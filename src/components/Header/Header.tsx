@@ -25,11 +25,10 @@ function Header() {
             <div className="side-bar"></div>
 
             <div className="breadcrumb">
-                
-            <FastForward />
-            <span>Dashboard</span>
-            <FastForward />
-            <span>Dashboard</span>
+                <FastForward />
+                <span>Dashboard</span>
+                <FastForward />
+                <span>Dashboard</span>
             </div>
         </div>
 

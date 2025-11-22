@@ -2,7 +2,7 @@
 
 
 body {
-  font-family: "Noto Sans JP", sans-serif;
+  /* font-family: "Noto Sans JP", sans-serif; */
   display: block;
   margin: auto;
 }
@@ -63,7 +63,7 @@ body {
   padding: 10px 25px;
   font-size: 14px;
   color: #5E5E5E;
-  margin-left: 45px;
+  margin-left: 4.8rem;
 }
 
 /* Breadcrumb icon style */

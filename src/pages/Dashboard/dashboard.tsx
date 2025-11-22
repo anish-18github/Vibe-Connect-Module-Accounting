@@ -118,27 +118,24 @@ function Dashboard() {
 
                         <div className="cashflow-summary">
                             <div className="summary-item">
-                                <span className="dot income"></span> Income
-                                <h3>Total Income</h3>
+                                <h3>Cash as on 01/04/2025</h3>
                                 <h2>₹0.00</h2>
                             </div>
 
                             <div className="summary-item">
-                                <span className="dot expense"></span> Expense
-                                <h3>Total Expenses</h3>
-                                <h2>₹0.00</h2>
+
+                                <h3 style={{color:"red"}}>Incoming</h3>
+                                <h2>₹0.00 +</h2>
                             </div>
 
                             <div className="summary-item">
-                                <span className="dot income"></span> Income
-                                <h3>Total Income</h3>
-                                <h2>₹0.00</h2>
+                                <h3 >Outgoing</h3>
+                                <h2>₹0.00 -</h2>
                             </div>
 
                             <div className="summary-item">
-                                <span className="dot expense"></span> Expense
-                                <h3>Total Expenses</h3>
-                                <h2>₹0.00</h2>
+                                <h3>Cash as on 01/04/2025</h3>
+                                <h2>₹0.00 =</h2>
                             </div>
                         </div>
                     </div>

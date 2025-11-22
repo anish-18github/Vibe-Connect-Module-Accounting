@@ -1,0 +1,27 @@
+/* Search box styling */
+.custom-search-box {
+  background: #ececec;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  height: 38px;
+  width: 250px;
+}
+
+/* Text box styling */
+.search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+}
+
+/* Add Button styling */
+.custom-add-btn {
+  height: 35px;
+  border-radius: 8px;
+  background-color: #f8f8f8;
+  border: 1px solid #c9c9c9;
+  padding: 5px 18px;
+  font-weight: 500;
+}
