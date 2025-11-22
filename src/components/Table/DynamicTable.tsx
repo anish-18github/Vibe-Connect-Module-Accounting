@@ -1,6 +1,6 @@
 import { useState } from "react";
 import './dynamicTable.css'
-import { Edit, Eye, ChevronLeft, ChevronRight } from "react-feather";
+import { Edit, Eye, ChevronLeft, ChevronRight, Search } from "react-feather";
 
 interface Column {
     key: string;
@@ -12,9 +12,10 @@ interface DynamicTableProps {
     data: any[];
     actions?: boolean;
     rowsPerPage?: number;
+    onAdd?: () => void; /* For Navigation */
 }
 
-function DynamicTable({ columns, data, actions = false, rowsPerPage = 10 }: DynamicTableProps) {
+function DynamicTable({ columns, data, actions = false, rowsPerPage = 10, onAdd }: DynamicTableProps) {
     const [currentPage, setCurrentPage] = useState(1);
 
     // Calculate pagination
@@ -27,104 +28,82 @@ function DynamicTable({ columns, data, actions = false, rowsPerPage = 10 }: Dyna
         setCurrentPage(Math.max(1, Math.min(page, totalPages)));
     };
 
-    const renderPageNumbers = () => {
-        const pages = [];
-        for (let i = 1; i <= totalPages; i++) {
-            // Show first page, last page, current page, and pages around current
-            if (
-                i === 1 ||
-                i === totalPages ||
-                (i >= currentPage - 1 && i <= currentPage + 1)
-            ) {
-                pages.push(
-                    <button
-                        key={i}
-                        onClick={() => goToPage(i)}
-                        style={{
-                            padding: "5px 12px",
-                            margin: "0 2px",
-                            border: "1px solid #c9c9c9",
-                            borderRadius: "4px",
-                            background: currentPage === i ? "#555" : "#f8f8f8",
-                            color: currentPage === i ? "white" : "#555",
-                            cursor: "pointer",
-                            minWidth: "36px"
-                        }}
-                    >
-                        {i}
-                    </button>
-                );
-            } else if (i === currentPage - 2 || i === currentPage + 2) {
-                pages.push(
-                    <span key={i} style={{ padding: "5px", color: "#555" }}>
-                        ...
-                    </span>
-                );
-            }
-        }
-        return pages;
-    };
-
     return (
         <div>
 
             {/* Pagination */}
-            {data.length > rowsPerPage && (
-                <div style={{
+            {/* TOP BAR */}
+            <div
+                style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginTop: "15px",
+                    marginBottom: "10px",
                     padding: "0 10px"
-                }}>
-                    {/* Left side - Showing info */}
-                    <div style={{ fontSize: "14px", color: "#555" }}>
-                        Showing {startIndex + 1} to {Math.min(endIndex, data.length)} of {data.length} entries
-                    </div>
+                }}
+            >
+                {/* LEFT SIDE: Search + Add */}
+                <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
 
-                    {/* Right side - Pagination controls */}
-                    <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                        {/* Previous button */}
+                    {/* Search Icon (Clickable, No Input) */}
+                    <button
+                        style={{
+                            border: "none",
+                            background: "transparent",
+                            cursor: "pointer",
+                            padding: "4px"
+                        }}
+                    >
+                        <Search size={25} style={{ color: "#555" }} />
+                    </button>
+
+                    {/* Add Button */}
+                    <button className="btn btn-outline-secondary custom-add-btn px-4" onClick={onAdd}>
+                        Add
+                    </button>
+                </div>
+
+                {/* RIGHT SIDE: Pagination (Already Working) */}
+                {data.length > rowsPerPage && (
+                    <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                        <div style={{ fontSize: "14px", color: "#555" }}>
+                            {startIndex + 1} - {Math.min(endIndex, data.length)} of {data.length}
+                        </div>
+
                         <button
                             onClick={() => goToPage(currentPage - 1)}
                             disabled={currentPage === 1}
                             style={{
-                                padding: "5px 10px",
-                                border: "1px solid #c9c9c9",
-                                borderRadius: "4px",
-                                background: currentPage === 1 ? "#e9e9e9" : "#f8f8f8",
-                                color: currentPage === 1 ? "#999" : "#555",
-                                cursor: currentPage === 1 ? "not-allowed" : "pointer"
+                                background: "transparent",
+                                border: "none",
+                                cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                                color: currentPage === 1 ? "#aaa" : "#555",
+                                padding: 0
                             }}
                         >
                             <ChevronLeft size={18} />
                         </button>
 
-                        {/* Page numbers */}
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                            {renderPageNumbers()}
-                        </div>
-
-                        {/* Next button */}
                         <button
                             onClick={() => goToPage(currentPage + 1)}
                             disabled={currentPage === totalPages}
                             style={{
-                                padding: "5px 10px",
-                                border: "1px solid #c9c9c9",
-                                borderRadius: "4px",
-                                background: currentPage === totalPages ? "#e9e9e9" : "#f8f8f8",
-                                color: currentPage === totalPages ? "#999" : "#555",
-                                cursor: currentPage === totalPages ? "not-allowed" : "pointer"
+                                background: "transparent",
+                                border: "none",
+                                cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                                color: currentPage === totalPages ? "#aaa" : "#555",
+                                padding: 0
                             }}
                         >
                             <ChevronRight size={18} />
                         </button>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
 
-            <table className="table custom-table table-bordered table-striped">
+            {/* table-striped */}
+
+            <table className="table custom-table table-bordered " style={{ margin: "0 25px" }}>
                 <thead>
                     <tr>
                         {actions && <th>Action</th>}

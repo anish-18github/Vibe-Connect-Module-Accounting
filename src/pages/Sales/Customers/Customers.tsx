@@ -1,9 +1,11 @@
-import { Search } from "react-feather";
 import Header from "../../../components/Header/Header";
 import Navbar from "../../../components/Navbar/NavBar";
 import DynamicTable from "../../../components/Table/DynamicTable";
 import { dashboardTabs } from "../../Dashboard/dashboard";
+
+
 import "./customers.css"
+import { useNavigate } from "react-router-dom";
 
 const salesTabs = [
     { label: "Customers", path: "/sales/customers" },
@@ -364,38 +366,25 @@ const customers = [
 ];
 
 
+
 function Customer() {
+
+    const navigate = useNavigate();
+    
+
     return (
         <>
             <Header />
             <Navbar tabs={dashboardTabs} />
             <Navbar tabs={salesTabs} />
 
-            <div className="container mt-3 d-flex align-items-center">
-
-                {/* Search Box */}
-                <div className="d-flex align-items-center px-3">
-                    <Search size={18} className="me-1" style={{ color: "#555" }} />
-                    {/* <input
-                        type="text"
-                        className="search-input"
-                        placeholder="Search Customers"
-                    /> */}
-                </div>
-
-                {/* Add Button */}
-                <button className="btn btn-outline-secondary custom-add-btn px-4">
-                    Add
-                </button>
-            </div>
-
-
             <div className="container mt-3">
                 <DynamicTable
                     columns={columns}
                     data={customers}
                     actions={true}
-                    rowsPerPage={10}  // Optional: defaults to 10
+                    rowsPerPage={10}
+                    onAdd={() => navigate("/add-customer")}
                 />
             </div>
 
