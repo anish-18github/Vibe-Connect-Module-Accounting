@@ -1,0 +1,228 @@
+/* MAIN DASHBOARD CONTAINER */
+/* .dashboard-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    padding: 18px 22px 0px 20px;
+    min-height: calc(100vh - 120px);
+    margin-left: 55px;
+} */
+.dashboard-container {
+    display: grid;
+    /* grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 18px 22px 0px 20px;
+    min-height: calc(100vh - 120px);
+    margin-left: 55px;
+}
+
+
+/* CARD BASE STYLING (if not already added in Card.css) */
+.card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    padding: 0px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* CARD TITLE */
+.card h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #000000;
+    font-weight: 400;
+}
+
+/* PROGRESS BARS */
+.bar {
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(to right, #19376D, #A5D7E8);
+    border-radius: 8px;
+    margin: 8px 0;
+}
+
+/* CONTENT TEXT STYLING */
+.card p {
+    margin: 0;
+    font-size: 13px;
+    color: #555;
+}
+
+.card span {
+    font-weight: 600;
+    color: #19376D;
+}
+
+/* HEADINGS INSIDE CARD */
+.card h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 4px 0;
+}
+
+.card h2 span {
+    font-size: 0.9rem;
+}
+
+.row-values {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.row-values h2 {
+    display: flex;
+    flex-direction: column;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.row-values h2 span {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #19376D;
+}
+
+
+/* PLACEHOLDER BOX WHEN NO CHART */
+.placeholder {
+    width: 100%;
+    height: 180px;
+    border: 1px dashed #bbb;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777;
+    background: #fafafa;
+}
+
+/* FIX CHART CARD HEIGHTS */
+.card .recharts-wrapper {
+    width: 100% !important;
+}
+
+.chart-toggle {
+    display: flex;
+    /* gap: 10px; */
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+
+.toggle-btn {
+    padding: 3px 10px;
+    border: 1px solid #ccc;
+    /* background: #f5f5f5; */
+    cursor: pointer;
+    font-size: 12px;
+    color: #352f2f;
+    /* display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center; */
+}
+
+.toggle-btn.accrual {
+    border-radius: 5px 0px 0px 5px;
+}
+
+.toggle-btn.cash {
+    border-radius: 0px 5px 5px 0px;
+}
+
+
+.toggle-btn.active {
+    background: #c1c8d4;
+    color: #5E5E5E;
+    border-color: #c9cfda;
+}
+
+/* Summary */
+.chart-summary {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.summary-item {
+    text-align: left;
+}
+
+.summary-item h3 {
+    font-size: 14px;
+    margin: 4px 0 2px;
+}
+
+.summary-item h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.dot.income {
+    background-color: #2b59ff;
+}
+
+.dot.expense {
+    background-color: #ff5757;
+}
+
+/* Note */
+.chart-note {
+    font-size: 12px;
+    margin-top: 8px;
+    color: #777;
+}
+
+.wide-card {
+    grid-column: span 2;
+}
+
+/* Cash Flow layout container */
+.cashflow-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* Summary on the right side */
+.cashflow-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 160px;
+    gap: 10px;
+    padding-left: 15px;
+    border-left: 1px solid #eee;
+}
+
+/* Make chart shrink properly */
+.cashflow-content .recharts-wrapper {
+    flex: 1;
+}
+
+
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+    .dashboard-container {
+        padding: 10px;
+        grid-template-columns: 1fr;
+    }
+}

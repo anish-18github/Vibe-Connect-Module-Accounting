@@ -1,7 +1,7 @@
 // import React from "react";
 import { Link } from "react-router-dom";
 import { RefreshCw, Settings, Search, Bell, PlusSquare, CheckCircle, FastForward } from "react-feather";
-import "./Header.css";
+import "./header.css";
 
 
 function Header() {
@@ -9,7 +9,7 @@ function Header() {
 
         <div>
             <header className="header">
-                <img src="src/assets/profile.jpg" alt="" className="profile" />
+                <img src="/profile.jpg" alt="" className="profile" />
                 <h2>Vibe Connect</h2>
 
                 <nav>

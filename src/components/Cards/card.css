@@ -1,0 +1,71 @@
+.card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ------------------ HEADER ------------------ */
+.card-header {
+    background: #f7f9fc;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e8ed;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header h3 {
+    color: #19376D;
+    font-size: 17px;
+    margin: 0;
+    border-bottom: 1px dotted #aaa;
+    padding-bottom: 4px;
+}
+
+/* Actions container (select + new button) */
+.card-header .actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ------------------ BUTTON ------------------ */
+.add {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    background: #f7f9fc;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 350;
+}
+
+.add svg {
+    width: 15px;
+    height: 15px;
+}
+
+/* ------------------ SELECT ------------------ */
+.card-header select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: #f7f9fc;
+    font-size: 12px;
+    outline: none;
+    font-weight: 530;
+    border: none;
+    color: #5E5E5E;
+}
+
+/* ------------------ BODY ------------------ */
+.card-body {
+    flex: 1;
+    padding: 12px;
+}
