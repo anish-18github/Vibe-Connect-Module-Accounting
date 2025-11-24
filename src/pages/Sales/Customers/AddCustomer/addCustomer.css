@@ -1,0 +1,44 @@
+.nav-tabs-container {
+    position: relative;
+}
+
+.tab-indicator {
+    position: absolute;
+    bottom: 0;
+    height: 2px;
+    background-color: var(--bs-primary);
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+    border-radius: 999px;
+}
+
+.nav-link {
+    padding: 0.5rem 0.1rem;
+    margin-right: 1.5rem;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+    color: var(--bs-gray-600);
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.nav-link.active,
+.nav-link:focus,
+.nav-link:hover {
+    color: var(--bs-primary);
+    background-color: transparent !important;
+}
+
+/* Simple form label appearance to match the image */
+.form-label {
+    margin-bottom: 0.2rem;
+}
+
+.upload-box {
+    border: 3px dotted #999;
+    transition: 0.2s;
+}
+
+.upload-box:hover {
+    background-color: #f7f7f7;
+    border-color: #6c6c6c;
+}
