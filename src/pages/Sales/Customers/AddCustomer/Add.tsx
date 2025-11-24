@@ -1,48 +1,66 @@
 import React, { useState, useRef, useEffect } from 'react';
-import type { ChangeEvent, FormEvent, RefObject } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
 import Header from '../../../../components/Header/Header';
-import './addCustomer.css'
+import './addCustomer.css';
+import { Plus, X } from 'react-feather';
 
-// --- 1. Interface Definitions for Type Safety ---
-
-interface FormData {
+// ---------------------------------------------
+// 1. Interface Definitions
+// ---------------------------------------------
+interface ContactPerson {
     salutation: string;
     firstName: string;
     lastName: string;
-    companyName: string;
-    displayName: string;
-    emailAddress: string;
-    countryCode: string;
-    phoneNumber: string;
-    pan: string;
-    currency: string;
-    paymentTerms: string;
-    portalLanguage: string;
+    email: string;
+    phone: string;
+    designation: string;
+    department: string;
 }
 
-interface LabeledFieldProps {
-    label: string;
-    name: keyof FormData;
-    value: string;
-    type?: string;
-    options?: string[];
-    required?: boolean;
-    isSelect?: boolean;
+interface FormData {
+    customer: {
+        salutation: string;
+        firstName: string;
+        lastName: string;
+        companyName: string;
+        displayName: string;
+        emailAddress: string;
+        countryCode: string;
+        phoneNumber: string;
+    };
+    otherDetails: {
+        pan: string;
+        currency: string;
+        paymentTerms: string;
+        portalLanguage: string;
+    };
+    address: {
+        attention: string;
+        country: string;
+        address1: string;
+        address2: string;
+        city: string;
+        state: string;
+        zip: string;
+        fax: string;
+    };
+    contactPersons: ContactPerson[];
+    remarks: string;
 }
 
-interface PhoneInputProps {
-    countryCode: string;
-    phoneNumber: string;
-}
 
-// Mock data for dropdowns
+// ---------------------------------------------
+// 2. Dropdown Data
+// ---------------------------------------------
 const salutations = ['Mr.', 'Ms.', 'Mrs.', 'Dr.', 'Sir', 'Madam'];
 const currencies = ['USD - US Dollar', 'EUR - Euro', 'INR - Indian Rupee'];
 const paymentTerms = ['Net 15', 'Net 30', 'Due on Receipt', 'Custom'];
 const languages = ['English', 'Spanish', 'French', 'German'];
 
-// Feather Upload Icon as a React Component (SVG)
-const FeatherUpload = ({ className = 'text-muted', size = 32 }: { className?: string, size?: number }) => (
+// ---------------------------------------------
+// 3. Icon Component
+// ---------------------------------------------
+const FeatherUpload = ({ className = 'text-muted', size = 32 }: { className?: string; size?: number }) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         width={size}
@@ -61,45 +79,117 @@ const FeatherUpload = ({ className = 'text-muted', size = 32 }: { className?: st
     </svg>
 );
 
-// Main Application Component
+// ---------------------------------------------
+// 4. Main Component
+// ---------------------------------------------
 const App = () => {
-    // --- Form State ---
     const [customerType, setCustomerType] = useState<'Business' | 'Individual'>('Business');
+
+    // ---------------------------------------------
+    // 5. FORM STATE (UPDATED INCLUDING ADDRESS)
+    // ---------------------------------------------
     const [formData, setFormData] = useState<FormData>({
-        // Basic Info
-        salutation: 'Mr.',
-        firstName: '',
-        lastName: '',
-        companyName: '',
-        displayName: '',
-        emailAddress: '',
-        countryCode: '+1',
-        phoneNumber: '',
-        // Other Details Tab
-        pan: '',
-        currency: currencies[0],
-        paymentTerms: paymentTerms[1],
-        portalLanguage: languages[0],
+        customer: {
+            salutation: "",
+            firstName: "",
+            lastName: "",
+            companyName: "",
+            displayName: "",
+            emailAddress: "",
+            countryCode: "",
+            phoneNumber: "",
+        },
+        otherDetails: {
+            pan: "",
+            currency: "",
+            paymentTerms: "",
+            portalLanguage: "",
+        },
+        address: {
+            attention: "",
+            country: "",
+            address1: "",
+            address2: "",
+            city: "",
+            state: "",
+            zip: "",
+            fax: "",
+        },
+        contactPersons: [
+            {
+                salutation: "",
+                firstName: "",
+                lastName: "",
+                email: "",
+                phone: "",
+                designation: "",
+                department: "",
+            },
+        ],
+        remarks: "",
     });
 
-    // --- Tab State & Animation Logic ---
+
+
+
+    const addContactPerson = () => {
+        setFormData({
+            ...formData,
+            contactPersons: [
+                ...formData.contactPersons,
+                {
+                    salutation: "",
+                    firstName: "",
+                    lastName: "",
+                    email: "",
+                    phone: "",
+                    designation: "",
+                    department: "",
+                },
+            ],
+        });
+    };
+
+
+    const removeContactPerson = (index: number) => {
+        const updatedContacts = formData.contactPersons.filter(
+            (_, i) => i !== index
+        );
+        setFormData({ ...formData, contactPersons: updatedContacts });
+    };
+
+
+    const handleContactChange = (
+        index: number,
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
+        const updatedContacts = [...formData.contactPersons];
+        updatedContacts[index] = {
+            ...updatedContacts[index],
+            [e.target.name]: e.target.value,
+        };
+
+        setFormData({ ...formData, contactPersons: updatedContacts });
+    };
+
+
+
+
     const tabs = ['Other Details', 'Address', 'Contact Persons', 'Remarks'];
-    // Using an array of RefObject<HTMLButtonElement | null> for tab references
     const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
     const tabsContainerRef = useRef<HTMLDivElement>(null);
-    // const buttonRef = useRef<HTMLButtonElement | null>(null);
 
     const [activeTab, setActiveTab] = useState(tabs[0]);
     const [indicatorStyle, setIndicatorStyle] = useState({});
 
-
-    // Function to calculate the indicator position
+    // ---------------------------------------------
+    // 6. Animated Indicator
+    // ---------------------------------------------
     const calculateIndicatorPosition = () => {
         const activeIndex = tabs.indexOf(activeTab);
         const activeTabElement = tabRefs.current[activeIndex];
         const container = tabsContainerRef.current;
 
-        // FIX 1: Add null checks for activeTabElement and container
         if (activeTabElement && container) {
             const tabRect = activeTabElement.getBoundingClientRect();
             const containerRect = container.getBoundingClientRect();
@@ -111,241 +201,482 @@ const App = () => {
         }
     };
 
-    // Recalculates indicator position on tab change and window resize
     useEffect(() => {
         calculateIndicatorPosition();
         window.addEventListener('resize', calculateIndicatorPosition);
-        return () => {
-            window.removeEventListener('resize', calculateIndicatorPosition);
-        };
+        return () => window.removeEventListener('resize', calculateIndicatorPosition);
     }, [activeTab]);
 
-    // Handle input changes
-    // FIX 2: Explicitly type the event argument
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        // Type assertion to ensure name is a valid key of FormData
-        setFormData(prev => ({ ...prev, [name as keyof FormData]: value }));
+    // ---------------------------------------------
+    // 7. Handle Field Change
+    // ---------------------------------------------
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    ) => {
+        const { name, value } = e.target; // e.g. "customer.firstName"
+        const keys = name.split(".");     // ["customer", "firstName"]
+
+        setFormData((prev) => {
+            const updated = { ...prev };
+            let ref: any = updated;
+
+            for (let i = 0; i < keys.length - 1; i++) {
+                ref[keys[i]] = { ...ref[keys[i]] };
+                ref = ref[keys[i]];
+            }
+
+            ref[keys[keys.length - 1]] = value;
+            return updated;
+        });
     };
 
-    // Handle form submission
-    // FIX 3: Explicitly type the event argument
+
+    // ---------------------------------------------
+    // 8. Submit Form
+    // ---------------------------------------------
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        console.log("Form Data Submitted:", formData);
-        const message = `Form data submitted successfully! Check console for details.
-      Customer: ${formData.displayName || formData.firstName} ${formData.lastName}
-      Type: ${customerType}`;
-        console.info(message);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        console.log('Form Submitted:', formData);
+        alert('Form submitted, check console!');
     };
 
-    // --- Utility Components (Stacked Labels to match the image) ---
 
-    // Standard Stacked Input/Select component
-    // FIX 4: Use interface for props
-    const LabeledFieldStacked: React.FC<LabeledFieldProps> = ({
-        label,
-        name,
-        value,
-        type = 'text',
-        options = [], // FIX 5: Provide default empty array for options
-        required = false,
-        isSelect = false
-    }) => (
-        <div className="mb-3">
-            <label htmlFor={name as string} className="form-label text-sm fw-medium text-secondary">
-                {label}
-            </label>
-            {isSelect ? (
-                <select
-                    id={name as string}
-                    name={name as string}
-                    value={value}
-                    onChange={handleChange}
-                    required={required}
-                    className="form-select form-select-sm"
-                >
-                    {/* FIX 6: Explicitly type parameters in map */}
-                    {options.map((option: string, index: number) => (
-                        <option key={index} value={option}>{option}</option>
-                    ))}
-                </select>
-            ) : (
-                <input
-                    type={type}
-                    id={name as string}
-                    name={name as string}
-                    value={value}
-                    onChange={handleChange}
-                    required={required}
-                    className="form-control form-control-sm"
-                />
-            )}
-        </div>
-    );
-
-    // Custom Phone Input to match the visual split in the image
-    // FIX 7: Use interface for props
-    const PhoneInputStacked: React.FC<PhoneInputProps> = ({ countryCode, phoneNumber }) => (
-        <div className="mb-3">
-            <label className="form-label text-sm fw-medium text-secondary">
-                Phone:
-            </label>
-            <div className="row g-2">
-                {/* Input 1 (left side) - width col-6 */}
-                <div className="col-6">
+    // ---------------------------------------------
+    // 9. Render Other Details TAB
+    // ---------------------------------------------
+    const renderOtherDetailsTab = () => (
+        <>
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">PAN:</label>
+                <div className="col-sm-6">
                     <input
                         type="text"
-                        id="countryCode"
-                        name="countryCode"
-                        value={countryCode}
-                        onChange={handleChange}
+                        name="pan"
                         className="form-control form-control-sm"
-                        placeholder="Country Code"
+                        value={formData.pan}
+                        onChange={handleChange}
                     />
                 </div>
-                {/* Input 2 (right side) - width col-6 */}
-                <div className="col-6">
+            </div>
+
+            {/* Currency */}
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">Currency:</label>
+                <div className="col-sm-6">
+                    <select
+                        name="currency"
+                        value={formData.currency}
+                        onChange={handleChange}
+                        className="form-select form-select-sm"
+                    >
+                        {currencies.map((c, i) => (
+                            <option key={i} value={c}>{c}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
+            {/* Payment Terms */}
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">Payment Terms:</label>
+                <div className="col-sm-6">
+                    <select
+                        name="paymentTerms"
+                        value={formData.paymentTerms}
+                        onChange={handleChange}
+                        className="form-select form-select-sm"
+                    >
+                        {paymentTerms.map((p, i) => (
+                            <option key={i} value={p}>{p}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
+            {/* Portal Language */}
+            <div className="row align-items-center mb-4">
+                <label className="col-sm-2 col-form-label">Portal Language:</label>
+                <div className="col-sm-6">
+                    <select
+                        name="portalLanguage"
+                        value={formData.portalLanguage}
+                        onChange={handleChange}
+                        className="form-select form-select-sm"
+                    >
+                        {languages.map((l, i) => (
+                            <option key={i} value={l}>{l}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
+            {/* Upload Box */}
+            <div className="row mb-4">
+                <label className="col-sm-2 col-form-label">Documents:</label>
+                <div className="col-sm-6">
+                    <div
+                        onClick={() => document.getElementById("fileUploadInput")?.click()}
+                        className="d-flex flex-column align-items-center justify-content-center w-100 p-4 bg-light cursor-pointer"
+                        style={{
+                            minHeight: "120px",
+                            border: "2px dotted #a0a0a0",
+                            borderRadius: "8px"
+                        }}
+                    >
+                        <FeatherUpload size={32} className="text-muted mb-2" />
+                        <span className="text-secondary small">Click to Upload Documents</span>
+
+                        {/* Hidden file input */}
+                        <input
+                            id="fileUploadInput"
+                            type="file"
+                            multiple
+                            className="d-none"
+                            onChange={(e) => {
+                                const files = e.target.files;
+                                if (files?.length) {
+                                    console.log("Files uploaded:", files);
+                                    alert(`${files.length} file(s) selected!`);
+                                }
+                            }}
+                        />
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+
+
+    // ---------------------------------------------
+    // 10. Render Address TAB
+    // ---------------------------------------------
+    const renderAddressTab = () => (
+        <>
+            {/* Attention */}
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">Attention:</label>
+                <div className="col-sm-6">
+                    <input
+                        type="text"
+                        name="attention"
+                        value={formData.attention}
+                        onChange={handleChange}
+                        className="form-control form-control-sm"
+                        placeholder="Enter attention name"
+                    />
+                </div>
+            </div>
+
+            {/* Country */}
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">Country / Region:</label>
+                <div className="col-sm-6">
+                    <select
+                        name="country"
+                        value={formData.country}
+                        onChange={handleChange}
+                        className="form-select form-select-sm text-muted"
+                    >
+                        <option value="" disabled hidden>Select Country</option>
+                        <option value="India">India</option>
+                        <option value="USA">United States</option>
+                        <option value="UK">United Kingdom</option>
+                        <option value="Germany">Germany</option>
+                    </select>
+                </div>
+            </div>
+
+            {/* Address Line 1 */}
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">Address Line 1:</label>
+                <div className="col-sm-6">
+                    <input
+                        type="text"
+                        name="address1"
+                        value={formData.address1}
+                        onChange={handleChange}
+                        className="form-control form-control-sm"
+                        placeholder="Enter address line 1"
+                    />
+                </div>
+            </div>
+
+            {/* Address Line 2 */}
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">Address Line 2:</label>
+                <div className="col-sm-6">
+                    <input
+                        type="text"
+                        name="address2"
+                        value={formData.address2}
+                        onChange={handleChange}
+                        className="form-control form-control-sm"
+                        placeholder="Enter address line 2"
+                    />
+                </div>
+            </div>
+
+            {/* City */}
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">City:</label>
+                <div className="col-sm-6">
+                    <input
+                        type="text"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        className="form-control form-control-sm"
+                        placeholder="Enter city"
+                    />
+                </div>
+            </div>
+
+            {/* State */}
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">State / Province:</label>
+                <div className="col-sm-6">
+                    <input
+                        type="text"
+                        name="state"
+                        value={formData.state}
+                        onChange={handleChange}
+                        className="form-control form-control-sm"
+                        placeholder="Enter state"
+                    />
+                </div>
+            </div>
+
+            {/* ZIP */}
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">ZIP / Postal Code:</label>
+                <div className="col-sm-6">
+                    <input
+                        type="text"
+                        name="zip"
+                        value={formData.zip}
+                        onChange={handleChange}
+                        className="form-control form-control-sm"
+                        placeholder="Enter ZIP / Postal Code"
+                    />
+                </div>
+            </div>
+
+            {/* Fax */}
+            <div className="row align-items-center mb-4">
+                <label className="col-sm-2 col-form-label">Fax:</label>
+                <div className="col-sm-6">
+                    <input
+                        type="text"
+                        name="fax"
+                        value={formData.fax}
+                        onChange={handleChange}
+                        className="form-control form-control-sm"
+                        placeholder="Enter fax number"
+                    />
+                </div>
+            </div>
+
+            {/* Phone */}
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-1 col-form-label">Phone:</label>
+                <div className="col-sm-1">
+                    <input
+                        type="text"
+                        name="countryCode"
+                        placeholder="+1"
+                        className="form-control form-control-sm"
+                        value={formData.countryCode}
+                        onChange={handleChange}
+                    />
+                </div>
+                <div className="col-sm-4">
                     <input
                         type="tel"
-                        id="phoneNumber"
                         name="phoneNumber"
-                        value={phoneNumber}
-                        onChange={handleChange}
                         className="form-control form-control-sm"
-                        placeholder="Phone Number"
+                        value={formData.phoneNumber}
+                        onChange={handleChange}
                     />
                 </div>
             </div>
-        </div>
+        </>
+    );
+    // ---------------------------------------------
+    // 11. Render Contact Persons TAB
+    // ---------------------------------------------
+    const renderContactPersons = () => (
+        <> <table className="table table-bordered table-sm align-middle"> <thead className="bg-light">
+            <tr>
+                <th style={{ width: "120px" }}>Salutation</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email Address</th>
+                <th>Phone No.</th>
+                <th>Designation</th>
+                <th>Department</th>
+                <th style={{ width: "60px" }}>Action</th>
+            </tr>
+        </thead>
+
+            <tbody>
+                {formData.contactPersons.map((person, index) => (
+                    <tr key={index}>
+                        <td>
+                            <select
+                                name="salutation"
+                                className="form-select form-select-sm"
+                                value={person.salutation}
+                                onChange={(e) => handleContactChange(index, e)}
+                            >
+                                <option value="">Select</option>
+                                <option value="Mr.">Mr.</option>
+                                <option value="Mrs.">Mrs.</option>
+                                <option value="Ms.">Ms.</option>
+                                <option value="Dr.">Dr.</option>
+                            </select>
+                        </td>
+
+                        <td>
+                            <input
+                                type="text"
+                                name="firstName"
+                                className="form-control form-control-sm"
+                                value={person.firstName}
+                                onChange={(e) => handleContactChange(index, e)}
+                            />
+                        </td>
+
+                        <td>
+                            <input
+                                type="text"
+                                name="lastName"
+                                className="form-control form-control-sm"
+                                value={person.lastName}
+                                onChange={(e) => handleContactChange(index, e)}
+                            />
+                        </td>
+
+                        <td>
+                            <input
+                                type="email"
+                                name="email"
+                                className="form-control form-control-sm"
+                                value={person.email}
+                                onChange={(e) => handleContactChange(index, e)}
+                            />
+                        </td>
+
+                        <td>
+                            <input
+                                type="text"
+                                name="phone"
+                                className="form-control form-control-sm"
+                                value={person.phone}
+                                onChange={(e) => handleContactChange(index, e)}
+                            />
+                        </td>
+
+                        <td>
+                            <input
+                                type="text"
+                                name="designation"
+                                className="form-control form-control-sm"
+                                value={person.designation}
+                                onChange={(e) => handleContactChange(index, e)}
+                            />
+                        </td>
+
+                        <td>
+                            <input
+                                type="text"
+                                name="department"
+                                className="form-control form-control-sm"
+                                value={person.department}
+                                onChange={(e) => handleContactChange(index, e)}
+                            />
+                        </td>
+
+                        <td className="text-center">
+                            <button
+                                type='button'
+                                className="btn btn-sm btn-outline-danger"
+                                onClick={() => removeContactPerson(index)}
+                                title="Remove"
+                            >
+                                <X size={16} />
+                            </button>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+
+            <button
+                className="btn btn-outline-primary btn-sm mt-2 d-flex align-items-center gap-1"
+                type='button'
+                onClick={addContactPerson}
+                title="Add Contact Person"
+            >
+                <Plus size={16} /> Add Contact Person
+            </button>
+        </>
+    );
+    // ---------------------------------------------
+    // 12. Render Contact Persons TAB
+    // ---------------------------------------------
+    const renderRemarks = () => (
+        <>
+            <label className="col-form-label pt-0">
+                Remarks <span className="text-muted">(For Internal Use)</span>
+            </label>
+
+            <textarea
+                name="remarks"
+                rows={4}
+                className="form-control"
+                value={formData.remarks}
+                onChange={handleChange}
+            />
+        </>
     );
 
-    // --- Tab Content Renderers ---
 
-    const renderOtherDetailsTab = () => (
-        <div className="row g-3 mt-2">
-            {/* All fields are full width (col-12) as per the image */}
-            <div className="col-12">
-                <LabeledFieldStacked
-                    label="PAN:"
-                    name="pan"
-                    value={formData.pan}
-                />
-            </div>
-            <div className="col-12">
-                <LabeledFieldStacked
-                    label="Currency:"
-                    name="currency"
-                    value={formData.currency}
-                    options={currencies}
-                    isSelect
-                />
-            </div>
-            <div className="col-12">
-                <LabeledFieldStacked
-                    label="Payment Terms:"
-                    name="paymentTerms"
-                    value={formData.paymentTerms}
-                    options={paymentTerms}
-                    isSelect
-                />
-            </div>
-            <div className="col-12">
-                <LabeledFieldStacked
-                    label="Portal Language:"
-                    name="portalLanguage"
-                    value={formData.portalLanguage}
-                    options={languages}
-                    isSelect
-                />
-            </div>
 
-            <div className="col-12 mt-4">
-                <label className="form-label text-sm fw-medium text-secondary">Documents:</label>
-                {/* Plain border style to match the image */}
-                <div className="d-flex align-items-center justify-content-center w-100 p-5 border border-secondary-subtle rounded-3 bg-light text-center cursor-pointer hover-shadow"
-                    style={{ minHeight: '150px' }}>
-                    <div className="d-flex flex-column align-items-center">
-                        <FeatherUpload size={32} className="text-muted mb-2" />
-                        <span className="text-sm text-secondary">Click to Upload</span>
-                    </div>
-                    <input type="file" className="d-none" multiple />
-                </div>
-            </div>
-        </div>
-    );
 
-    // FIX 8: Explicitly type the name parameter
-    const renderPlaceholderTab = (name: string) => (
-        <div className="p-4 p-md-5 mt-4 bg-light rounded-3 text-center text-muted border border-dashed border-secondary-subtle">
-            <p className="lead fw-bold text-secondary">Tab: {name}</p>
-            <p className="mb-0">This section is a placeholder for **{name}**-related fields and configurations.</p>
-        </div>
-    );
 
+    // ---------------------------------------------
+    // 10. TAB CONTENT SWITCH
+    // ---------------------------------------------
     const renderTabContent = () => {
         switch (activeTab) {
             case 'Other Details':
                 return renderOtherDetailsTab();
             case 'Address':
+                return renderAddressTab();
             case 'Contact Persons':
+                return renderContactPersons();
             case 'Remarks':
-                return renderPlaceholderTab(activeTab);
+                return renderRemarks();
             default:
-                return null;
+                return (
+                    <div className="p-4 bg-light border rounded text-center text-muted">
+                        <strong>{activeTab}</strong> content coming soon.
+                    </div>
+                );
         }
     };
 
-
-    // Custom styles for the animated indicator (simplified)
-    //     const customStyles = `
-    //     .nav-tabs-container {
-    //       position: relative;
-    //     }
-    //     .tab-indicator {
-    //       position: absolute;
-    //       bottom: 0;
-    //       height: 2px;
-    //       background-color: var(--bs-primary);
-    //       transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
-    //       border-radius: 999px;
-    //     }
-    //     .nav-link {
-    //         padding: 0.5rem 0.1rem;
-    //         margin-right: 1.5rem;
-    //         border: none !important;
-    //         border-bottom: 2px solid transparent !important;
-    //         color: var(--bs-gray-600);
-    //         font-weight: 500;
-    //         cursor: pointer;
-    //     }
-    //     .nav-link.active, .nav-link:focus, .nav-link:hover {
-    //         color: var(--bs-primary);
-    //         background-color: transparent !important;
-    //     }
-    //     /* Simple form label appearance to match the image */
-    //     .form-label {
-    //         margin-bottom: 0.2rem;
-    //     }
-    //   `;
-
-    // --- Main Render ---
+    // ---------------------------------------------
+    // 11. MAIN RETURN
+    // ---------------------------------------------
     return (
         <>
-            {/* Bootstrap CSS CDN link */}
-            <link
-                rel="stylesheet"
-                href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-                integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-                crossOrigin="anonymous"
-            />
-
             <Header />
 
-
-            <div style={{ marginLeft: 80, paddingRight: 160 }} >
+            <div style={{ marginLeft: 80, paddingRight: 160 }}>
                 <h1 className="h4 text-dark mb-4 pb-1">New Customer</h1>
+
+                {/* MAIN FORM */}
 
                 <form onSubmit={handleSubmit} className="mt-4">
 
@@ -385,11 +716,6 @@ const App = () => {
                             </div>
                         </div>
                     </div>
-
-                    {/* Primary Contact Title */}
-                    {/* <div className="mb-2 fw-semibold text-secondary">
-                        Primary Contact:
-                    </div> */}
 
                     {/* Salutation / First Name / Last Name */}
                     <div className="row mb-3 align-items-center">
@@ -500,16 +826,16 @@ const App = () => {
                         </div>
                     </div>
 
-                    {/* TABS */}
+                    {/* ————— TABS ————— */}
                     <div className="mt-4 border-bottom nav-tabs-container" ref={tabsContainerRef}>
                         <ul className="nav nav-tabs border-0">
                             {tabs.map((tab, index) => (
-                                <li className="nav-item" key={tab}>
+                                <li key={tab} className="nav-item">
                                     <button
                                         ref={(el) => { tabRefs.current[index] = el; }}
-                                        className={`nav-link ${activeTab === tab ? "active" : ""}`}
-                                        onClick={() => setActiveTab(tab)}
                                         type="button"
+                                        className={`nav-link ${activeTab === tab ? 'active' : ''}`}
+                                        onClick={() => setActiveTab(tab)}
                                     >
                                         {tab}
                                     </button>
@@ -517,144 +843,22 @@ const App = () => {
                             ))}
                         </ul>
 
-                        {/* Blue line under active tab */}
                         <div className="tab-indicator" style={indicatorStyle}></div>
                     </div>
 
                     {/* TAB CONTENT */}
-                    <div className="pt-4">
-                        {activeTab === "Other Details" && (
-                            <>
-                                {/* PAN */}
-                                <div className="row align-items-center mb-3">
-                                    <label className="col-sm-2 col-form-label">PAN:</label>
-                                    <div className="col-sm-6">
-                                        <input
-                                            type="text"
-                                            name="pan"
-                                            className="form-control form-control-sm"
-                                            value={formData.pan}
-                                            onChange={handleChange}
-                                        />
-                                    </div>
-                                </div>
+                    <div className="pt-4">{renderTabContent()}</div>
 
-                                {/* Currency */}
-                                <div className="row align-items-center mb-3">
-                                    <label className="col-sm-2 col-form-label">Currency:</label>
-                                    <div className="col-sm-6">
-                                        <select
-                                            name="currency"
-                                            value={formData.currency}
-                                            onChange={handleChange}
-                                            className="form-select form-select-sm"
-                                        >
-                                            {currencies.map((c, i) => (
-                                                <option key={i} value={c}>{c}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                {/* Payment Terms */}
-                                <div className="row align-items-center mb-3">
-                                    <label className="col-sm-2 col-form-label">Payment Terms:</label>
-                                    <div className="col-sm-6">
-                                        <select
-                                            name="paymentTerms"
-                                            value={formData.paymentTerms}
-                                            onChange={handleChange}
-                                            className="form-select form-select-sm"
-                                        >
-                                            {paymentTerms.map((p, i) => (
-                                                <option key={i} value={p}>{p}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                {/* Portal Language */}
-                                <div className="row align-items-center mb-4">
-                                    <label className="col-sm-2 col-form-label">Portal Language:</label>
-                                    <div className="col-sm-6">
-                                        <select
-                                            name="portalLanguage"
-                                            value={formData.portalLanguage}
-                                            onChange={handleChange}
-                                            className="form-select form-select-sm"
-                                        >
-                                            {languages.map((l, i) => (
-                                                <option key={i} value={l}>{l}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                {/* Upload Box */}
-                                {/* Upload Box */}
-                                <div className="row mb-4">
-                                    <label className="col-sm-2 col-form-label">Documents:</label>
-                                    <div className="col-sm-6">
-                                        <div
-                                            onClick={() => document.getElementById("fileUploadInput")?.click()}
-                                            className="d-flex flex-column align-items-center justify-content-center w-100 p-4 bg-light cursor-pointer"
-                                            style={{
-                                                minHeight: "120px",
-                                                border: "2px dotted #a0a0a0",
-                                                borderRadius: "8px"
-                                            }}
-                                        >
-                                            <FeatherUpload size={32} className="text-muted mb-2" />
-                                            <span className="text-secondary small">Click to Upload Documents</span>
-
-                                            {/* Hidden file input */}
-                                            <input
-                                                id="fileUploadInput"
-                                                type="file"
-                                                multiple
-                                                className="d-none"
-                                                onChange={(e) => {
-                                                    const files = e.target.files;
-                                                    if (files?.length) {
-                                                        console.log("Files uploaded:", files);
-                                                        alert(`${files.length} file(s) selected!`);
-                                                    }
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </>
-                        )}
-
-                        {(activeTab === "Address" ||
-                            activeTab === "Contact Persons" ||
-                            activeTab === "Remarks") && (
-                                <div className="p-4 bg-light border rounded text-center text-muted">
-                                    <strong>{activeTab}</strong> content coming soon.
-                                </div>
-                            )}
-                    </div>
-
-                    {/* Buttons */}
+                    {/* Submit Buttons */}
                     <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                        <button
-                            type="button"
-                            className="btn btn-outline-secondary me-3 px-4"
-                            onClick={() => console.log("Cancel pressed")}
-                        >
+                        <button type="button" className="btn btn-outline-secondary me-3 px-4">
                             Cancel
                         </button>
-                        <button
-                            type="submit"
-                            className="btn btn-primary px-4"
-                        >
+                        <button type="submit" className="btn btn-primary px-4">
                             Save
                         </button>
                     </div>
                 </form>
-
             </div>
         </>
     );
