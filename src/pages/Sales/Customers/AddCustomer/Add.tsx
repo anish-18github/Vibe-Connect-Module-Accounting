@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import type { ChangeEvent, FormEvent } from 'react';
+// import type { ChangeEvent, FormEvent } from 'react';
 import Header from '../../../../components/Header/Header';
+import { useNavigate } from "react-router-dom";
+
 import './addCustomer.css';
 import { Plus, X } from 'react-feather';
 
@@ -19,6 +21,7 @@ interface ContactPerson {
 
 interface FormData {
     customer: {
+        customerType: string,
         salutation: string;
         firstName: string;
         lastName: string;
@@ -42,6 +45,8 @@ interface FormData {
         city: string;
         state: string;
         zip: string;
+        countryCode: string;
+        phoneNumber: string;
         fax: string;
     };
     contactPersons: ContactPerson[];
@@ -56,6 +61,16 @@ const salutations = ['Mr.', 'Ms.', 'Mrs.', 'Dr.', 'Sir', 'Madam'];
 const currencies = ['USD - US Dollar', 'EUR - Euro', 'INR - Indian Rupee'];
 const paymentTerms = ['Net 15', 'Net 30', 'Due on Receipt', 'Custom'];
 const languages = ['English', 'Spanish', 'French', 'German'];
+const countries = [
+    "India",
+    "United States",
+    "United Kingdom",
+    "Canada",
+    "Australia",
+];
+const states = [
+    "Maharashtra", "Gujarat", "Karnataka", "Tamil Nadu", "Uttar Pradesh"];
+
 
 // ---------------------------------------------
 // 3. Icon Component
@@ -82,14 +97,15 @@ const FeatherUpload = ({ className = 'text-muted', size = 32 }: { className?: st
 // ---------------------------------------------
 // 4. Main Component
 // ---------------------------------------------
-const App = () => {
-    const [customerType, setCustomerType] = useState<'Business' | 'Individual'>('Business');
+const Add = () => {
+    // const [customerType, setCustomerType] = useState<'Business' | 'Individual'>('Business');
 
     // ---------------------------------------------
     // 5. FORM STATE (UPDATED INCLUDING ADDRESS)
     // ---------------------------------------------
     const [formData, setFormData] = useState<FormData>({
         customer: {
+            customerType: "",
             salutation: "",
             firstName: "",
             lastName: "",
@@ -113,6 +129,8 @@ const App = () => {
             city: "",
             state: "",
             zip: "",
+            countryCode: "",
+            phoneNumber: "",
             fax: "",
         },
         contactPersons: [
@@ -159,18 +177,12 @@ const App = () => {
     };
 
 
-    const handleContactChange = (
-        index: number,
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-    ) => {
-        const updatedContacts = [...formData.contactPersons];
-        updatedContacts[index] = {
-            ...updatedContacts[index],
-            [e.target.name]: e.target.value,
-        };
-
-        setFormData({ ...formData, contactPersons: updatedContacts });
+    const handleContactChange = (index: number, field: string, value: string) => {
+        const updated = [...formData.contactPersons];
+        updated[index] = { ...updated[index], [field]: value };
+        setFormData({ ...formData, contactPersons: updated });
     };
+
 
 
 
@@ -211,34 +223,75 @@ const App = () => {
     // 7. Handle Field Change
     // ---------------------------------------------
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+        >
     ) => {
-        const { name, value } = e.target; // e.g. "customer.firstName"
-        const keys = name.split(".");     // ["customer", "firstName"]
+        const { name, value } = e.target;   // e.g. "customer.firstName"
+        const keys = name.split(".");       // ["customer", "firstName"]
 
         setFormData((prev) => {
             const updated = { ...prev };
             let ref: any = updated;
 
+            // Navigate through object based on name keys
             for (let i = 0; i < keys.length - 1; i++) {
                 ref[keys[i]] = { ...ref[keys[i]] };
                 ref = ref[keys[i]];
             }
 
+            // Set final nested property
             ref[keys[keys.length - 1]] = value;
+
             return updated;
         });
+
     };
+
 
 
     // ---------------------------------------------
     // 8. Submit Form
     // ---------------------------------------------
-    const handleSubmit = (e: FormEvent) => {
+    const navigate = useNavigate();
+
+
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Form Submitted:', formData);
-        alert('Form submitted, check console!');
+
+        const { customer } = formData;
+
+        // Generate RANDOM Customer ID (Temporary)
+        const customerId = Math.floor(100000 + Math.random() * 900000); // e.g. 345234
+
+        // Get current date (YYYY-MM-DD)
+        const createdOn = new Date().toISOString().split("T")[0];
+
+        // Build Final Payload
+        const finalPayload = {
+            customerId,
+            name: `${customer.firstName} ${customer.lastName}`,
+            customerType: customer.customerType,
+            createdOn: createdOn,
+            createdBy: "Admin",
+            ...formData,
+        };
+
+        // 🔹 Get old customers from localStorage
+        const existing = JSON.parse(localStorage.getItem("customers") || "[]");
+
+        // 🔹 Add new customer
+        existing.push(finalPayload);
+
+        // 🔹 Save back to localStorage
+        localStorage.setItem("customers", JSON.stringify(existing));
+
+        console.log("Final Payload:", finalPayload);
+
+        // Redirect to Customer Page
+        navigate("/sales/customers");
     };
+
 
 
     // ---------------------------------------------
@@ -251,9 +304,9 @@ const App = () => {
                 <div className="col-sm-6">
                     <input
                         type="text"
-                        name="pan"
+                        name="otherDetails.pan"
                         className="form-control form-control-sm"
-                        value={formData.pan}
+                        value={formData.otherDetails.pan}
                         onChange={handleChange}
                     />
                 </div>
@@ -264,11 +317,14 @@ const App = () => {
                 <label className="col-sm-2 col-form-label">Currency:</label>
                 <div className="col-sm-6">
                     <select
-                        name="currency"
-                        value={formData.currency}
+                        name="otherDetails.currency"
+                        value={formData.otherDetails.currency}
                         onChange={handleChange}
                         className="form-select form-select-sm"
+                        style={{ color: formData.otherDetails.currency ? "#000" : "#9b9b9b" }}
                     >
+                        <option value="" disabled hidden >
+                            -- Select Country --</option>
                         {currencies.map((c, i) => (
                             <option key={i} value={c}>{c}</option>
                         ))}
@@ -281,11 +337,15 @@ const App = () => {
                 <label className="col-sm-2 col-form-label">Payment Terms:</label>
                 <div className="col-sm-6">
                     <select
-                        name="paymentTerms"
-                        value={formData.paymentTerms}
+                        name="otherDetails.paymentTerms"
+                        value={formData.otherDetails.paymentTerms}
                         onChange={handleChange}
                         className="form-select form-select-sm"
+                        style={{ color: formData.otherDetails.paymentTerms ? "#000" : "#9b9b9b" }}
                     >
+
+                        <option value="" disabled hidden >
+                            -- Select Payment term --</option>
                         {paymentTerms.map((p, i) => (
                             <option key={i} value={p}>{p}</option>
                         ))}
@@ -298,11 +358,15 @@ const App = () => {
                 <label className="col-sm-2 col-form-label">Portal Language:</label>
                 <div className="col-sm-6">
                     <select
-                        name="portalLanguage"
-                        value={formData.portalLanguage}
+                        name="otherDetails.portalLanguage"
+                        value={formData.otherDetails.portalLanguage}
                         onChange={handleChange}
                         className="form-select form-select-sm"
+                        style={{ color: formData.otherDetails.portalLanguage ? "#000" : "#9b9b9b" }}
                     >
+
+                        <option value="" disabled hidden >
+                            -- Select Languages --</option>
                         {languages.map((l, i) => (
                             <option key={i} value={l}>{l}</option>
                         ))}
@@ -358,8 +422,8 @@ const App = () => {
                 <div className="col-sm-6">
                     <input
                         type="text"
-                        name="attention"
-                        value={formData.attention}
+                        name="address.attention"
+                        value={formData.address.attention}
                         onChange={handleChange}
                         className="form-control form-control-sm"
                         placeholder="Enter attention name"
@@ -372,19 +436,27 @@ const App = () => {
                 <label className="col-sm-2 col-form-label">Country / Region:</label>
                 <div className="col-sm-6">
                     <select
-                        name="country"
-                        value={formData.country}
+                        name="address.country"
+                        value={formData.address.country}
                         onChange={handleChange}
-                        className="form-select form-select-sm text-muted"
+                        className="form-select form-select-sm"
+                        style={{
+                            color: formData.address.country ? "#000" : "#9b9b9b"
+                        }}
                     >
-                        <option value="" disabled hidden>Select Country</option>
-                        <option value="India">India</option>
-                        <option value="USA">United States</option>
-                        <option value="UK">United Kingdom</option>
-                        <option value="Germany">Germany</option>
+                        <option value="" disabled hidden>
+                            -- Select --
+                        </option>
+
+                        {countries.map((cu, i) => (
+                            <option key={i} value={cu}>
+                                {cu}
+                            </option>
+                        ))}
                     </select>
                 </div>
             </div>
+
 
             {/* Address Line 1 */}
             <div className="row align-items-center mb-3">
@@ -392,8 +464,8 @@ const App = () => {
                 <div className="col-sm-6">
                     <input
                         type="text"
-                        name="address1"
-                        value={formData.address1}
+                        name="address.address1"
+                        value={formData.address.address1}
                         onChange={handleChange}
                         className="form-control form-control-sm"
                         placeholder="Enter address line 1"
@@ -407,8 +479,8 @@ const App = () => {
                 <div className="col-sm-6">
                     <input
                         type="text"
-                        name="address2"
-                        value={formData.address2}
+                        name="address.address2"
+                        value={formData.address.address2}
                         onChange={handleChange}
                         className="form-control form-control-sm"
                         placeholder="Enter address line 2"
@@ -422,8 +494,8 @@ const App = () => {
                 <div className="col-sm-6">
                     <input
                         type="text"
-                        name="city"
-                        value={formData.city}
+                        name="address.city"
+                        value={formData.address.city}
                         onChange={handleChange}
                         className="form-control form-control-sm"
                         placeholder="Enter city"
@@ -435,14 +507,25 @@ const App = () => {
             <div className="row align-items-center mb-3">
                 <label className="col-sm-2 col-form-label">State / Province:</label>
                 <div className="col-sm-6">
-                    <input
-                        type="text"
-                        name="state"
-                        value={formData.state}
+                    <select
+                        name="address.state"
+                        value={formData.address.state}
                         onChange={handleChange}
-                        className="form-control form-control-sm"
-                        placeholder="Enter state"
-                    />
+                        className="form-select form-select-sm"
+                        style={{
+                            color: formData.address.state ? "#000" : "#9b9b9b"
+                        }}
+                    >
+                        <option value="" disabled hidden>
+                            -- Select State --
+                        </option>
+                        {states.map((st, i) => (
+                            <option key={i} value={st}>
+                                {st}
+                            </option>
+                        ))}
+                    </select>
+
                 </div>
             </div>
 
@@ -452,8 +535,8 @@ const App = () => {
                 <div className="col-sm-6">
                     <input
                         type="text"
-                        name="zip"
-                        value={formData.zip}
+                        name="address.zip"
+                        value={formData.address.zip}
                         onChange={handleChange}
                         className="form-control form-control-sm"
                         placeholder="Enter ZIP / Postal Code"
@@ -467,8 +550,8 @@ const App = () => {
                 <div className="col-sm-6">
                     <input
                         type="text"
-                        name="fax"
-                        value={formData.fax}
+                        name="address.fax"
+                        value={formData.address.fax}
                         onChange={handleChange}
                         className="form-control form-control-sm"
                         placeholder="Enter fax number"
@@ -482,19 +565,19 @@ const App = () => {
                 <div className="col-sm-1">
                     <input
                         type="text"
-                        name="countryCode"
+                        name="address.countryCode"
                         placeholder="+1"
                         className="form-control form-control-sm"
-                        value={formData.countryCode}
+                        value={formData.address.countryCode}
                         onChange={handleChange}
                     />
                 </div>
                 <div className="col-sm-4">
                     <input
                         type="tel"
-                        name="phoneNumber"
+                        name="address.phoneNumber"
                         className="form-control form-control-sm"
-                        value={formData.phoneNumber}
+                        value={formData.address.phoneNumber}
                         onChange={handleChange}
                     />
                 </div>
@@ -505,111 +588,113 @@ const App = () => {
     // 11. Render Contact Persons TAB
     // ---------------------------------------------
     const renderContactPersons = () => (
-        <> <table className="table table-bordered table-sm align-middle"> <thead className="bg-light">
-            <tr>
-                <th style={{ width: "120px" }}>Salutation</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email Address</th>
-                <th>Phone No.</th>
-                <th>Designation</th>
-                <th>Department</th>
-                <th style={{ width: "60px" }}>Action</th>
-            </tr>
-        </thead>
-
-            <tbody>
-                {formData.contactPersons.map((person, index) => (
-                    <tr key={index}>
-                        <td>
-                            <select
-                                name="salutation"
-                                className="form-select form-select-sm"
-                                value={person.salutation}
-                                onChange={(e) => handleContactChange(index, e)}
-                            >
-                                <option value="">Select</option>
-                                <option value="Mr.">Mr.</option>
-                                <option value="Mrs.">Mrs.</option>
-                                <option value="Ms.">Ms.</option>
-                                <option value="Dr.">Dr.</option>
-                            </select>
-                        </td>
-
-                        <td>
-                            <input
-                                type="text"
-                                name="firstName"
-                                className="form-control form-control-sm"
-                                value={person.firstName}
-                                onChange={(e) => handleContactChange(index, e)}
-                            />
-                        </td>
-
-                        <td>
-                            <input
-                                type="text"
-                                name="lastName"
-                                className="form-control form-control-sm"
-                                value={person.lastName}
-                                onChange={(e) => handleContactChange(index, e)}
-                            />
-                        </td>
-
-                        <td>
-                            <input
-                                type="email"
-                                name="email"
-                                className="form-control form-control-sm"
-                                value={person.email}
-                                onChange={(e) => handleContactChange(index, e)}
-                            />
-                        </td>
-
-                        <td>
-                            <input
-                                type="text"
-                                name="phone"
-                                className="form-control form-control-sm"
-                                value={person.phone}
-                                onChange={(e) => handleContactChange(index, e)}
-                            />
-                        </td>
-
-                        <td>
-                            <input
-                                type="text"
-                                name="designation"
-                                className="form-control form-control-sm"
-                                value={person.designation}
-                                onChange={(e) => handleContactChange(index, e)}
-                            />
-                        </td>
-
-                        <td>
-                            <input
-                                type="text"
-                                name="department"
-                                className="form-control form-control-sm"
-                                value={person.department}
-                                onChange={(e) => handleContactChange(index, e)}
-                            />
-                        </td>
-
-                        <td className="text-center">
-                            <button
-                                type='button'
-                                className="btn btn-sm btn-outline-danger"
-                                onClick={() => removeContactPerson(index)}
-                                title="Remove"
-                            >
-                                <X size={16} />
-                            </button>
-                        </td>
+        <>
+            <table className="table table-bordered table-sm align-middle">
+                <thead className="bg-light">
+                    <tr>
+                        <th style={{ width: "120px" }}>Salutation</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email Address</th>
+                        <th>Phone No.</th>
+                        <th>Designation</th>
+                        <th>Department</th>
+                        <th style={{ width: "60px" }}>Action</th>
                     </tr>
-                ))}
-            </tbody>
-        </table>
+                </thead>
+
+                <tbody>
+                    {formData.contactPersons.map((person, index) => (
+                        <tr key={index}>
+                            <td>
+                                <select
+                                    name={`contacts[${index}].salutation`}
+                                    className="form-select form-select-sm"
+                                    value={person.salutation}
+                                    onChange={(e) => handleContactChange(index, "salutation", e.target.value)}
+                                >
+                                    <option value="">Select</option>
+                                    <option value="Mr.">Mr.</option>
+                                    <option value="Mrs.">Mrs.</option>
+                                    <option value="Ms.">Ms.</option>
+                                    <option value="Dr.">Dr.</option>
+                                </select>
+                            </td>
+
+                            <td>
+                                <input
+                                    type="text"
+                                    name={`contacts[${index}].firstName`}
+                                    className="form-control form-control-sm"
+                                    value={person.firstName}
+                                    onChange={(e) => handleContactChange(index, "firstName", e.target.value)}
+                                />
+                            </td>
+
+                            <td>
+                                <input
+                                    type="text"
+                                    name={`contacts[${index}].lastName`}
+                                    className="form-control form-control-sm"
+                                    value={person.lastName}
+                                    onChange={(e) => handleContactChange(index, "lastName", e.target.value)}
+                                />
+                            </td>
+
+                            <td>
+                                <input
+                                    type="email"
+                                    name={`contacts[${index}].email`}
+                                    className="form-control form-control-sm"
+                                    value={person.email}
+                                    onChange={(e) => handleContactChange(index, "email", e.target.value)}
+                                />
+                            </td>
+
+                            <td>
+                                <input
+                                    type="text"
+                                    name={`contacts[${index}].phone`}
+                                    className="form-control form-control-sm"
+                                    value={person.phone}
+                                    onChange={(e) => handleContactChange(index, "phone", e.target.value)}
+                                />
+                            </td>
+
+                            <td>
+                                <input
+                                    type="text"
+                                    name={`contacts[${index}].designation`}
+                                    className="form-control form-control-sm"
+                                    value={person.designation}
+                                    onChange={(e) => handleContactChange(index, "designation", e.target.value)}
+                                />
+                            </td>
+
+                            <td>
+                                <input
+                                    type="text"
+                                    name={`contacts[${index}].department`}
+                                    className="form-control form-control-sm"
+                                    value={person.department}
+                                    onChange={(e) => handleContactChange(index, "department", e.target.value)}
+                                />
+                            </td>
+
+                            <td className="text-center">
+                                <button
+                                    type='button'
+                                    className="btn btn-sm btn-outline-danger"
+                                    onClick={() => removeContactPerson(index)}
+                                    title="Remove"
+                                >
+                                    <X size={16} />
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
 
             <button
                 className="btn btn-outline-primary btn-sm mt-2 d-flex align-items-center gap-1"
@@ -686,49 +771,54 @@ const App = () => {
                             Customer Type:
                         </label>
                         <div className="col-sm-6 d-flex align-items-center">
+
                             <div className="form-check me-4">
                                 <input
                                     type="radio"
                                     id="typeBusiness"
-                                    name="customerType"
+                                    name="customer.customerType"
                                     value="Business"
-                                    checked={customerType === 'Business'}
-                                    onChange={() => setCustomerType('Business')}
+                                    checked={formData.customer.customerType === "Business"}
+                                    onChange={handleChange}
                                     className="form-check-input"
                                 />
                                 <label htmlFor="typeBusiness" className="form-check-label">
                                     Business
                                 </label>
                             </div>
+
                             <div className="form-check">
                                 <input
                                     type="radio"
                                     id="typeIndividual"
-                                    name="customerType"
+                                    name="customer.customerType"
                                     value="Individual"
-                                    checked={customerType === 'Individual'}
-                                    onChange={() => setCustomerType('Individual')}
+                                    checked={formData.customer.customerType === "Individual"}
+                                    onChange={handleChange}
                                     className="form-check-input"
                                 />
                                 <label htmlFor="typeIndividual" className="form-check-label">
                                     Individual
                                 </label>
                             </div>
+
                         </div>
                     </div>
+
 
                     {/* Salutation / First Name / Last Name */}
                     <div className="row mb-3 align-items-center">
                         <label className="col-sm-2 col-form-label">Primary Contact: </label>
                         <div className="col-sm-2">
                             <select
-                                name="salutation"
-                                value={formData.salutation}
+                                name="customer.salutation"
+                                value={formData.customer.salutation}
                                 onChange={handleChange}
                                 className="form-select form-select-sm"
+                                style={{ color: formData.customer.salutation ? "#000" : "#9b9b9b" }}
                             >
-                                <option value="" disabled hidden>
-                                    Salutation                                </option>
+                                <option value="" disabled hidden >
+                                    Salutation</option>
                                 {salutations.map((s, i) => (
                                     <option key={i} value={s}>{s}</option>
                                 ))}
@@ -739,23 +829,24 @@ const App = () => {
                         <div className="col-sm-3">
                             <input
                                 type="text"
-                                name="firstName"
-                                className="form-control form-control-sm"
-                                placeholder='First Name'
-                                value={formData.firstName}
+                                name="customer.firstName"
+                                value={formData.customer.firstName}
                                 onChange={handleChange}
+                                className="form-control form-control-sm"
+                                placeholder="First Name"
                             />
+
                         </div>
 
                         {/* <label className="col-sm-1 col-form-label">Last:</label> */}
                         <div className="col-sm-2">
                             <input
                                 type="text"
-                                name="lastName"
-                                placeholder='Last name'
-                                className="form-control form-control-sm"
-                                value={formData.lastName}
+                                name="customer.lastName"
+                                value={formData.customer.lastName}
                                 onChange={handleChange}
+                                className="form-control form-control-sm"
+                                placeholder="Last Name"
                             />
                         </div>
                     </div>
@@ -766,11 +857,12 @@ const App = () => {
                         <div className="col-sm-6">
                             <input
                                 type="text"
-                                name="companyName"
-                                className="form-control form-control-sm"
-                                value={formData.companyName}
+                                name="customer.companyName"
+                                value={formData.customer.companyName}
                                 onChange={handleChange}
+                                className="form-control form-control-sm"
                             />
+
                         </div>
                     </div>
 
@@ -780,11 +872,12 @@ const App = () => {
                         <div className="col-sm-6">
                             <input
                                 type="text"
-                                name="displayName"
-                                className="form-control form-control-sm"
-                                value={formData.displayName}
+                                name="customer.displayName"
+                                value={formData.customer.displayName}
                                 onChange={handleChange}
+                                className="form-control form-control-sm"
                             />
+
                         </div>
                     </div>
 
@@ -794,11 +887,12 @@ const App = () => {
                         <div className="col-sm-6">
                             <input
                                 type="email"
-                                name="emailAddress"
-                                className="form-control form-control-sm"
-                                value={formData.emailAddress}
+                                name="customer.emailAddress"
+                                value={formData.customer.emailAddress}
                                 onChange={handleChange}
+                                className="form-control form-control-sm"
                             />
+
                         </div>
                     </div>
 
@@ -806,22 +900,24 @@ const App = () => {
                     <div className="row align-items-center mb-3">
                         <label className="col-sm-2 col-form-label">Phone:</label>
                         <div className="col-sm-2">
+                            {/* Country COde */}
                             <input
                                 type="text"
-                                name="countryCode"
-                                placeholder="+1"
-                                className="form-control form-control-sm"
-                                value={formData.countryCode}
+                                name="customer.countryCode"
+                                value={formData.customer.countryCode}
                                 onChange={handleChange}
+                                className="form-control form-control-sm"
+                                placeholder="+1"
                             />
+
                         </div>
                         <div className="col-sm-4">
                             <input
                                 type="tel"
-                                name="phoneNumber"
-                                className="form-control form-control-sm"
-                                value={formData.phoneNumber}
+                                name="customer.phoneNumber"
+                                value={formData.customer.phoneNumber}
                                 onChange={handleChange}
+                                className="form-control form-control-sm"
                             />
                         </div>
                     </div>
@@ -864,4 +960,4 @@ const App = () => {
     );
 };
 
-export default App;
+export default Add;
