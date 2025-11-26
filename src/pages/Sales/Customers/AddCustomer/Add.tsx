@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Header from '../../../../components/Header/Header';
 import { useNavigate } from "react-router-dom";
 
+
 import './addCustomer.css';
 import { Plus, X } from 'react-feather';
 
@@ -97,7 +98,7 @@ const FeatherUpload = ({ className = 'text-muted', size = 32 }: { className?: st
 // ---------------------------------------------
 // 4. Main Component
 // ---------------------------------------------
-const Add = () => {
+const   Add = () => {
     // const [customerType, setCustomerType] = useState<'Business' | 'Individual'>('Business');
 
     // ---------------------------------------------

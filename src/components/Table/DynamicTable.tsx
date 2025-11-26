@@ -13,9 +13,10 @@ interface DynamicTableProps {
     actions?: boolean;
     rowsPerPage?: number;
     onAdd?: () => void; /* For Navigation */
+    onView?: (row: any) => void;
 }
 
-function DynamicTable({ columns, data, actions = false, rowsPerPage = 10, onAdd }: DynamicTableProps) {
+function DynamicTable({ columns, data, actions = false, rowsPerPage = 10, onAdd, onView }: DynamicTableProps) {
     const [currentPage, setCurrentPage] = useState(1);
 
     // Calculate pagination
@@ -122,9 +123,13 @@ function DynamicTable({ columns, data, actions = false, rowsPerPage = 10, onAdd 
                                         <span style={{ marginRight: "10px", cursor: "pointer", color: "#555" }}>
                                             <Edit size={15} />
                                         </span>
-                                        <span style={{ cursor: "pointer", color: "#555" }}>
+                                        <span
+                                            style={{ cursor: "pointer", color: "#555" }}
+                                            onClick={() => onView?.(row)}   // Pass entire row
+                                        >
                                             <Eye size={15} />
                                         </span>
+
                                     </td>
                                 )}
                                 {columns.map((col) => (

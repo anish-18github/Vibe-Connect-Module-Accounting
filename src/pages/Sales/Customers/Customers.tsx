@@ -56,7 +56,7 @@ function Customer() {
                     actions={true}
                     rowsPerPage={10}
                     onAdd={() => navigate("/add-customer")}
-                />
+                    onView={(row) => navigate(`/view-customer/${row.customerId}`)} />
             </div>
 
         </>

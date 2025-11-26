@@ -1,0 +1,63 @@
+.customer-card {
+    background: #F4F4F4;
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid #E0E0E0;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.18),
+        /* main shadow */
+        0 2px 4px rgba(0, 0, 0, 0.10);
+    /* soft top shadow */
+}
+
+/* Section titles (floating above box) */
+.section-title {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 6px;
+    margin-left: 4px;
+}
+
+.section-box {
+    background: #F4F4F4;
+    /* same as outer card */
+    border: 1px solid #D0D0D0;
+    border-radius: 8px;
+    padding: 10px;
+
+}
+
+/* Rounded table */
+.rounded-table {
+    border-radius: 10px !important;
+    overflow: hidden;
+    border: none !important;
+}
+
+/* Optional: soften borders */
+.rounded-table th,
+.rounded-table td {
+    border: none !important;
+}
+
+.rounded-table thead th {
+    color: #4A4A4A;
+    /* darker than #5E5E5E */
+    font-weight: 600;
+}
+
+/* Row background */
+.rounded-table tbody tr:nth-child(odd) {
+    background: #F9F9F9;
+}
+
+.rounded-table tbody tr:nth-child(even) {
+    background: #FFFFFF;
+}
+
+.chart-header {
+    font-weight: 400;
+    font-size: 22px;
+    color: #19376D;
+}
