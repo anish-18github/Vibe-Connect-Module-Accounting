@@ -4,6 +4,11 @@ import Header from "../../../../components/Header/Header";
 import Tabs from "../../../../components/Tab/Tabs";
 import './viewCustomer.css'
 
+// import { Bold } from "react-feather";
+import CommentBox from "../../../../components/ViewComponents/CommentBox";
+import Transactions from "../../../../components/ViewComponents/Transactions";
+import MailSystem from "../../../../components/ViewComponents/MailSystem";
+
 const ViewCustomer: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [activeKey, setActiveKey] = React.useState("overview");
@@ -105,13 +110,124 @@ const ViewCustomer: React.FC = () => {
     );
 
 
-    const renderComments = () => (
-        <>
+    // Commenet Tab
+    const renderComments = () => <CommentBox />;
 
-        </>
+    const renderTransactions = () => (
+
+        <Transactions
+            section={{
+                title: "Go to Transactions",
+                children: [
+                    {
+                        title: "Invoices",
+                        columns: ["Date", "Invoice Number", "Order Number", "Amount", "Balance Due", "Status"],
+                        path: "/add-invoice",
+                        emptyMessage: "There are no invoices",
+                        // invoiceData <- new Invoice form
+                        data: [
+                            ["INV-101", "2024-10-01", 5000],
+                            ["INV-102", "2024-10-05", 3000],
+                        ]
+                    },
+                    {
+                        title: "Customer Payments",
+                        columns: ["Date", "Payment Number", "Reffrence Number", "Payment Mode", "Amount", "Unused Amount"],
+                        path: "/add-invoice",
+                        emptyMessage: "No payments have been received or recorded yet.",
+                        data: [
+
+                        ]
+                    },
+                    {
+                        title: "Quotes",
+                        columns: ["Date", "Quotes", "Reference Number", "Amount", "Status"],
+                        path: "/add-invoice",
+                        emptyMessage: "There are no quotes.",
+                        data: [
+
+                        ]
+                    },
+                    {
+                        title: "Sales Orders",
+                        columns: ["Date", "Shipment Date", "Reference Number", "Sales Order", "Amount", "Status"],
+                        path: "/add-invoice",
+                        emptyMessage: "There are no Sales Orders.",
+                        data: [
+
+                        ]
+                    },
+                    {
+                        title: "Delivery Challans",
+                        columns: ["Date", "Delivery Challan", "Reference Number", "Reference Number", "Status"],
+                        path: "/add-invoice",
+                        emptyMessage: "There are no Delivery Challans.",
+                        data: [
+
+                        ]
+                    },
+                    {
+                        title: "Recurring Invoices",
+                        columns: ["Profile Name", "Frequency", "Last Invoice Date", "Next Invoice Date", "Status"],
+                        path: "/add-invoice",
+                        emptyMessage: "There are no recurring invoices.",
+                        data: [
+
+                        ]
+                    },
+                    {
+                        title: "Expenses",
+                        columns: ["Date", "Expense Category", "Invoice Number", "Amount", "Status"],
+                        path: "/add-invoice",
+                        emptyMessage: "There are no expenses.",
+                        data: [
+
+                        ]
+                    },
+                    {
+                        title: "Recurring Expenses",
+                        columns: ["Profile Name", "Expense Category", "Frequency", "Last Invoice Date", "Next Invoice Date", "Status"],
+                        path: "/add-invoice",
+                        emptyMessage: "There are no recurring expenses.",
+                        data: [
+
+                        ]
+                    },
+                    {
+                        title: "Journals",
+                        columns: ["Date", "Journal Number", "Reference Number", "Debit", "Credit"],
+                        path: "/add-invoice",
+                        emptyMessage: "There are no journals created. ",
+                        data: [
+
+                        ]
+                    },
+                    {
+                        title: "Bills",
+                        columns: ["Date", "Bill", "Order Number", "Vendor Name", "Amount", "Customer associated Line Items total", "Balance Due"],
+                        path: "/add-invoice",
+                        emptyMessage: "There are no Bills.",
+                        data: [
+
+                        ]
+                    },
+                    {
+                        title: "Credit Notes",
+                        columns: ["Date", "Credit Note Number", "Reference Number", "Reference Number", "Status"],
+                        path: "/add-invoice",
+                        emptyMessage: "There are no Credit Note created.",
+                        data: [
+
+                        ]
+                    }
+                ]
+            }}
+        />
+
+
+
     );
-    const renderTransactions = () => <div>Transactions content…</div>;
-    const renderMails = () => <div>Mails content…</div>;
+    const renderMails = () => <MailSystem />;
     const renderStatements = () => <div>Statements content…</div>;
 
     const tabs = [
@@ -199,9 +315,10 @@ const ViewCustomer: React.FC = () => {
 
                         {/* RIGHT DYNAMIC CARD */}
                         <div className="col-md-9">
-                            <div className="customer-card shadow-sm p-4">
+                            <div className="customer-card shadow-sm" style={{ padding: activeKey === "mails" ? 0 : "1.5rem" }}>
                                 {activeContent}
                             </div>
+
                         </div>
 
                     </div>

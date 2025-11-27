@@ -1,0 +1,62 @@
+.comment-editor:empty:before {
+    content: "Type here...";
+    color: #8c8c8c;
+    pointer-events: none;
+}
+
+/* tRANSACTION COMPONENT STYLE */
+
+.fade-in {
+    animation: fadeInAnim 0.35s ease-in-out;
+}
+
+.table-animate {
+    overflow: hidden;
+    animation: slideDownFade 0.25s ease forwards;
+}
+
+@keyframes slideDownFade {
+    0% {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+
+.table-animate-close {
+    overflow: hidden;
+    animation: slideUpFade 0.2s ease forwards;
+}
+
+@keyframes slideUpFade {
+    0% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+}
+
+
+@keyframes fadeInAnim {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* MAIL SYSTEM COMPONENT STYLE */
+
