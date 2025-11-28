@@ -18,7 +18,7 @@ function Navbar({ tabs }: NavbarProps) {
                 (<li key={index}>
                     <NavLink
                         to={item.path}
-                        end
+                        
                         className={({ isActive }) =>
                             isActive ? "active" : ""
                         }

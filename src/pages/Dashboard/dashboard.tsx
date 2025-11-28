@@ -23,7 +23,7 @@ const cashFlowData = [
 
 export const dashboardTabs = [
     { label: "Dashboard", path: "/" },
-    { label: "Sales", path: "/sales/customers" },
+    { label: "Sales", path: "/sales" },
     { label: "Purchases", path: "/purchases" },
     { label: "Accountant", path: "/accountant" },
     { label: "Society", path: "/society" },

@@ -1,10 +1,15 @@
 // import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { RefreshCw, Settings, Search, Bell, PlusSquare, CheckCircle, FastForward } from "react-feather";
 import "./header.css";
 
 
 function Header() {
+
+    const location = useLocation();
+    const pathParts = location.pathname.split("/").filter(Boolean);
+
+
     return (
 
         <div>
@@ -26,10 +31,25 @@ function Header() {
 
             <div className="breadcrumb mt-3">
                 <FastForward />
-                <span>Dashboard</span>
-                <FastForward />
-                <span>Dashboard</span>
+
+                <Link to="/" className="breadcrumb-link">
+                    Dashboard
+                </Link>
+
+                {pathParts.map((part, index) => {
+                    const to = "/" + pathParts.slice(0, index + 1).join("/");
+
+                    return (
+                        <div key={index} className="breadcrumb-item-flex">
+                            <FastForward />
+                            <Link to={to} className="breadcrumb-link">
+                                {part.charAt(0).toUpperCase() + part.slice(1)}
+                            </Link>
+                        </div>
+                    );
+                })}
             </div>
+
         </div>
 
 

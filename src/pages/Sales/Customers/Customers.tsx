@@ -8,9 +8,9 @@ import { dashboardTabs } from "../../Dashboard/dashboard";
 import "./customers.css"
 import { useNavigate } from "react-router-dom";
 
-const salesTabs = [
+export const salesTabs = [
     { label: "Customers", path: "/sales/customers" },
-    { label: "Quotes", path: "/quotes" },
+    { label: "Quotes", path: "/sales/quotes" },
     { label: "Sales Orders", path: "/sales-orders" },
     { label: "Delivery Challans", path: "/delivery-challans" },
     { label: "Invoices", path: "/invoices" },

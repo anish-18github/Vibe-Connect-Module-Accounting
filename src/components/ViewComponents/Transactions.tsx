@@ -61,13 +61,23 @@ const Transactions = ({ section }: TransactionsProps) => {
                 </div>
             </button>
 
-            {openMain && (
-                <div className="mt-3">
+            {/* OPEN DROPDOWN */}
+            {!openMain && (
+                <div className="animate-open mt-3">
                     {section.children.map((child, index) => (
                         <ChildSection key={index} child={child} />
                     ))}
                 </div>
             )}
+
+            {/* CLOSE DROPDOWN */}
+            {/* {openMain && (
+                <div className="animate-close mt-3">
+                    {section.children.map((child, index) => (
+                        <ChildSection key={index} child={child} />
+                    ))}
+                </div>
+            )} */}
         </>
     );
 };
@@ -146,14 +156,14 @@ const ChildSection = ({ child }: { child: ChildSectionType }) => {
 
             {/* TABLE OPEN ANIMATION */}
             {open && (
-                <div className="table-animate">
+                <div className="animate-open">
                     <DynamicTable columns={child.columns} data={child.data} emptyMessage={child.emptyMessage} />
                 </div>
             )}
 
             {/* TABLE CLOSE ANIMATION */}
             {animate && (
-                <div className="table-animate-close">
+                <div className="animate-close">
                     <DynamicTable columns={child.columns} data={child.data} />
                 </div>
             )}
