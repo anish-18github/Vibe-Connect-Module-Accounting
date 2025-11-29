@@ -27,7 +27,7 @@ function Header() {
                 </nav>
             </header>
 
-            <div className="side-bar"></div>
+            {/* <div className="side-bar"></div> */}
 
             <div className="breadcrumb mt-3">
                 <FastForward />

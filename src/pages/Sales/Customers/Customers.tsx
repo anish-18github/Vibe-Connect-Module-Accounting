@@ -49,7 +49,7 @@ function Customer() {
             <Navbar tabs={dashboardTabs} />
             <Navbar tabs={salesTabs} />
 
-            <div className="container mt-3">
+            <div className=" mt-3">
                 <DynamicTable
                     columns={columns}
                     data={customers}

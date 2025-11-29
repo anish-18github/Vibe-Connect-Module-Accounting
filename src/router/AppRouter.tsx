@@ -14,8 +14,10 @@ function AppRouter() {
 
             <Route path="/" element={<Dashboard />} />
             
-            <Route path="/sales" element={<Customers />} /> 
-             
+
+
+             {/*SALES ROUTES  */}
+            <Route path="/sales" element={<Customers />} />
             <Route path="/sales/customers" element={<Customers />} />
             {/* <Route path="/sales/quotes" element={<Quotes />} /> */}
             <Route path="/add-customer" element={<AddCustomer />} />

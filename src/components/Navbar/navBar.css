@@ -21,7 +21,7 @@ body {
     overflow-x: auto;
     white-space: nowrap;
 
-    margin-left: 61px;
+    margin-left: 1.8rem;
     margin-bottom: -10px;
 }
 
@@ -55,7 +55,7 @@ body {
 /* ANCHOR STYLES */
 .nav-links a {
     position: relative;
-    color: #19376D;
+    color: #5E5E5E;
     text-decoration: none;
     font-weight: 500;
     padding: 7px 8px;
@@ -82,8 +82,15 @@ body {
     border-radius: 3px;
 }
 
+/* ACTIVE NAV LINK */
+.nav-links a.active {
+    color: #19376D !important;
+}
+
+/* ACTIVE BOTTOM INDICATOR */
 .nav-links a.active::after {
     width: 100%;
+    background-color: #19376D;
 }
 
 /* MOBILE FRIENDLY */

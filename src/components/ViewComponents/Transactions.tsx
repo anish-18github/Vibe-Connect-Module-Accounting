@@ -109,6 +109,7 @@ const ChildSection = ({ child }: { child: ChildSectionType }) => {
                 className="btn w-100 d-flex align-items-center justify-content-between"
                 style={{
                     background: "#E7E6E6",
+                    color: "#5E5E5E",
                     border: "none",
                     boxShadow: "none",
                     paddingLeft: 5,
@@ -127,7 +128,7 @@ const ChildSection = ({ child }: { child: ChildSectionType }) => {
                             transform: open ? "rotate(0deg)" : "rotate(-90deg)",
                         }}
                     />
-                    <span className="fw-semibold">{child.title}</span>
+                    <span className="fw-normal">{child.title}</span>
                 </div>
 
                 {/* RIGHT: ADD NEW BUTTON (visible only when open) */}
@@ -201,10 +202,11 @@ const DynamicTable = ({
                         {columns.map((col, index) => (
                             <th
                                 key={index}
-                                className="fw-semibold"
+                                className="fw-normal"
                                 style={{
                                     padding: "10px",
                                     borderBottom: "1px solid #D0D0D0",
+                                    color: "#5E5E5E",
                                     borderRight: "none",
                                 }}
                             >

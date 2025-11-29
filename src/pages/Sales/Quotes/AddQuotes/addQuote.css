@@ -1,6 +1,76 @@
-.form-label-inline {
+/* DARK BACKDROP */
+.settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 9999;
+}
+
+/* POPUP BOX */
+.settings-modal {
+    width: 650px;
+    max-width: 95%;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 0;
+    box-shadow: 0px 6px 22px rgba(0, 0, 0, 0.20);
+    animation: fadeIn 0.25s ease-out;
+    position: relative;
+}
+
+/* OPEN ANIMATION */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* CLEAN CARD STYLE HEADER */
+.custom-header {
+    background: #F4F4F4;
+    padding: 14px 18px;
+    border-bottom: 1px solid #ddd;
+    border-radius: 10px 10px 0 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* BODY */
+.settings-modal .modal-body {
+    padding: 22px;
+}
+
+.modal-body label {
+    font-weight: 500;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* FOOTER (OPTIONAL) */
+.settings-modal .modal-footer {
+    padding: 14px 18px;
+    border-top: 1px solid #ddd;
     display: flex;
     justify-content: flex-end;
-    align-items: center;
-    font-weight: 500;
+    gap: 10px;
+}
+
+/* REMOVE PAGE SCROLL WHEN POPUP IS OPEN */
+body.no-scroll {
+    overflow: hidden !important;
 }

@@ -30,7 +30,7 @@ function DynamicTable({ columns, data, actions = false, rowsPerPage = 10, onAdd,
     };
 
     return (
-        <div>
+        <div style={{ padding: "0px 5rem 0px 1rem" }}>
 
             {/* Pagination */}
             {/* TOP BAR */}
@@ -104,48 +104,54 @@ function DynamicTable({ columns, data, actions = false, rowsPerPage = 10, onAdd,
 
             {/* table-striped */}
 
-            <table className="table custom-table table-bordered " style={{ margin: "0 25px" }}>
-                <thead>
-                    <tr>
-                        {actions && <th>Action</th>}
-                        {columns.map((col) => (
-                            <th key={col.key}>{col.label}</th>
-                        ))}
-                    </tr>
-                </thead>
+            <div className="table-wrapper">
 
-                <tbody>
-                    {currentData.length > 0 ? (
-                        currentData.map((row, i) => (
-                            <tr key={i}>
-                                {actions && (
-                                    <td>
-                                        <span style={{ marginRight: "10px", cursor: "pointer", color: "#555" }}>
-                                            <Edit size={15} />
-                                        </span>
-                                        <span
-                                            style={{ cursor: "pointer", color: "#555" }}
-                                            onClick={() => onView?.(row)}   // Pass entire row
-                                        >
-                                            <Eye size={15} />
-                                        </span>
-
-                                    </td>
-                                )}
-                                {columns.map((col) => (
-                                    <td key={col.key}>{row[col.key]}</td>
-                                ))}
-                            </tr>
-                        ))
-                    ) : (
+                <table className="table custom-table table-bordered ">
+                    <thead className="fw-normal">
                         <tr>
-                            <td colSpan={columns.length + (actions ? 1 : 0)} className="text-center">
-                                No Data Found
-                            </td>
+                            {actions && <th>Action</th>}
+                            {columns.map((col) => (
+                                <th key={col.key}>{col.label}</th>
+                            ))}
                         </tr>
-                    )}
-                </tbody>
-            </table>
+                    </thead>
+
+                    <tbody>
+                        {currentData.length > 0 ? (
+                            currentData.map((row, i) => (
+                                <tr key={i}>
+                                    {actions && (
+                                        <td>
+                                            <span style={{ marginRight: "10px", cursor: "pointer", color: "#555" }}>
+                                                <Edit size={15} />
+                                            </span>
+                                            <span
+                                                style={{ cursor: "pointer", color: "#555" }}
+                                                onClick={() => onView?.(row)}   // Pass entire row
+                                            >
+                                                <Eye size={15} />
+                                            </span>
+
+                                        </td>
+                                    )}
+                                    {columns.map((col) => (
+                                        <td key={col.key}>{row[col.key]}</td>
+                                    ))}
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={columns.length + (actions ? 1 : 0)} className="text-center">
+                                    No Data Found
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+
+            </div>
+
+
 
 
         </div>

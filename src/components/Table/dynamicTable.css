@@ -1,35 +1,67 @@
-.table-container {
-    width: 100%;
-    overflow-x: auto;
-}
+    .table-wrapper {
+        margin: 0 14px;
+        background: white;
+        /* border-radius: 12px; */
+        overflow: hidden;
+        /* border: 1px solid rgba(0, 0, 0, 0.08); */
+    }
 
-.custom-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: transparent;
-}
+    .custom-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: transparent;
+    }
 
-.custom-table thead tr {
-    background: rgba(0, 0, 0, 0.6);
-    /* dark transparent background */
-    color: white;
-}
+    /* Header */
+    .custom-table thead th {
+        background: #F5F5F5;
+        padding: 14px;
+        font-size: 15px;
+        color: #5E5E5E;
+        font-weight: 500;
+    }
 
-.custom-table th {
-    padding: 12px 10px;
-    border: none !important;
-    font-size: 15px;
-}
+    /* Rounded top corners */
+    .custom-table thead th:first-child {
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+    }
 
-.custom-table td {
-    padding: 10px;
-    border: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    /* subtle separator */
-    color: white;
-    background: transparent !important;
-}
+    .custom-table thead th:last-child {
+        border-top-right-radius: 12px;
+        border-bottom-right-radius: 12px;
 
-.custom-table tr:last-child td {
-    border-bottom: none;
-}
+    }
+
+    /* Header Row */
+    .custom-table thead tr {
+        background: #F5F5F5;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-bottom: none;
+        /* cleaner */
+    }
+
+
+    .custom-table th {
+        padding: 12px 10px;
+        border: none !important;
+        font-size: 15px;
+        color: #5E5E5E !important;
+        font-weight: 400 !important;
+        /* fw-normal */
+    }
+
+    /* Body Rows */
+    .custom-table td {
+        padding: 12px;
+        border: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        color: #5E5E5E !important;
+        font-weight: 400 !important;
+        background: transparent !important;
+    }
+
+    .custom-table tr:last-child td {
+        border-bottom: none;
+    }

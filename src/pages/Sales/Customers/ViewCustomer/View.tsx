@@ -227,7 +227,9 @@ const ViewCustomer: React.FC = () => {
 
 
     );
+
     const renderMails = () => <MailSystem />;
+  
     const renderStatements = () => <div>Statements content…</div>;
 
     const tabs = [
@@ -244,9 +246,9 @@ const ViewCustomer: React.FC = () => {
         <>
             <Header />
 
-            <div className="container-fluid mt-4">
+            <div className="container-fluid ">
 
-                <div style={{ marginLeft: "55px", padding: "10px" }}>
+                <div style={{padding: "0 1rem" }}>
 
                     {/* Tabs Header */}
                     <Tabs

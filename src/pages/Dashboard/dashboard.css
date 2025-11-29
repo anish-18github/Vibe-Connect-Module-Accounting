@@ -1,11 +1,11 @@
 /* MAIN DASHBOARD CONTAINER */
 .dashboard-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr) ;
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
-    padding: 18px 22px 0px 20px;
+    padding: 1.8rem 1.8rem;
     min-height: calc(100vh - 120px);
-    margin-left: 55px;
+    /* margin-left: 55px; */
 }
 
 /* CARD BASE STYLING */

@@ -759,7 +759,7 @@ const   Add = () => {
         <>
             <Header />
 
-            <div style={{ marginLeft: 80, paddingRight: 160 }}>
+            <div style={{ padding: "0 1rem" }}>
                 <h1 className="h4 text-dark mb-4 pb-1">New Customer</h1>
 
                 {/* MAIN FORM */}
@@ -767,8 +767,8 @@ const   Add = () => {
                 <form onSubmit={handleSubmit} className="mt-4">
 
                     {/* Customer Type */}
-                    <div className="row align-items-center mb-4">
-                        <label className="col-sm-2 col-form-label fw-semibold text-secondary">
+                    <div className="row align-items-center mb-2">
+                        <label className="col-sm-2 col-form-label fw-normal ">
                             Customer Type:
                         </label>
                         <div className="col-sm-6 d-flex align-items-center">
@@ -808,7 +808,7 @@ const   Add = () => {
 
 
                     {/* Salutation / First Name / Last Name */}
-                    <div className="row mb-3 align-items-center">
+                    <div className="row mb-2 align-items-center">
                         <label className="col-sm-2 col-form-label">Primary Contact: </label>
                         <div className="col-sm-2">
                             <select
@@ -853,7 +853,7 @@ const   Add = () => {
                     </div>
 
                     {/* Company Name */}
-                    <div className="row align-items-center mb-3">
+                    <div className="row align-items-center mb-2">
                         <label className="col-sm-2 col-form-label">Company Name:</label>
                         <div className="col-sm-6">
                             <input
@@ -868,7 +868,7 @@ const   Add = () => {
                     </div>
 
                     {/* Display Name */}
-                    <div className="row align-items-center mb-3">
+                    <div className="row align-items-center mb-2">
                         <label className="col-sm-2 col-form-label">Display Name:</label>
                         <div className="col-sm-6">
                             <input
@@ -883,7 +883,7 @@ const   Add = () => {
                     </div>
 
                     {/* Email */}
-                    <div className="row align-items-center mb-3">
+                    <div className="row align-items-center mb-2">
                         <label className="col-sm-2 col-form-label">Email Address:</label>
                         <div className="col-sm-6">
                             <input
@@ -898,7 +898,7 @@ const   Add = () => {
                     </div>
 
                     {/* Phone */}
-                    <div className="row align-items-center mb-3">
+                    <div className="row align-items-center mb-2">
                         <label className="col-sm-2 col-form-label">Phone:</label>
                         <div className="col-sm-2">
                             {/* Country COde */}
@@ -948,10 +948,10 @@ const   Add = () => {
 
                     {/* Submit Buttons */}
                     <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                        <button type="button" className="btn btn-outline-secondary me-3 px-4">
+                        <button type="button" className="btn border me-3 px-4">
                             Cancel
                         </button>
-                        <button type="submit" className="btn btn-primary px-4">
+                        <button type="submit" className="btn px-4" style={{background: "#7991BB", color: "#FFFFFF"}}>
                             Save
                         </button>
                     </div>
