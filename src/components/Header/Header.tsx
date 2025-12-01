@@ -1,6 +1,6 @@
 // import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { RefreshCw, Settings, Search, Bell, PlusSquare, CheckCircle, FastForward } from "react-feather";
+import { RefreshCw, Settings, Search, Bell, PlusSquare, CheckCircle, ChevronsRight } from "react-feather";
 import "./header.css";
 
 
@@ -29,26 +29,31 @@ function Header() {
 
             {/* <div className="side-bar"></div> */}
 
-            <div className="breadcrumb mt-3">
-                <FastForward />
+            <div className="breadcrumb mt-3 fw-normal">
+                <ChevronsRight size={20} />
 
+                {/* Dashboard always present */}
                 <Link to="/" className="breadcrumb-link">
                     Dashboard
                 </Link>
 
+                {/* Loop through each part and build full path */}
                 {pathParts.map((part, index) => {
                     const to = "/" + pathParts.slice(0, index + 1).join("/");
 
                     return (
                         <div key={index} className="breadcrumb-item-flex">
-                            <FastForward />
+                            <ChevronsRight size={20} />
+
                             <Link to={to} className="breadcrumb-link">
-                                {part.charAt(0).toUpperCase() + part.slice(1)}
+                                {part.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                             </Link>
                         </div>
                     );
                 })}
             </div>
+
+
 
         </div>
 

@@ -1,0 +1,22 @@
+[
+  {
+    "Category": "Office Rent",
+    "Amount": 35000
+  },
+  {
+    "Category": "Salaries",
+    "Amount": 120000
+  },
+  {
+    "Category": "Utilities",
+    "Amount": 8000
+  },
+  {
+    "Category": "Software Subscriptions",
+    "Amount": 5000
+  },
+  {
+    "Category": "Maintenance",
+    "Amount": 3000
+  }
+]

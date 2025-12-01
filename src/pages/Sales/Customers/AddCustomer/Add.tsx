@@ -76,7 +76,7 @@ const states = [
 // ---------------------------------------------
 // 3. Icon Component
 // ---------------------------------------------
-const FeatherUpload = ({ className = 'text-muted', size = 32 }: { className?: string; size?: number }) => (
+export const FeatherUpload = ({ className = 'text-muted', size = 32 }: { className?: string; size?: number }) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         width={size}

@@ -1,25 +1,32 @@
-import IncomeExpenseChart from "../../components/Charts/IncomeExpenseChart";
-import CashFlowBar from "../../components/Charts/CashFlowBar";
+// import IncomeExpenseChart from "../../components/Charts/IncomeExpenseChart";
 import Header from "../../components/Header/Header";
 import Navbar from "../../components/Navbar/NavBar";
 import Card from "../../components/Cards/Card";
 import "./dashboard.css";
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+    LineElement,
+    PointElement
+} from "chart.js";
+import { Bar, Line } from "react-chartjs-2";
+
+import chartData from "../../data/incomeExpense.json";
+import topExpenses from "../../data/topExpenses.json";
+import cashFlow from "../../data/cashFlow.json";
+
+// import { data } from "react-router-dom";
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, LineElement, PointElement);
 
 
-// Sample data for charts
-const incomeExpenseData = [
-    { month: "Jan", income: 5000, expense: 3500 },
-    { month: "Feb", income: 6000, expense: 4200 },
-    { month: "Mar", income: 5500, expense: 3000 },
-    { month: "Apr", income: 6500, expense: 5000 },
-];
 
-const cashFlowData = [
-    { month: "Jan", incoming: 1200, outgoing: 800 },
-    { month: "Feb", incoming: 1800, outgoing: 900 },
-    { month: "Mar", incoming: 1500, outgoing: 1300 },
-    { month: "Apr", incoming: 2000, outgoing: 1000 },
-];
+
 
 export const dashboardTabs = [
     { label: "Dashboard", path: "/" },
@@ -31,9 +38,87 @@ export const dashboardTabs = [
 ];
 
 
+interface ChartEntry {
+    Income: { Label: string; value: number };
+    Expense: { Label: string; value: number };
+}
+
+interface TopExpenseEntry {
+    Category: string;
+    Amount: number;
+}
+
+interface CashFlowEntry {
+    month: string;
+    incoming: number;
+    outgoing: number;
+}
+
+
+
+const chartDataTyped: ChartEntry[] = chartData as ChartEntry[];
+const topExpensesTyped: TopExpenseEntry[] = topExpenses as TopExpenseEntry[];
+const cashFlowTyped: CashFlowEntry[] = cashFlow as CashFlowEntry[];
+
+
 
 
 function Dashboard() {
+
+    const formattedIncomeExpense = {
+        labels: chartDataTyped.map(i => i.Income.Label),
+        datasets: [
+            {
+                label: "Income",
+                data: chartDataTyped.map(i => i.Income.value),
+                backgroundColor: "rgba(75, 192, 192, 0.6)"
+            },
+            {
+                label: "Expense",
+                data: chartDataTyped.map(i => i.Expense.value),
+                backgroundColor: "rgba(255, 99, 132, 0.6)"
+            }
+        ]
+    };
+
+    const formattedTopExpenses = {
+        labels: topExpensesTyped.map(item => item.Category),
+
+        datasets: [
+            {
+                label: "Top Expenses",
+                data: topExpensesTyped.map(item => item.Amount),
+                backgroundColor: "rgba(255, 159, 64, 0.6)"
+            }
+        ]
+    };
+
+    const formattedCashFlow = {
+        labels: cashFlowTyped.map(i => i.month),
+
+        datasets: [
+            {
+                label: "Incoming",
+                data: cashFlowTyped.map(i => i.incoming),
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 2,
+                tension: 0.4,
+                fill: false
+            },
+            {
+                label: "Outgoing",
+                data: cashFlowTyped.map(i => i.outgoing),
+                borderColor: "rgba(255, 99, 132, 1)",
+                borderWidth: 2,
+                tension: 0.4,
+                fill: false
+            }
+        ]
+    };
+
+
+
+
     return (
         <>
             <Header />
@@ -79,7 +164,12 @@ function Dashboard() {
                     </div>
 
                     {/* Chart */}
-                    <IncomeExpenseChart data={incomeExpenseData} />
+
+                    <div className="dataCard customerCard">
+                        <Bar data={formattedIncomeExpense} />
+                    </div>
+
+
 
                     {/* Summary section */}
                     <div className="chart-summary">
@@ -105,16 +195,17 @@ function Dashboard() {
 
                 {/* Top Expenses (NO CHART) */}
                 <Card title="Top Expenses" selectable>
-                    <div className="placeholder">
-                        <p>No data available</p>
+                    <div className="dataCard customerCard">
+                        <Bar data={formattedTopExpenses} />
                     </div>
                 </Card>
+
 
                 {/* Cash Flow (WITH DATA) */}
                 <Card title="Cash Flow" selectable className="wide-card">
 
                     <div className="cashflow-content">
-                        <CashFlowBar data={cashFlowData} />
+                        <Line data={formattedCashFlow} />
 
                         <div className="cashflow-summary">
                             <div className="summary-item">
@@ -124,7 +215,7 @@ function Dashboard() {
 
                             <div className="summary-item">
 
-                                <h3 style={{color:"red"}}>Incoming</h3>
+                                <h3 style={{ color: "red" }}>Incoming</h3>
                                 <h2>₹0.00 +</h2>
                             </div>
 

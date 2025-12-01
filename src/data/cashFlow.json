@@ -1,0 +1,62 @@
+[
+    {
+        "month": "Apr 2025",
+        "incoming": 12000,
+        "outgoing": 8000
+    },
+    {
+        "month": "May 2025",
+        "incoming": 15000,
+        "outgoing": 9000
+    },
+    {
+        "month": "Jun 2025",
+        "incoming": 11000,
+        "outgoing": 5000
+    },
+    {
+        "month": "Jul 2025",
+        "incoming": 17000,
+        "outgoing": 7000
+    },
+    {
+        "month": "Aug 2025",
+        "incoming": 16000,
+        "outgoing": 6000
+    },
+    {
+        "month": "Sep 2025",
+        "incoming": 14000,
+        "outgoing": 7500
+    },
+    {
+        "month": "Oct 2025",
+        "incoming": 18000,
+        "outgoing": 8000
+    },
+    {
+        "month": "Nov 2025",
+        "incoming": 20000,
+        "outgoing": 11000
+    },
+    {
+        "month": "Dec 2025",
+        "incoming": 22000,
+        "outgoing": 10000
+    },
+    {
+        "month": "Jan 2026",
+        "incoming": 25000,
+        "outgoing": 12000
+    },
+    {
+        "month": "Feb 2026",
+        "incoming": 23000,
+        "outgoing": 11000
+    },
+    {
+        "month": "Mar 2026",
+        "incoming": 24000,
+        "outgoing": 15000
+    }
+]

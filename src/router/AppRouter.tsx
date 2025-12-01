@@ -13,10 +13,10 @@ function AppRouter() {
             <Route path="*" element={<NotFound />} />
 
             <Route path="/" element={<Dashboard />} />
-            
 
 
-             {/*SALES ROUTES  */}
+
+            {/*SALES ROUTES  */}
             <Route path="/sales" element={<Customers />} />
             <Route path="/sales/customers" element={<Customers />} />
             {/* <Route path="/sales/quotes" element={<Quotes />} /> */}

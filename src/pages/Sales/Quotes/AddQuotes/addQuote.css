@@ -74,3 +74,154 @@
 body.no-scroll {
     overflow: hidden !important;
 }
+
+/* ----------------------------------
+   MAIN NOTES + SUMMARY LAYOUT
+---------------------------------- */
+.notes-summary-row {
+    display: flex;
+    gap: 20px;
+    margin-top: 25px;
+}
+
+/* LEFT SIDE (Notes + Terms) */
+.left-fields {
+    width: 50%;
+    /* padding: 15px; */
+    /* background: #fafafa; */
+    /* border: 1px solid #ddd; */
+    /* border-radius: 8px; */
+}
+
+/* RIGHT SIDE (Summary Box) */
+.right-summary {
+    width: 50%;
+    /* padding: 15px;
+    background: #ffffff; */
+    /* border: 1px solid #ddd; */
+    /* border-radius: 8px; */
+}
+
+/* ----------------------------------
+   TABLE CONTAINER FIXES
+---------------------------------- */
+.item-table-container {
+    overflow-x: auto;
+    width: 100%;
+    padding-right: 15px;
+    /* prevents touching right side */
+}
+
+.item-table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.item-table-container th,
+.item-table-container td {
+    padding: 8px 10px;
+    /* border: 1px solid #ddd; */
+    font-size: 14px;
+}
+
+/* ----------------------------------
+   SUMMARY BOX DESIGN
+---------------------------------- */
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.summary-label {
+    color: #444;
+    font-weight: 500;
+}
+
+.summary-value {
+    font-weight: 600;
+}
+
+/* ----------------------------------
+   POPUP (SETTINGS MODAL)
+---------------------------------- */
+.settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+}
+
+.settings-modal {
+    width: 550px;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    max-height: 90vh;
+    animation: popupOpen 0.25s ease-out;
+}
+
+.settings-modal.closing {
+    animation: popupClose 0.25s ease-in;
+}
+
+@keyframes popupOpen {
+    from {
+        transform: scale(0.85);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes popupClose {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    to {
+        transform: scale(0.85);
+        opacity: 0;
+    }
+}
+
+.custom-header {
+    background: #f7f7f7;
+    padding: 12px 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* ----------------------------------
+   RESPONSIVE DESIGN
+---------------------------------- */
+@media (max-width: 992px) {
+    .notes-summary-row {
+        flex-direction: column;
+    }
+
+    .left-fields,
+    .right-summary {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .item-table-container th,
+    .item-table-container td {
+        font-size: 12px;
+        padding: 6px;
+    }
+}

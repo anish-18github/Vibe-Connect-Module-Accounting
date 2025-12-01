@@ -75,8 +75,8 @@ body {
 /* Breadcrumb clickable links */
 .breadcrumb-link {
   text-decoration: none;
-  color: inherit;
-  font-weight: 500;
+  color: #5E5E5E;
+  font-size: 20px;
 }
 
 .breadcrumb-link:hover {

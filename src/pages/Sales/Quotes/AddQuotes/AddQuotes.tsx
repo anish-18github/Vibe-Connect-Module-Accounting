@@ -3,15 +3,18 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../../../components/Header/Header";
 import { Info, Settings, X } from "react-feather";
 import './addQuote.css'
-import ItemTable from "../../../../components/Table/ItemTable/ItemTable";
+import ItemTable, { SummaryBox } from "../../../../components/Table/ItemTable/ItemTable";
+import { FeatherUpload } from "../../Customers/AddCustomer/Add";
 
 interface ItemTable {
     itemDetails: string;
-    quantity: string | number;
-    rate: string | number;
-    discount: string | number;
-    amount: string | number;
+    quantity: number | string;
+    rate: number | string;
+    discount: number | string;
+    amount: number | string;
 }
+
+
 
 
 interface QuotesForm {
@@ -50,10 +53,6 @@ export default function AddQuotes() {
             setClosing(false);
         }, 250); // matches animation duration
     };
-
-  
-
-
 
     useEffect(() => {
         if (showSettings) {
@@ -94,6 +93,8 @@ export default function AddQuotes() {
             }
         ]
 
+
+
     });
 
     // ---------------------
@@ -114,25 +115,6 @@ export default function AddQuotes() {
     };
 
     // ---------------------
-    // HANDLE CHANGE (ITEM TABLE)
-    // ---------------------
-    // const handleItemChange = (
-    //     index: number,
-    //     e: React.ChangeEvent<HTMLInputElement>
-    // ) => {
-    //     const { name, value } = e.target;
-
-    //     setFormData(prev => {
-    //         const updated = [...prev.itemTable];
-    //         updated[index] = {
-    //             ...updated[index],
-    //             [name]: name === "itemDetails" ? value : value === "" ? "" : Number(value)
-    //         };
-    //         return { ...prev, itemTable: updated };
-    //     });
-    // };
-
-    // ---------------------
     // ADD ROW TO ITEM TABLE
     // ---------------------
     const handleAddRow = () => {
@@ -151,15 +133,16 @@ export default function AddQuotes() {
         }));
     };
 
+
     // ---------------------
     // REMOVE ROW
     // ---------------------
-    const handleRemoveRow = (index: number) => {
-        setFormData(prev => ({
-            ...prev,
-            itemTable: prev.itemTable.filter((_, i) => i !== index)
-        }));
-    };
+    // const handleRemoveRow = (index: number) => {
+    //     setFormData(prev => ({
+    //         ...prev,
+    //         itemTable: prev.itemTable.filter((_, i) => i !== index)
+    //     }));
+    // };
 
     // ---------------------
     // SUBMIT HANDLER
@@ -183,24 +166,50 @@ export default function AddQuotes() {
         navigate("/sales/quotes");
     };
 
+    // ---------------------
+    // HANDLE CHANGE (ITEM TABLE)
+    // ---------------------
     const handleRowChange = (
         index: number,
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
         const { name, value } = e.target;
 
+        // FIX: restrict name to known keys
+        type Field = keyof ItemTable;
+        const fieldName = name as Field;
+
         setFormData(prev => {
             const updated = [...prev.itemTable];
-            updated[index] = {
-                ...updated[index],
-                [name]: name === "itemDetails" ? value : value === "" ? "" : Number(value)
-            };
+            const row = { ...updated[index] };
+
+            // Now TypeScript allows this
+            row[fieldName] = value === "" ? "" : value;
+
+            // (Optional) calculate amount
+            const qty = parseFloat(row.quantity as string) || 0;
+            const rate = parseFloat(row.rate as string) || 0;
+            const discount = parseFloat(row.discount as string) || 0;
+
+            const beforeDiscount = qty * rate;
+            const finalAmount = beforeDiscount - (beforeDiscount * discount) / 100;
+
+            row.amount = finalAmount ? finalAmount.toFixed(2) : "";
+
+            updated[index] = row;
+
             return { ...prev, itemTable: updated };
         });
     };
 
 
+
+
+
     const [taxInfo, setTaxInfo] = useState({
+        type: "",          // NEW
+        selectedTax: "",   // NEW
+        adjustment: 0,     // NEW
         taxRate: 0,
         taxAmount: 0,
         total: 0
@@ -221,14 +230,6 @@ export default function AddQuotes() {
         }));
     };
 
-      const [taxInfo, setTaxInfo] = useState({
-        type: "",          // NEW
-        selectedTax: "",   // NEW
-        adjustment: 0,     // NEW
-        taxRate: 0,
-        taxAmount: 0,
-        total: 0
-    });
 
 
 
@@ -275,8 +276,9 @@ export default function AddQuotes() {
                                     position: "absolute",
                                     right: "15px",
                                     top: "50%",
-                                    transform: "translateY(-50%)",
-                                    cursor: "pointer"
+                                    transform: "translateY(-55%)",
+                                    cursor: "pointer",
+                                    paddingRight: "5px"
                                 }}
                                 onClick={() => setShowSettings(true)}
                             >
@@ -338,61 +340,101 @@ export default function AddQuotes() {
                         </div>
                     </div>
 
-                    {/* Customer Notes */}
-                    <div className="row align-items-center mb-2">
-                        <label className="col-sm-2 col-form-label">Customer Notes:</label>
-                        <div className="col-sm-6">
-                            <textarea
-                                className="form-control form-control-sm"
-                                name="customerNotes"
-                                value={formData.quote.customerNotes}
-                                onChange={handleQuoteChange}
-                            />
-                        </div>
-                    </div>
 
-                    {/* Terms & Conditions */}
-                    <div className="row align-items-center mb-3">
-                        <label className="col-sm-2 col-form-label">Terms & Conditions:</label>
-                        <div className="col-sm-6">
-                            <textarea
-                                className="form-control form-control-sm"
-                                name="termsAndConditions"
-                                value={formData.quote.termsAndConditions}
-                                onChange={handleQuoteChange}
-                            />
-                        </div>
-                    </div>
 
                     {/* ------------------ ITEM TABLE ------------------ */}
-                    <h5 className="mt-4 mb-3">Item Table</h5>
+                    <h5 className="mt-4 fw-normal"
+                        style={{
+                            width: "100%",
+                            backgroundColor: "#EEEEEE",
+                            padding: "6px",
+                            borderRadius: "5px",
+                            border: "1px solid #D9D9D9",
+                            color: "#5E5E5E",
+                            fontSize: "25px"
+                        }}
+                    >Item Table</h5>
+
                     <ItemTable
                         rows={formData.itemTable}
-                        totals={{
-                            subtotal: totals.subtotal,
-                            tax: totals.tax,
-                            total: totals.total,
-                            grandTotal: totals.grandTotal,   // ✔ REQUIRED
-                        }}
-                        taxInfo={{
-                            type: taxInfo.type,
-                            selectedTax: taxInfo.selectedTax,
-                            adjustment: taxInfo.adjustment,
-                            taxRate: taxInfo.taxRate,
-                            taxAmount: taxInfo.taxAmount,
-                            total: taxInfo.total
-                        }}
                         onRowChange={handleRowChange}
                         onAddRow={handleAddRow}
-                        onRemoveRow={handleRemoveRow}
-                        onTaxChange={(field, value) => handleTaxChange(field, value)} // ✔ match signature
                     />
 
 
+                    {/* ------------- NOTES + TERMS + SUMMARY LAYOUT ------------- */}
+                    {/* NOTES + TERMS + SUMMARY ROW */}
+                    <div className="notes-summary-row">
 
-                    <button type="button" className="btn btn-secondary btn-sm" onClick={handleAddRow}>
-                        + Add Item
-                    </button>
+                        {/* LEFT FIELDS */}
+                        <div className="left-fields">
+
+                            {/* Customer Notes */}
+                            <div className="mb-3">
+                                <label className="form-label">Customer Notes:</label>
+                                <textarea
+                                    className="form-control form-control-sm"
+                                    name="customerNotes"
+                                    value={formData.quote.customerNotes}
+                                    onChange={handleQuoteChange}
+                                />
+                            </div>
+
+                            {/* Terms & Conditions */}
+                            <div className="mb-3">
+                                <label className="form-label">Terms & Conditions:</label>
+                                <textarea
+                                    className="form-control form-control-sm"
+                                    name="termsAndConditions"
+                                    value={formData.quote.termsAndConditions}
+                                    onChange={handleQuoteChange}
+                                />
+                            </div>
+                        </div>
+
+                        {/* RIGHT SUMMARY BOX */}
+                        <div className="right-summary">
+                            <SummaryBox
+                                totals={totals}
+                                taxInfo={taxInfo}
+                                onTaxChange={handleTaxChange}
+                            />
+                        </div>
+
+                    </div>
+
+                    <div className="row mb-4 mt-4">
+                        <label className="col-sm-1 col-form-label">Documents:</label>
+                        <div className="col-sm-11">
+                            <div
+                                onClick={() => document.getElementById("fileUploadInput")?.click()}
+                                className="d-flex flex-column align-items-center justify-content-center w-100 p-4 bg-light cursor-pointer"
+                                style={{
+                                    minHeight: "120px",
+                                    border: "2px dotted #a0a0a0",
+                                    borderRadius: "8px"
+                                }}
+                            >
+                                <FeatherUpload size={32} className="text-muted mb-2" />
+                                <span className="text-secondary small">Click to Upload Documents</span>
+
+                                {/* Hidden file input */}
+                                <input
+                                    id="fileUploadInput"
+                                    type="file"
+                                    multiple
+                                    className="d-none"
+                                    onChange={(e) => {
+                                        const files = e.target.files;
+                                        if (files?.length) {
+                                            console.log("Files uploaded:", files);
+                                            alert(`${files.length} file(s) selected!`);
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
 
                     {/* Submit Buttons */}
                     <div className="d-flex justify-content-center mt-4 pt-4 border-top">
