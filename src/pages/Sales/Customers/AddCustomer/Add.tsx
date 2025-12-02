@@ -98,7 +98,7 @@ export const FeatherUpload = ({ className = 'text-muted', size = 32 }: { classNa
 // ---------------------------------------------
 // 4. Main Component
 // ---------------------------------------------
-const   Add = () => {
+const Add = () => {
     // const [customerType, setCustomerType] = useState<'Business' | 'Individual'>('Business');
 
     // ---------------------------------------------
@@ -590,17 +590,17 @@ const   Add = () => {
     // ---------------------------------------------
     const renderContactPersons = () => (
         <>
-            <table className="table table-bordered table-sm align-middle">
+            <table className="table table-bordered table-sm align-middle table-rounded">
                 <thead className="bg-light">
                     <tr>
-                        <th style={{ width: "120px" }}>Salutation</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Email Address</th>
-                        <th>Phone No.</th>
-                        <th>Designation</th>
-                        <th>Department</th>
-                        <th style={{ width: "60px" }}>Action</th>
+                        <th style={{ width: "120px", color: "#5E5E5E", fontWeight: "400" }}>Salutation</th>
+                        <th style={{ color: "#5E5E5E", fontWeight: "400" }}>First Name</th>
+                        <th style={{ color: "#5E5E5E", fontWeight: "400" }}>Last Name</th>
+                        <th style={{ color: "#5E5E5E", fontWeight: "400" }}>Email Address</th>
+                        <th style={{ color: "#5E5E5E", fontWeight: "400" }}>Phone No.</th>
+                        <th style={{ color: "#5E5E5E", fontWeight: "400" }}>Designation</th>
+                        <th style={{ color: "#5E5E5E", fontWeight: "400" }}>Department</th>
+                        <th style={{ width: "60px", color: "#5E5E5E", fontWeight: "400" }}>Action</th>
                     </tr>
                 </thead>
 
@@ -610,11 +610,11 @@ const   Add = () => {
                             <td>
                                 <select
                                     name={`contacts[${index}].salutation`}
-                                    className="form-select form-select-sm"
+                                    className="form-select form-select-sm border-0"
                                     value={person.salutation}
                                     onChange={(e) => handleContactChange(index, "salutation", e.target.value)}
                                 >
-                                    <option value="">Select</option>
+                                    <option value="" disabled hidden >Select</option>
                                     <option value="Mr.">Mr.</option>
                                     <option value="Mrs.">Mrs.</option>
                                     <option value="Ms.">Ms.</option>
@@ -626,7 +626,7 @@ const   Add = () => {
                                 <input
                                     type="text"
                                     name={`contacts[${index}].firstName`}
-                                    className="form-control form-control-sm"
+                                    className="form-control form-control-sm border-0"
                                     value={person.firstName}
                                     onChange={(e) => handleContactChange(index, "firstName", e.target.value)}
                                 />
@@ -636,7 +636,7 @@ const   Add = () => {
                                 <input
                                     type="text"
                                     name={`contacts[${index}].lastName`}
-                                    className="form-control form-control-sm"
+                                    className="form-control form-control-sm border-0"
                                     value={person.lastName}
                                     onChange={(e) => handleContactChange(index, "lastName", e.target.value)}
                                 />
@@ -646,7 +646,7 @@ const   Add = () => {
                                 <input
                                     type="email"
                                     name={`contacts[${index}].email`}
-                                    className="form-control form-control-sm"
+                                    className="form-control form-control-sm border-0"
                                     value={person.email}
                                     onChange={(e) => handleContactChange(index, "email", e.target.value)}
                                 />
@@ -656,7 +656,7 @@ const   Add = () => {
                                 <input
                                     type="text"
                                     name={`contacts[${index}].phone`}
-                                    className="form-control form-control-sm"
+                                    className="form-control form-control-sm border-0"
                                     value={person.phone}
                                     onChange={(e) => handleContactChange(index, "phone", e.target.value)}
                                 />
@@ -666,7 +666,7 @@ const   Add = () => {
                                 <input
                                     type="text"
                                     name={`contacts[${index}].designation`}
-                                    className="form-control form-control-sm"
+                                    className="form-control form-control-sm border-0"
                                     value={person.designation}
                                     onChange={(e) => handleContactChange(index, "designation", e.target.value)}
                                 />
@@ -676,7 +676,7 @@ const   Add = () => {
                                 <input
                                     type="text"
                                     name={`contacts[${index}].department`}
-                                    className="form-control form-control-sm"
+                                    className="form-control form-control-sm border-0"
                                     value={person.department}
                                     onChange={(e) => handleContactChange(index, "department", e.target.value)}
                                 />
@@ -685,11 +685,11 @@ const   Add = () => {
                             <td className="text-center">
                                 <button
                                     type='button'
-                                    className="btn btn-sm btn-outline-danger"
+                                    className="btn btn-sm border-0"
                                     onClick={() => removeContactPerson(index)}
                                     title="Remove"
                                 >
-                                    <X size={16} />
+                                    <X size={16} style={{ color: "red" }} />
                                 </button>
                             </td>
                         </tr>
@@ -759,15 +759,19 @@ const   Add = () => {
         <>
             <Header />
 
-            <div style={{ padding: "0 1rem" }}>
+            <div style={{ padding: "0 1.8rem" }}>
                 <h1 className="h4 text-dark mb-4 pb-1">New Customer</h1>
 
                 {/* MAIN FORM */}
 
-                <form onSubmit={handleSubmit} className="mt-4">
+                <form onSubmit={handleSubmit} className="mt-4"
+                    style={{ color: "#5E5E5E" }}
+                >
 
                     {/* Customer Type */}
-                    <div className="row align-items-center mb-2">
+                    <div className="row align-items-center mb-2"
+
+                    >
                         <label className="col-sm-2 col-form-label fw-normal ">
                             Customer Type:
                         </label>
@@ -951,7 +955,7 @@ const   Add = () => {
                         <button type="button" className="btn border me-3 px-4">
                             Cancel
                         </button>
-                        <button type="submit" className="btn px-4" style={{background: "#7991BB", color: "#FFFFFF"}}>
+                        <button type="submit" className="btn px-4" style={{ background: "#7991BB", color: "#FFFFFF" }}>
                             Save
                         </button>
                     </div>

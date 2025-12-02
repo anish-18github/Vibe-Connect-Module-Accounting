@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../../components/Header/Header";
 import { Info, Settings, X } from "react-feather";
-import './addQuote.css'
-import ItemTable, { SummaryBox } from "../../../../components/Table/ItemTable/ItemTable";
+import './addQuote.css';
+import ItemTable, { SummaryBox, type TcsOption } from "../../../../components/Table/ItemTable/ItemTable";
 import { FeatherUpload } from "../../Customers/AddCustomer/Add";
 
-interface ItemTable {
+interface ItemRow {
     itemDetails: string;
     quantity: number | string;
     rate: number | string;
@@ -14,36 +14,31 @@ interface ItemTable {
     amount: number | string;
 }
 
-
-
-
 interface QuotesForm {
     quote: {
         customerName: string;
         quote: string;
         quoteDate: string;
-        expiryDate: string;   // ➜ NEW FIELD
+        expiryDate: string;
         salesPerson: string;
         projectName: string;
         customerNotes: string;
         termsAndConditions: string;
     };
-
-    itemTable: ItemTable[];
+    itemTable: ItemRow[];
 }
+
+type TaxType = "TDS" | "TCS" | "";
 
 export default function AddQuotes() {
     const navigate = useNavigate();
 
-    // ---------------------
-    // SETTINGS MODAL STATES
-    // ---------------------
+    // ------------- modal + small UI state -------------
     const [showSettings, setShowSettings] = useState(false);
     const [mode, setMode] = useState<"auto" | "manual">("auto");
     const [prefix, setPrefix] = useState("");
     const [nextNumber, setNextNumber] = useState("");
     const [restartYear, setRestartYear] = useState(false);
-
     const [closing, setClosing] = useState(false);
 
     const closePopup = () => {
@@ -51,26 +46,17 @@ export default function AddQuotes() {
         setTimeout(() => {
             setShowSettings(false);
             setClosing(false);
-        }, 250); // matches animation duration
+        }, 250);
     };
 
     useEffect(() => {
-        if (showSettings) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "auto";
-        }
-
+        document.body.style.overflow = showSettings ? "hidden" : "auto";
         return () => {
-            document.body.style.overflow = "auto"; // cleanup
+            document.body.style.overflow = "auto";
         };
     }, [showSettings]);
 
-
-
-    // ---------------------
-    // INITIAL STATE
-    // ---------------------
+    // ------------- form state -------------
     const [formData, setFormData] = useState<QuotesForm>({
         quote: {
             customerName: "",
@@ -82,7 +68,6 @@ export default function AddQuotes() {
             customerNotes: "",
             termsAndConditions: "",
         },
-
         itemTable: [
             {
                 itemDetails: "",
@@ -90,35 +75,90 @@ export default function AddQuotes() {
                 rate: "",
                 discount: "",
                 amount: "",
-            }
-        ]
-
-
-
+            },
+        ],
     });
 
-    // ---------------------
-    // HANDLE CHANGE (QUOTE OBJECT)
-    // ---------------------
-    const handleQuoteChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
-        const { name, value } = e.target;
+    // ---------- TCS options (editable by user) ----------
+    const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([
+        { id: "tcs_5", name: "TCS Standard", rate: 5 },
+        { id: "tcs_12", name: "TCS Standard", rate: 12 },
+        { id: "tcs_18", name: "TCS Standard", rate: 18 },
+    ]);
 
-        setFormData(prev => ({
+    // ---------- taxInfo & totals ----------
+    const [taxInfo, setTaxInfo] = useState({
+        type: "" as TaxType,
+        selectedTax: "", // for TDS -> "0.1" | "1" etc ; for TCS -> option id
+        adjustment: 0,
+        taxRate: 0,
+        taxAmount: 0,
+        total: 0,
+    });
+
+    const [totals, setTotals] = useState({
+        subtotal: 0,
+        tax: 0,
+        total: 0,
+        grandTotal: 0,
+    });
+
+    // ---------- helpers ----------
+    const computeSubtotal = (items: ItemRow[]) => {
+        return items.reduce((acc, r) => {
+            const amt = parseFloat(String(r.amount || "0")) || 0;
+            return acc + amt;
+        }, 0);
+    };
+
+    // update totals whenever items, tax selection, adjustment or tcsOptions change
+    useEffect(() => {
+        const subtotal = computeSubtotal(formData.itemTable);
+
+        // determine the rate
+        let rate = 0;
+        if (taxInfo.type === "TDS") {
+            rate = Number(taxInfo.selectedTax || 0);
+        } else if (taxInfo.type === "TCS") {
+            const opt = tcsOptions.find((o) => o.id === taxInfo.selectedTax);
+            rate = opt ? opt.rate : 0;
+        }
+
+        const taxAmount = +(subtotal * (rate / 100));
+        // Option A: TDS deducts, TCS adds
+        const grand =
+            taxInfo.type === "TDS"
+                ? subtotal - taxAmount + Number(taxInfo.adjustment || 0)
+                : subtotal + taxAmount + Number(taxInfo.adjustment || 0);
+
+        setTaxInfo((prev) => ({ ...prev, taxRate: rate, taxAmount, total: grand }));
+        setTotals({ subtotal, tax: taxAmount, total: grand, grandTotal: grand });
+    }, [formData.itemTable, taxInfo.type, taxInfo.selectedTax, taxInfo.adjustment, tcsOptions]);
+
+    // ---------- handlers ----------
+    const handleTaxChange = (field: keyof typeof taxInfo | "type", value: any) => {
+        setTaxInfo((prev) => ({ ...prev, [field]: value } as any));
+    };
+
+    const handleAddTcs = (opt: TcsOption) => {
+        setTcsOptions((prev) => [...prev, opt]);
+    };
+
+    // Quote fields
+    const handleQuoteChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
             ...prev,
             quote: {
                 ...prev.quote,
                 [name]: value,
-            }
+            },
         }));
     };
 
-    // ---------------------
-    // ADD ROW TO ITEM TABLE
-    // ---------------------
+    // Item table handlers
     const handleAddRow = () => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
             itemTable: [
                 ...prev.itemTable,
@@ -128,33 +168,51 @@ export default function AddQuotes() {
                     rate: "",
                     discount: "",
                     amount: "",
-                }
-            ]
+                },
+            ],
         }));
     };
 
+    const handleRemoveRow = (index: number) => {
+        setFormData((prev) => ({
+            ...prev,
+            itemTable: prev.itemTable.filter((_, i) => i !== index),
+        }));
+    };
 
-    // ---------------------
-    // REMOVE ROW
-    // ---------------------
-    // const handleRemoveRow = (index: number) => {
-    //     setFormData(prev => ({
-    //         ...prev,
-    //         itemTable: prev.itemTable.filter((_, i) => i !== index)
-    //     }));
-    // };
+    const handleRowChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        type Field = keyof ItemRow;
+        const field = name as Field;
 
-    // ---------------------
-    // SUBMIT HANDLER
-    // ---------------------
+        setFormData((prev) => {
+            const updated = [...prev.itemTable];
+            const row = { ...updated[index] };
+            row[field] = value === "" ? "" : value;
+
+            const qty = parseFloat(String(row.quantity || "0")) || 0;
+            const rate = parseFloat(String(row.rate || "0")) || 0;
+            const discount = parseFloat(String(row.discount || "0")) || 0;
+            const beforeDiscount = qty * rate;
+            const finalAmount = beforeDiscount - (beforeDiscount * discount) / 100;
+            row.amount = finalAmount ? finalAmount.toFixed(2) : "";
+
+            updated[index] = row;
+            return { ...prev, itemTable: updated };
+        });
+    };
+
+    // submit
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         const finalPayload = {
             ...formData,
+            totals,
+            taxInfo,
             quoteId: Math.floor(100000 + Math.random() * 900000),
             createdOn: new Date().toISOString().split("T")[0],
-            createdBy: "Admin"
+            createdBy: "Admin",
         };
 
         console.log("Final Payload:", finalPayload);
@@ -166,96 +224,33 @@ export default function AddQuotes() {
         navigate("/sales/quotes");
     };
 
-    // ---------------------
-    // HANDLE CHANGE (ITEM TABLE)
-    // ---------------------
-    const handleRowChange = (
-        index: number,
-        e: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        const { name, value } = e.target;
-
-        // FIX: restrict name to known keys
-        type Field = keyof ItemTable;
-        const fieldName = name as Field;
-
-        setFormData(prev => {
-            const updated = [...prev.itemTable];
-            const row = { ...updated[index] };
-
-            // Now TypeScript allows this
-            row[fieldName] = value === "" ? "" : value;
-
-            // (Optional) calculate amount
-            const qty = parseFloat(row.quantity as string) || 0;
-            const rate = parseFloat(row.rate as string) || 0;
-            const discount = parseFloat(row.discount as string) || 0;
-
-            const beforeDiscount = qty * rate;
-            const finalAmount = beforeDiscount - (beforeDiscount * discount) / 100;
-
-            row.amount = finalAmount ? finalAmount.toFixed(2) : "";
-
-            updated[index] = row;
-
-            return { ...prev, itemTable: updated };
-        });
+    // small utility used by Settings modal
+    const applyAutoQuote = () => {
+        if (mode === "auto") {
+            setFormData((prev) => ({
+                ...prev,
+                quote: {
+                    ...prev.quote,
+                    quote: prefix + nextNumber,
+                },
+            }));
+        }
+        closePopup();
     };
-
-
-
-
-
-    const [taxInfo, setTaxInfo] = useState({
-        type: "",          // NEW
-        selectedTax: "",   // NEW
-        adjustment: 0,     // NEW
-        taxRate: 0,
-        taxAmount: 0,
-        total: 0
-    });
-
-    const totals = {
-        subtotal: 0,
-        tax: taxInfo.taxAmount,
-        total: taxInfo.total,
-        grandTotal: taxInfo.total + taxInfo.taxAmount // or your own formula
-    };
-
-
-    const handleTaxChange = (field: string, value: any) => {
-        setTaxInfo(prev => ({
-            ...prev,
-            [field]: value,
-        }));
-    };
-
-
-
-
 
     return (
         <>
             <Header />
 
-            <div style={{ padding: "0 1rem" }}>
+            <div style={{ padding: "0 1.8rem" }}>
                 <h1 className="h4 text-dark mb-4 pb-1">New Quote</h1>
 
-                <form onSubmit={handleSubmit} className="mt-4">
-
+                <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
                     {/* Customer Name */}
                     <div className="row align-items-center mb-2">
-                        <label className="col-sm-2 col-form-label fw-normal">
-                            Customer Name:
-                        </label>
+                        <label className="col-sm-2 col-form-label fw-normal">Customer Name:</label>
                         <div className="col-sm-6">
-                            <input
-                                type="text"
-                                name="customerName"
-                                className="form-control form-control-sm"
-                                value={formData.quote.customerName}
-                                onChange={handleQuoteChange}
-                            />
+                            <input type="text" name="customerName" className="form-control form-control-sm" value={formData.quote.customerName} onChange={handleQuoteChange} />
                         </div>
                     </div>
 
@@ -263,14 +258,7 @@ export default function AddQuotes() {
                     <div className="row align-items-center mb-2">
                         <label className="col-sm-2 col-form-label fw-normal">Quote:</label>
                         <div className="col-sm-6" style={{ position: "relative" }}>
-                            <input
-                                type="text"
-                                className="form-control form-control-sm"
-                                name="quote"
-                                value={formData.quote.quote}
-                                onChange={handleQuoteChange}
-                                style={{ paddingRight: "35px" }}
-                            />
+                            <input type="text" className="form-control form-control-sm" name="quote" value={formData.quote.quote} onChange={handleQuoteChange} style={{ paddingRight: "35px" }} />
                             <div
                                 style={{
                                     position: "absolute",
@@ -278,7 +266,7 @@ export default function AddQuotes() {
                                     top: "50%",
                                     transform: "translateY(-55%)",
                                     cursor: "pointer",
-                                    paddingRight: "5px"
+                                    paddingRight: "5px",
                                 }}
                                 onClick={() => setShowSettings(true)}
                             >
@@ -287,28 +275,16 @@ export default function AddQuotes() {
                         </div>
                     </div>
 
-                    {/* Date Fields */}
+                    {/* Dates */}
                     <div className="row align-items-center mb-2">
                         <label className="col-sm-2 col-form-label">Quote Date:</label>
                         <div className="col-sm-2">
-                            <input
-                                type="date"
-                                className="form-control form-control-sm"
-                                name="quoteDate"
-                                value={formData.quote.quoteDate}
-                                onChange={handleQuoteChange}
-                            />
+                            <input type="date" className="form-control form-control-sm" name="quoteDate" value={formData.quote.quoteDate} onChange={handleQuoteChange} />
                         </div>
 
                         <label className="col-sm-2 col-form-label">Expiry Date:</label>
                         <div className="col-sm-2">
-                            <input
-                                type="date"
-                                className="form-control form-control-sm"
-                                name="expiryDate"
-                                value={formData.quote.expiryDate}
-                                onChange={handleQuoteChange}
-                            />
+                            <input type="date" className="form-control form-control-sm" name="expiryDate" value={formData.quote.expiryDate} onChange={handleQuoteChange} />
                         </div>
                     </div>
 
@@ -316,13 +292,7 @@ export default function AddQuotes() {
                     <div className="row align-items-center mb-2">
                         <label className="col-sm-2 col-form-label">Sales Person:</label>
                         <div className="col-sm-6">
-                            <input
-                                type="text"
-                                className="form-control form-control-sm"
-                                name="salesPerson"
-                                value={formData.quote.salesPerson}
-                                onChange={handleQuoteChange}
-                            />
+                            <input type="text" className="form-control form-control-sm" name="salesPerson" value={formData.quote.salesPerson} onChange={handleQuoteChange} />
                         </div>
                     </div>
 
@@ -330,20 +300,13 @@ export default function AddQuotes() {
                     <div className="row align-items-center mb-2">
                         <label className="col-sm-2 col-form-label">Project Name:</label>
                         <div className="col-sm-6">
-                            <input
-                                type="text"
-                                className="form-control form-control-sm"
-                                name="projectName"
-                                value={formData.quote.projectName}
-                                onChange={handleQuoteChange}
-                            />
+                            <input type="text" className="form-control form-control-sm" name="projectName" value={formData.quote.projectName} onChange={handleQuoteChange} />
                         </div>
                     </div>
 
-
-
-                    {/* ------------------ ITEM TABLE ------------------ */}
-                    <h5 className="mt-4 fw-normal"
+                    {/* Item Table header */}
+                    <h5
+                        className="mt-4 fw-normal"
                         style={{
                             width: "100%",
                             backgroundColor: "#EEEEEE",
@@ -351,58 +314,35 @@ export default function AddQuotes() {
                             borderRadius: "5px",
                             border: "1px solid #D9D9D9",
                             color: "#5E5E5E",
-                            fontSize: "25px"
                         }}
-                    >Item Table</h5>
+                    >
+                        Item Table
+                    </h5>
 
-                    <ItemTable
-                        rows={formData.itemTable}
-                        onRowChange={handleRowChange}
-                        onAddRow={handleAddRow}
-                    />
+                    <ItemTable rows={formData.itemTable} onRowChange={handleRowChange} onAddRow={handleAddRow} onRemoveRow={handleRemoveRow} />
 
-
-                    {/* ------------- NOTES + TERMS + SUMMARY LAYOUT ------------- */}
-                    {/* NOTES + TERMS + SUMMARY ROW */}
-                    <div className="notes-summary-row">
-
-                        {/* LEFT FIELDS */}
-                        <div className="left-fields">
-
-                            {/* Customer Notes */}
+                    {/* Notes + Summary layout */}
+                    <div className="notes-summary-row" style={{ display: "flex", gap: 20, marginTop: 18 }}>
+                        {/* Left: notes */}
+                        <div style={{ width: "50%" }}>
                             <div className="mb-3">
                                 <label className="form-label">Customer Notes:</label>
-                                <textarea
-                                    className="form-control form-control-sm"
-                                    name="customerNotes"
-                                    value={formData.quote.customerNotes}
-                                    onChange={handleQuoteChange}
-                                />
+                                <textarea className="form-control form-control-sm" name="customerNotes" value={formData.quote.customerNotes} onChange={handleQuoteChange} />
                             </div>
 
-                            {/* Terms & Conditions */}
                             <div className="mb-3">
                                 <label className="form-label">Terms & Conditions:</label>
-                                <textarea
-                                    className="form-control form-control-sm"
-                                    name="termsAndConditions"
-                                    value={formData.quote.termsAndConditions}
-                                    onChange={handleQuoteChange}
-                                />
+                                <textarea className="form-control form-control-sm" name="termsAndConditions" value={formData.quote.termsAndConditions} onChange={handleQuoteChange} />
                             </div>
                         </div>
 
-                        {/* RIGHT SUMMARY BOX */}
-                        <div className="right-summary">
-                            <SummaryBox
-                                totals={totals}
-                                taxInfo={taxInfo}
-                                onTaxChange={handleTaxChange}
-                            />
+                        {/* Right: summary */}
+                        <div style={{ width: "50%" }}>
+                            <SummaryBox totals={totals} taxInfo={taxInfo} onTaxChange={handleTaxChange} tcsOptions={tcsOptions} onAddTcs={handleAddTcs} />
                         </div>
-
                     </div>
 
+                    {/* Documents */}
                     <div className="row mb-4 mt-4">
                         <label className="col-sm-1 col-form-label">Documents:</label>
                         <div className="col-sm-11">
@@ -412,13 +352,12 @@ export default function AddQuotes() {
                                 style={{
                                     minHeight: "120px",
                                     border: "2px dotted #a0a0a0",
-                                    borderRadius: "8px"
+                                    borderRadius: "8px",
                                 }}
                             >
                                 <FeatherUpload size={32} className="text-muted mb-2" />
                                 <span className="text-secondary small">Click to Upload Documents</span>
 
-                                {/* Hidden file input */}
                                 <input
                                     id="fileUploadInput"
                                     type="file"
@@ -448,136 +387,78 @@ export default function AddQuotes() {
                 </form>
             </div>
 
+            {/* Settings modal */}
             {showSettings && (
                 <div className="settings-overlay" onClick={closePopup}>
-                    <div
-                        className={`settings-modal ${closing ? "closing" : "opening"}`}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        {/* HEADER */}
+                    <div className={`settings-modal ${closing ? "closing" : "opening"}`} onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header custom-header">
                             <h4 className="mb-0 p-4">Configure Quote Number Preferences</h4>
                             <X size={20} style={{ cursor: "pointer", marginRight: "15px" }} onClick={closePopup} />
                         </div>
 
-                        {/* BODY CONTENT */}
                         <div className="modal-body mt-3">
-
-                            {/* PARAGRAPH */}
                             <p style={{ fontSize: "14px", color: "#555" }}>
-                                Your quote numbers are set on auto-generate mode to save your time.
-                                Are you sure about changing this setting?
+                                Your quote numbers are set on auto-generate mode to save your time. Are you sure about changing this setting?
                             </p>
 
-                            {/* RADIO 1 */}
                             <div className="form-check mb-3">
-                                <input
-                                    type="radio"
-                                    name="mode"
-                                    className="form-check-input"
-                                    checked={mode === "auto"}
-                                    onChange={() => setMode("auto")}
-                                />
+                                <input type="radio" name="mode" className="form-check-input" checked={mode === "auto"} onChange={() => setMode("auto")} />
                                 <label className="form-check-label" style={{ fontWeight: 500 }}>
                                     Continue auto-generating quote numbers
                                 </label>
-
-                                {/* info icon */}
                                 <span style={{ marginLeft: "6px", cursor: "pointer" }}>
                                     <Info size={18} />
                                 </span>
                             </div>
 
-                            {/* AUTO MODE SETTINGS */}
                             {mode === "auto" && (
-                                <div style={{ marginLeft: "25px" }}>
-
-                                    <div style={{ display: "flex", gap: "20px" }}>
-
+                                <div style={{ marginLeft: 25 }}>
+                                    <div style={{ display: "flex", gap: 20 }}>
                                         <div style={{ flex: 1 }}>
                                             <label className="form-label">Prefix</label>
-                                            <input
-                                                value={prefix}
-                                                onChange={(e) => setPrefix(e.target.value)}
-                                                className="form-control"
-                                                placeholder="QT-"
-                                            />
+                                            <input value={prefix} onChange={(e) => setPrefix(e.target.value)} className="form-control" placeholder="QT-" />
                                         </div>
 
                                         <div style={{ flex: 1 }}>
                                             <label className="form-label">Next Number</label>
-                                            <input
-                                                value={nextNumber}
-                                                onChange={(e) => setNextNumber(e.target.value)}
-                                                className="form-control"
-                                            />
+                                            <input value={nextNumber} onChange={(e) => setNextNumber(e.target.value)} className="form-control" />
                                         </div>
-
                                     </div>
 
-                                    {/* Checkbox */}
                                     <div className="mt-3">
                                         <label>
-                                            <input
-                                                type="checkbox"
-                                                checked={restartYear}
-                                                onChange={(e) => setRestartYear(e.target.checked)}
-                                                className="me-2"
-                                            />
+                                            <input type="checkbox" checked={restartYear} onChange={(e) => setRestartYear(e.target.checked)} className="me-2" />
                                             Restart numbering for quotes at the start of each fiscal year.
                                         </label>
                                     </div>
                                 </div>
                             )}
 
-                            {/* RADIO 2 */}
                             <div className="form-check mt-4">
-                                <input
-                                    type="radio"
-                                    name="mode"
-                                    className="form-check-input"
-                                    checked={mode === "manual"}
-                                    onChange={() => setMode("manual")}
-                                />
+                                <input type="radio" name="mode" className="form-check-input" checked={mode === "manual"} onChange={() => setMode("manual")} />
                                 <label className="form-check-label" style={{ fontWeight: 500 }}>
                                     Enter quote numbers manually
                                 </label>
                             </div>
 
-                            {/* BUTTONS */}
-                            <div className="d-flex justify-content-end mt-4" style={{ gap: "10px" }}>
-                                <button
-                                    className="btn btn-outline-secondary"
-                                    onClick={closePopup}                                >
+                            <div className="d-flex justify-content-end mt-4" style={{ gap: 10 }}>
+                                <button className="btn btn-outline-secondary" onClick={closePopup}>
                                     Cancel
                                 </button>
-
                                 <button
                                     className="btn btn-primary px-4"
                                     onClick={() => {
-                                        if (mode === "auto") {
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                quote: {
-                                                    ...prev.quote,
-                                                    quote: prefix + nextNumber
-                                                }
-                                            }));
-                                        }
-                                        closePopup();
+                                        applyAutoQuote();
                                     }}
                                 >
                                     Save
                                 </button>
                             </div>
-
                         </div>
                     </div>
                 </div>
             )}
-
-
         </>
-
     );
 }
+    

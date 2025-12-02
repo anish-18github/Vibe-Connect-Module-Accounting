@@ -123,13 +123,13 @@ function DynamicTable({ columns, data, actions = false, rowsPerPage = 10, onAdd,
                                     {actions && (
                                         <td>
                                             <span style={{ marginRight: "10px", cursor: "pointer", color: "#555" }}>
-                                                <Edit size={15} />
+                                                <Edit size={16} />
                                             </span>
                                             <span
                                                 style={{ cursor: "pointer", color: "#555" }}
                                                 onClick={() => onView?.(row)}   // Pass entire row
                                             >
-                                                <Eye size={15} />
+                                                <Eye size={16} />
                                             </span>
 
                                         </td>

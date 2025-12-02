@@ -17,12 +17,23 @@ const Quotes = () => {
     ];
 
     const navigate = useNavigate();
-    const [customers, setCustomers] = useState<any[]>([]);
+    const [quotes, setQuotes] = useState<any[]>([]);
 
     useEffect(() => {
-        const stored = JSON.parse(localStorage.getItem("customers") || "[]");
-        setCustomers(stored);
+        const stored = JSON.parse(localStorage.getItem("quotes") || "[]");
+
+        const formatted = stored.map((q: any) => ({
+            name: q.customerName,
+            quote: q.quote?.quoteNumber || "N/A",
+            createdOn: q.quoteDate,
+            expiredOn: q.expiryDate,
+            createdBy: q.salesPerson,
+            customerId: q.customerId
+        }));
+
+        setQuotes(formatted);
     }, []);
+
 
 
     return (
@@ -35,10 +46,10 @@ const Quotes = () => {
             <div className="mt-3">
                 <DynamicTable
                     columns={columns}
-                    data={customers}
+                    data={quotes}
                     actions={true}
                     rowsPerPage={10}
-                    onAdd={() => navigate("/add-quotes")}
+                    onAdd={() => navigate("/sales/add-quotes")}
                     onView={(row) => navigate(`/view-customer/${row.customerId}`)} />
             </div>
 

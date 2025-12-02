@@ -3,35 +3,18 @@ import Header from "../../../components/Header/Header";
 import Navbar from "../../../components/Navbar/NavBar";
 import DynamicTable from "../../../components/Table/DynamicTable";
 import { dashboardTabs } from "../../Dashboard/dashboard";
-
-
-import "./customers.css"
+import { salesTabs } from "../Customers/Customers";
 import { useNavigate } from "react-router-dom";
 
+const DeliveryChallans = () => {
 
-export const salesTabs = [
-    { label: "Customers", path: "/sales/customers" },
-    { label: "Quotes", path: "/sales/quotes" },
-    { label: "Sales Orders", path: "/sales/sales-orders" },
-    { label: "Delivery Challans", path: "/sales/delivery-challans" },
-    { label: "Invoices", path: "/sales/invoices" },
-    { label: "Payment Received", path: "/payment-received" },
-    { label: "Payment Invoices", path: "/payment-invoices" },
-    { label: "Credit Notes", path: "/credit-notes" },
-];
-
-const columns = [
-    { key: "customerId", label: "Customer ID" },
-    { key: "name", label: "Name" },
-    { key: "customerType", label: "Customer Type" },
-    { key: "createdOn", label: "Created On" },
-    { key: "createdBy", label: "Created By" }
-];
-
-
-
-
-function Customer() {
+    const columns = [
+        { key: "name", label: "Name" },
+        { key: "deliveryChallanNo", label: "Delivery Challan No." },
+        { key: "type", label: "Type" },
+        { key: "date", label: "Date" },
+        { key: "reference", label: "Reference" }
+    ];
 
     const navigate = useNavigate();
     const [customers, setCustomers] = useState<any[]>([]);
@@ -45,9 +28,12 @@ function Customer() {
 
     return (
         <>
+
             <Header />
+
             <Navbar tabs={dashboardTabs} />
             <Navbar tabs={salesTabs} />
+
 
             <div className=" mt-3">
                 <DynamicTable
@@ -55,12 +41,13 @@ function Customer() {
                     data={customers}
                     actions={true}
                     rowsPerPage={10}
-                    onAdd={() => navigate("/add-customer")} //May be change it latter. "/add-customer"
+                    onAdd={() => navigate("/sales/add-deliveryChallans")} //May be change it latter. "/add-customer"
                     onView={(row) => navigate(`/view-customer/${row.customerId}`)} />
             </div>
 
         </>
-    );
+    )
+
 }
 
-export default Customer;
+export default DeliveryChallans;
