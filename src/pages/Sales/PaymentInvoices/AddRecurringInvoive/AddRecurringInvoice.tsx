@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../../components/Header/Header";
-import { Info, Settings, X } from "react-feather";
-import './addDeliveryChallan.css'
+// import { Info, Settings, X } from "react-feather";
+import './addRecurringInvoice.css';
+
 import ItemTable, {
     SummaryBox,
     type TcsOption,
 } from "../../../../components/Table/ItemTable/ItemTable";
+
 import { FeatherUpload } from "../../Customers/AddCustomer/Add";
 
 interface ItemRow {
@@ -17,14 +19,16 @@ interface ItemRow {
     amount: number | string;
 }
 
-interface DeliveryChallanForm {
-    challan: {
+interface RecurringInvoiceForm {
+    invoice: {
         customerName: string;
-        challanNo: string;
-        challanDate: string;
-        deliveryDate: string;
-        deliveryMethod: string;
+        invoiceNo: string;
+        invoiceDate: string;
+        startOn: string;
+        endOn: string;
+        paymentTerms: string;
         salesperson: string;
+        deliveryMethod: string;
         customerNotes: string;
         termsAndConditions: string;
     };
@@ -33,41 +37,42 @@ interface DeliveryChallanForm {
 
 type TaxType = "TDS" | "TCS" | "";
 
-export default function AddDeliveryChallan() {
+export default function AddRecurringInvoices() {
     const navigate = useNavigate();
 
     // ---------------- Modal + Small UI State ----------------
-    const [showSettings, setShowSettings] = useState(false);
-    const [mode, setMode] = useState<"auto" | "manual">("auto");
-    const [prefix, setPrefix] = useState("");
-    const [nextNumber, setNextNumber] = useState("");
-    const [restartYear, setRestartYear] = useState(false);
-    const [closing, setClosing] = useState(false);
+    // const [showSettings, setShowSettings] = useState(false);
+    // const [prefix, setPrefix] = useState("");
+    // const [nextNumber, setNextNumber] = useState("");
+    // const [restartYear, setRestartYear] = useState(false);
+    // const [closing, setClosing] = useState(false);
 
-    const closePopup = () => {
-        setClosing(true);
-        setTimeout(() => {
-            setShowSettings(false);
-            setClosing(false);
-        }, 250);
-    };
+    // const closePopup = () => {
+    //     setClosing(true);
+    //     setTimeout(() => {
+    //         setShowSettings(false);
+    //         setClosing(false);
+    //     }, 250);
+    // };
 
-    useEffect(() => {
-        document.body.style.overflow = showSettings ? "hidden" : "auto";
-        return () => {
-            document.body.style.overflow = "auto";
-        };
-    }, [showSettings]);
+    // useEffect(() => {
+    //     document.body.style.overflow = showSettings ? "hidden" : "auto";
+    //     return () => {
+    //         document.body.style.overflow = "auto";
+    //     };
+    // }, [showSettings]);
 
     // ---------------- Form State ----------------
-    const [formData, setFormData] = useState<DeliveryChallanForm>({
-        challan: {
+    const [formData, setFormData] = useState<RecurringInvoiceForm>({
+        invoice: {
             customerName: "",
-            challanNo: "",
-            challanDate: "",
-            deliveryDate: "",
-            deliveryMethod: "",
+            invoiceNo: "",
+            invoiceDate: "",
+            startOn: "",
+            endOn: "",
+            paymentTerms: "",
             salesperson: "",
+            deliveryMethod: "",
             customerNotes: "",
             termsAndConditions: "",
         },
@@ -160,14 +165,12 @@ export default function AddDeliveryChallan() {
     };
 
     const handleChange = (
-        e: React.ChangeEvent<
-            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-        >
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            challan: { ...prev.challan, [name]: value },
+            invoice: { ...prev.invoice, [name]: value },
         }));
     };
 
@@ -228,103 +231,119 @@ export default function AddDeliveryChallan() {
             ...formData,
             totals,
             taxInfo,
-            challanId: Math.floor(100000 + Math.random() * 900000),
+            invoiceId: Math.floor(100000 + Math.random() * 900000),
             createdOn: new Date().toISOString().split("T")[0],
             createdBy: "Admin",
         };
 
-        const existing = JSON.parse(localStorage.getItem("deliveryChallans") || "[]");
+        const existing = JSON.parse(localStorage.getItem("recurringInvoices") || "[]");
         existing.push(finalPayload);
-        localStorage.setItem("deliveryChallans", JSON.stringify(existing));
+        localStorage.setItem("recurringInvoices", JSON.stringify(existing));
 
-        navigate("/delivery/challan");
+        navigate("/recurring/invoices");
     };
 
-    const applyAutoSO = () => {
-        if (mode === "auto") {
-            setFormData((prev) => ({
-                ...prev,
-                challan: {
-                    ...prev.challan,
-                    challanNo: prefix + nextNumber,
-                },
-            }));
-        }
-        closePopup();
-    };
+    // const applyAutoSO = () => {
+    //     if (mode === "auto") {
+    //         setFormData((prev) => ({
+    //             ...prev,
+    //             invoice: {
+    //                 ...prev.invoice,
+    //                 invoiceNo: prefix + nextNumber,
+    //             },
+    //         }));
+    //     }
+    //     closePopup();
+    // };
 
-    // ---------------- UI ----------------
     return (
         <>
             <Header />
 
             <div style={{ padding: "0 1.8rem" }}>
-                <h1 className="h4 text-dark mb-4 pb-1">Delivery Challan</h1>
+                <h1 className="h4 text-dark mb-4 pb-1">
+                    New Recurring Invoice
+                </h1>
 
                 <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
 
                     <div className="two-column-form">
+                        {/* -------- LEFT COLUMN -------- */}
                         <div className="left-column">
 
-                            {/* Customer Name */}
                             <div className="form-row">
                                 <label>Customer Name:</label>
                                 <select
                                     name="customerName"
                                     className="form-control form-control-sm"
-                                    value={formData.challan.customerName}
+                                    value={formData.invoice.customerName}
                                     onChange={handleChange}
                                 >
-                                    <option value="" disabled hidden >Select Customer</option>
+                                    <option value="">Select Customer</option>
                                     <option value="Customer A">Customer A</option>
                                     <option value="Customer B">Customer B</option>
                                 </select>
                             </div>
 
-                            {/* Challan Date */}
                             <div className="form-row">
-                                <label>Delivery Challan Date:</label>
+                                <label>Order Number:</label>
                                 <input
                                     type="date"
                                     className="form-control form-control-sm"
-                                    name="challanDate"
-                                    value={formData.challan.challanDate}
+                                    name="invoiceDate"
+                                    value={formData.invoice.invoiceDate}
                                     onChange={handleChange}
                                 />
                             </div>
 
-                            {/* Delivery Method */}
                             <div className="form-row">
-                                <label>Challan Type:</label>
+                                <label>Repeat Every:</label>
                                 <select
-                                    name="deliveryMethod"
+                                    name="customerName"
                                     className="form-control form-control-sm"
-                                    value={formData.challan.deliveryMethod}
+                                    value={formData.invoice.customerName}
                                     onChange={handleChange}
                                 >
-                                    <option value="">Select Delivery Method</option>
-                                    <option value="Courier">Courier</option>
-                                    <option value="Transport">Transport</option>
-                                    <option value="Pickup">Pickup</option>
+                                    <option value="">Select</option>
+                                    <option value="Week">Week</option>
+                                    <option value="Week">2 Weeks</option>
+                                    <option value="Month">Month</option>
+                                    <option value="2 Months">2 Months</option>
+                                    <option value="3 Months">3 Months</option>
+                                    <option value="6 Months">6 Months</option>
+                                    <option value="Year">Year</option>
+                                    <option value="2 Years">2 Years</option>
+                                    <option value="3 Years">3 Years</option>
                                 </select>
+                            </div>
+
+                            <div className="form-row">
+                                <label className="form-label">Subject:</label>
+                                <textarea
+                                    className="form-control form-control-sm"
+                                    name="customerNotes"
+                                    value={formData.invoice.customerNotes}
+                                    onChange={handleChange}
+                                />
                             </div>
 
                         </div>
 
+                        {/* -------- RIGHT COLUMN -------- */}
                         <div className="right-column">
 
-                            {/* Challan No */}
                             <div className="form-row" style={{ position: "relative" }}>
-                                <label>Delivery Challan:</label>
+                                <label>Profile Name:</label>
                                 <input
                                     type="text"
-                                    name="challanNo"
-                                    className="form-control form-control-sm"
-                                    value={formData.challan.challanNo}
+                                    name="invoiceNo"
+                                    className="form-control form-control-sm border"
+                                    value={formData.invoice.invoiceNo}
                                     onChange={handleChange}
                                     style={{ paddingRight: "35px" }}
                                 />
-                                <div
+
+                                {/* <div
                                     style={{
                                         position: "absolute",
                                         right: "12px",
@@ -335,16 +354,27 @@ export default function AddDeliveryChallan() {
                                     onClick={() => setShowSettings(true)}
                                 >
                                     <Settings size={16} style={{ color: "#555" }} />
+                                </div> */}
+                            </div>
+
+                            <div className="form-row">
+                                <label className="col-sm-2 col-form-label">Terms:</label>
+                                <div className="col-sm-2">
+                                    <input type="date" className="form-control form-control-sm" name="quoteDate" value={formData.invoice.startOn} onChange={handleChange} />
+                                </div>
+
+                                <label className="col-sm-2 col-form-label">Expiry Date:</label>
+                                <div className="col-sm-2">
+                                    <input type="date" className="form-control form-control-sm" name="expiryDate" value={formData.invoice.endOn} onChange={handleChange} />
                                 </div>
                             </div>
 
-                            {/* Salesperson */}
                             <div className="form-row">
-                                <label>Reference:</label>
+                                <label>Salesperson:</label>
                                 <select
                                     name="salesperson"
                                     className="form-control form-control-sm"
-                                    value={formData.challan.salesperson}
+                                    value={formData.invoice.salesperson}
                                     onChange={handleChange}
                                 >
                                     <option value="">Select Salesperson</option>
@@ -353,11 +383,27 @@ export default function AddDeliveryChallan() {
                                 </select>
                             </div>
 
+
+                            <div className="form-row">
+                                <label>Payment Terms:</label>
+                                <select
+                                    name="paymentTerms"
+                                    className="form-control form-control-sm"
+                                    value={formData.invoice.paymentTerms}
+                                    onChange={handleChange}
+                                >
+                                    <option value="">Select</option>
+                                    <option value="Advance">Advance</option>
+                                    <option value="Net 15">Net 15</option>
+                                    <option value="Net 30">Net 30</option>
+                                    <option value="Net 45">Net 45</option>
+                                </select>
+                            </div>
+
                         </div>
                     </div>
 
-
-                    {/* Item Table Title */}
+                    {/* ITEM TABLE */}
                     <h5
                         className="mt-4 fw-normal"
                         style={{
@@ -381,22 +427,36 @@ export default function AddDeliveryChallan() {
 
                     {/* Notes + Summary */}
                     <div className="notes-summary-row" style={{ display: "flex", gap: 5, marginTop: 18 }}>
-                        {/* Left: notes */}
                         <div style={{ width: "50%" }}>
                             <div className="mb-3">
                                 <label className="form-label">Customer Notes:</label>
-                                <textarea className="form-control form-control-sm" name="customerNotes" value={formData.challan.customerNotes} onChange={handleChange} />
+                                <textarea
+                                    className="form-control form-control-sm border"
+                                    name="customerNotes"
+                                    value={formData.invoice.customerNotes}
+                                    onChange={handleChange}
+                                />
                             </div>
 
                             <div className="mb-3">
                                 <label className="form-label">Terms & Conditions:</label>
-                                <textarea className="form-control form-control-sm" name="termsAndConditions" value={formData.challan.termsAndConditions} onChange={handleChange} />
+                                <textarea
+                                    className="form-control form-control-sm"
+                                    name="termsAndConditions"
+                                    value={formData.invoice.termsAndConditions}
+                                    onChange={handleChange}
+                                />
                             </div>
                         </div>
 
-                        {/* Right: summary */}
                         <div style={{ width: "50%" }}>
-                            <SummaryBox totals={totals} taxInfo={taxInfo} onTaxChange={handleTaxChange} tcsOptions={tcsOptions} onAddTcs={handleAddTcs} />
+                            <SummaryBox
+                                totals={totals}
+                                taxInfo={taxInfo}
+                                onTaxChange={handleTaxChange}
+                                tcsOptions={tcsOptions}
+                                onAddTcs={handleAddTcs}
+                            />
                         </div>
                     </div>
 
@@ -459,120 +519,6 @@ export default function AddDeliveryChallan() {
                 </form>
             </div>
 
-            {/* ---------------- Settings Modal ---------------- */}
-            {showSettings && (
-                <div className="settings-overlay" onClick={closePopup}>
-                    <div
-                        className={`settings-modal ${closing ? "closing" : "opening"
-                            }`}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className="modal-header custom-header">
-                            <h4 className="mb-0 p-4">
-                                Configure Delivery Challan Number
-                            </h4>
-                            <X
-                                size={20}
-                                style={{ cursor: "pointer", marginRight: "15px" }}
-                                onClick={closePopup}
-                            />
-                        </div>
-
-                        <div className="modal-body mt-3">
-                            <p style={{ fontSize: "14px", color: "#555" }}>
-                                Your Delivery Challans are currently set to auto-generate
-                                numbers. Change settings if needed.
-                            </p>
-
-                            {/* Auto Mode */}
-                            <div className="form-check mb-3">
-                                <input
-                                    type="radio"
-                                    name="mode"
-                                    className="form-check-input"
-                                    checked={mode === "auto"}
-                                    onChange={() => setMode("auto")}
-                                />
-                                <label className="form-check-label" style={{ fontWeight: 500 }}>
-                                    Continue auto-generating Challan Numbers
-                                </label>
-                                <span style={{ marginLeft: "6px", cursor: "pointer" }}>
-                                    <Info size={18} />
-                                </span>
-                            </div>
-
-                            {mode === "auto" && (
-                                <div style={{ marginLeft: 25 }}>
-                                    <div style={{ display: "flex", gap: 20 }}>
-                                        <div style={{ flex: 1 }}>
-                                            <label className="form-label">Prefix</label>
-                                            <input
-                                                value={prefix}
-                                                onChange={(e) => setPrefix(e.target.value)}
-                                                className="form-control"
-                                                placeholder="DC-"
-                                            />
-                                        </div>
-
-                                        <div style={{ flex: 1 }}>
-                                            <label className="form-label">Next Number</label>
-                                            <input
-                                                value={nextNumber}
-                                                onChange={(e) => setNextNumber(e.target.value)}
-                                                className="form-control"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-3">
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                checked={restartYear}
-                                                onChange={(e) => setRestartYear(e.target.checked)}
-                                                className="me-2"
-                                            />
-                                            Restart numbering every fiscal year.
-                                        </label>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Manual Mode */}
-                            <div className="form-check mt-4">
-                                <input
-                                    type="radio"
-                                    name="mode"
-                                    className="form-check-input"
-                                    checked={mode === "manual"}
-                                    onChange={() => setMode("manual")}
-                                />
-                                <label className="form-check-label" style={{ fontWeight: 500 }}>
-                                    Enter Challan Numbers manually
-                                </label>
-                            </div>
-
-                            <div
-                                className="d-flex justify-content-end mt-4"
-                                style={{ gap: 10 }}
-                            >
-                                <button
-                                    className="btn btn-outline-secondary"
-                                    onClick={closePopup}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    className="btn btn-primary px-4"
-                                    onClick={applyAutoSO}
-                                >
-                                    Save
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </>
     );
 }

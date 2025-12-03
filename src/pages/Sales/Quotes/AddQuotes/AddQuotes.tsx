@@ -250,7 +250,7 @@ export default function AddQuotes() {
                     <div className="row align-items-center mb-2">
                         <label className="col-sm-2 col-form-label fw-normal">Customer Name:</label>
                         <div className="col-sm-6">
-                            <input type="text" name="customerName" className="form-control form-control-sm" value={formData.quote.customerName} onChange={handleQuoteChange} />
+                            <input type="text" name="customerName" className="form-control form-control-sm border" value={formData.quote.customerName} onChange={handleQuoteChange} />
                         </div>
                     </div>
 
@@ -258,7 +258,7 @@ export default function AddQuotes() {
                     <div className="row align-items-center mb-2">
                         <label className="col-sm-2 col-form-label fw-normal">Quote:</label>
                         <div className="col-sm-6" style={{ position: "relative" }}>
-                            <input type="text" className="form-control form-control-sm" name="quote" value={formData.quote.quote} onChange={handleQuoteChange} style={{ paddingRight: "35px" }} />
+                            <input type="text" className="form-control form-control-sm border" name="quote" value={formData.quote.quote} onChange={handleQuoteChange} style={{ paddingRight: "35px" }} />
                             <div
                                 style={{
                                     position: "absolute",
@@ -279,12 +279,12 @@ export default function AddQuotes() {
                     <div className="row align-items-center mb-2">
                         <label className="col-sm-2 col-form-label">Quote Date:</label>
                         <div className="col-sm-2">
-                            <input type="date" className="form-control form-control-sm" name="quoteDate" value={formData.quote.quoteDate} onChange={handleQuoteChange} />
+                            <input type="date" className="form-control form-control-sm border" name="quoteDate" value={formData.quote.quoteDate} onChange={handleQuoteChange} />
                         </div>
 
                         <label className="col-sm-2 col-form-label">Expiry Date:</label>
                         <div className="col-sm-2">
-                            <input type="date" className="form-control form-control-sm" name="expiryDate" value={formData.quote.expiryDate} onChange={handleQuoteChange} />
+                            <input type="date" className="form-control form-control-sm border" name="expiryDate" value={formData.quote.expiryDate} onChange={handleQuoteChange} />
                         </div>
                     </div>
 
@@ -292,7 +292,7 @@ export default function AddQuotes() {
                     <div className="row align-items-center mb-2">
                         <label className="col-sm-2 col-form-label">Sales Person:</label>
                         <div className="col-sm-6">
-                            <input type="text" className="form-control form-control-sm" name="salesPerson" value={formData.quote.salesPerson} onChange={handleQuoteChange} />
+                            <input type="text" className="form-control form-control-sm border" name="salesPerson" value={formData.quote.salesPerson} onChange={handleQuoteChange} />
                         </div>
                     </div>
 
@@ -300,7 +300,7 @@ export default function AddQuotes() {
                     <div className="row align-items-center mb-2">
                         <label className="col-sm-2 col-form-label">Project Name:</label>
                         <div className="col-sm-6">
-                            <input type="text" className="form-control form-control-sm" name="projectName" value={formData.quote.projectName} onChange={handleQuoteChange} />
+                            <input type="text" className="form-control form-control-sm border" name="projectName" value={formData.quote.projectName} onChange={handleQuoteChange} />
                         </div>
                     </div>
 
@@ -327,12 +327,12 @@ export default function AddQuotes() {
                         <div style={{ width: "50%" }}>
                             <div className="mb-3">
                                 <label className="form-label">Customer Notes:</label>
-                                <textarea className="form-control form-control-sm" name="customerNotes" value={formData.quote.customerNotes} onChange={handleQuoteChange} />
+                                <textarea className="form-control form-control-sm border" style={{ resize: "none", height: "90px" }} name="customerNotes" value={formData.quote.customerNotes} onChange={handleQuoteChange} />
                             </div>
 
                             <div className="mb-3">
                                 <label className="form-label">Terms & Conditions:</label>
-                                <textarea className="form-control form-control-sm" name="termsAndConditions" value={formData.quote.termsAndConditions} onChange={handleQuoteChange} />
+                                <textarea className="form-control form-control-sm border" style={{ resize: "none", height: "90px" }} name="termsAndConditions" value={formData.quote.termsAndConditions} onChange={handleQuoteChange} />
                             </div>
                         </div>
 
@@ -344,14 +344,16 @@ export default function AddQuotes() {
 
                     {/* Documents */}
                     <div className="row mb-4 mt-4">
-                        <label className="col-sm-1 col-form-label">Documents:</label>
+                        <label className="col-sm-1 col-form-label d-flex align-items-center">
+                            Documents:
+                        </label>
                         <div className="col-sm-11">
                             <div
                                 onClick={() => document.getElementById("fileUploadInput")?.click()}
                                 className="d-flex flex-column align-items-center justify-content-center w-100 p-4 bg-light cursor-pointer"
                                 style={{
-                                    minHeight: "120px",
-                                    border: "2px dotted #a0a0a0",
+                                    minHeight: "100px",
+                                    border: "2px dotted #D9D9D9",
                                     borderRadius: "8px",
                                 }}
                             >
@@ -377,9 +379,14 @@ export default function AddQuotes() {
 
                     {/* Submit Buttons */}
                     <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                        <button type="button" className="btn border me-3 px-4">
+                        <button
+                            type="button"
+                            className="btn border me-3 px-4"
+                            onClick={() => navigate(-1)}
+                        >
                             Cancel
                         </button>
+
                         <button type="submit" className="btn px-4" style={{ background: "#7991BB", color: "#FFF" }}>
                             Save
                         </button>
@@ -461,4 +468,3 @@ export default function AddQuotes() {
         </>
     );
 }
-    

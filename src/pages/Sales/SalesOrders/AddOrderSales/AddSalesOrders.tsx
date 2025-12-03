@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../../components/Header/Header";
 import { Info, Settings, X } from "react-feather";
-import "./salesOrders.css";
+import './salesOrders.css'
 
 import ItemTable, {
     SummaryBox,
@@ -20,7 +20,7 @@ interface ItemRow {
 
 interface SalesOrdersForm {
     salesOrder: {
-        customerName: string;       
+        customerName: string;
         salesOrderNo: string;
         salesOrderDate: string;
         expectedShipmentDate: string;
@@ -259,8 +259,8 @@ export default function AddSalesOrder() {
         <>
             <Header />
 
-            <div style={{ padding: "0 1.8rem" }}>
-                <h1 className="h4 text-dark mb-4 pb-1">New Sales Order</h1>
+            <div className="sales-orders-page" style={{ padding: "0 1.8rem" }}>
+                <h1 className="h4 text-dark mb-4 pb-1">Sales Order</h1>
 
                 <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
 
@@ -289,7 +289,7 @@ export default function AddSalesOrder() {
                                 <label>Sales Order Date:</label>
                                 <input
                                     type="date"
-                                    className="form-control form-control-sm"
+                                    className="form-control form-control-sm custom-border"
                                     name="salesOrderDate"
                                     value={formData.salesOrder.salesOrderDate}
                                     onChange={handleChange}
@@ -341,10 +341,10 @@ export default function AddSalesOrder() {
                                 <input
                                     type="text"
                                     name="salesOrderNo"
-                                    className="form-control form-control-sm"
+                                    className="form-control form-control-sm "
                                     value={formData.salesOrder.salesOrderNo}
                                     onChange={handleChange}
-                                    style={{ paddingRight: "35px" }}
+                                // style={{ paddingRight: "35px" }}
                                 />
                                 <div
                                     style={{
@@ -419,12 +419,12 @@ export default function AddSalesOrder() {
                         <div style={{ width: "50%" }}>
                             <div className="mb-3">
                                 <label className="form-label">Customer Notes:</label>
-                                <textarea className="form-control form-control-sm" name="customerNotes" value={formData.salesOrder.customerNotes} onChange={handleChange} />
+                                <textarea className="form-control form-control-sm border" style={{ resize: "none", height: "90px" }} name="customerNotes" value={formData.salesOrder.customerNotes} onChange={handleChange} />
                             </div>
 
                             <div className="mb-3">
                                 <label className="form-label">Terms & Conditions:</label>
-                                <textarea className="form-control form-control-sm" name="termsAndConditions" value={formData.salesOrder.termsAndConditions} onChange={handleChange} />
+                                <textarea className="form-control form-control-sm border" style={{ resize: "none", height: "90px" }} name="termsAndConditions" value={formData.salesOrder.termsAndConditions} onChange={handleChange} />
                             </div>
                         </div>
 
@@ -474,9 +474,14 @@ export default function AddSalesOrder() {
 
                     {/* Buttons */}
                     <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                        <button type="button" className="btn border me-3 px-4">
+                        <button
+                            type="button"
+                            className="btn border me-3 px-4"
+                            onClick={() => navigate(-1)}
+                        >
                             Cancel
                         </button>
+
                         <button
                             type="submit"
                             className="btn px-4"

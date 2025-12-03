@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../../components/Header/Header";
 import { Info, Settings, X } from "react-feather";
-import './addDeliveryChallan.css'
+
 import ItemTable, {
     SummaryBox,
     type TcsOption,
 } from "../../../../components/Table/ItemTable/ItemTable";
+
+import './creditNotes.css';
 import { FeatherUpload } from "../../Customers/AddCustomer/Add";
 
 interface ItemRow {
@@ -17,26 +19,27 @@ interface ItemRow {
     amount: number | string;
 }
 
-interface DeliveryChallanForm {
-    challan: {
+interface CreditNoteForm {
+    credit: {
         customerName: string;
-        challanNo: string;
-        challanDate: string;
-        deliveryDate: string;
-        deliveryMethod: string;
+        creditNoteNo: string;
+        creditDate: string;
+        referenceNo: string;
+        subject: string;
+        paymentTerm: string;
         salesperson: string;
-        customerNotes: string;
-        termsAndConditions: string;
+        notes: string;
+        terms: string;
     };
     itemTable: ItemRow[];
 }
 
 type TaxType = "TDS" | "TCS" | "";
 
-export default function AddDeliveryChallan() {
+export default function AddCreditNote() {
     const navigate = useNavigate();
 
-    // ---------------- Modal + Small UI State ----------------
+    // ---------------- Modal ----------------
     const [showSettings, setShowSettings] = useState(false);
     const [mode, setMode] = useState<"auto" | "manual">("auto");
     const [prefix, setPrefix] = useState("");
@@ -54,22 +57,20 @@ export default function AddDeliveryChallan() {
 
     useEffect(() => {
         document.body.style.overflow = showSettings ? "hidden" : "auto";
-        return () => {
-            document.body.style.overflow = "auto";
-        };
     }, [showSettings]);
 
     // ---------------- Form State ----------------
-    const [formData, setFormData] = useState<DeliveryChallanForm>({
-        challan: {
+    const [formData, setFormData] = useState<CreditNoteForm>({
+        credit: {
             customerName: "",
-            challanNo: "",
-            challanDate: "",
-            deliveryDate: "",
-            deliveryMethod: "",
+            creditNoteNo: "",
+            creditDate: "",
+            referenceNo: "",
+            subject: "",
+            paymentTerm: "",
             salesperson: "",
-            customerNotes: "",
-            termsAndConditions: "",
+            notes: "",
+            terms: "",
         },
         itemTable: [
             {
@@ -106,29 +107,22 @@ export default function AddDeliveryChallan() {
         grandTotal: 0,
     });
 
-    const computeSubtotal = (items: ItemRow[]) => {
-        return items.reduce((acc, r) => {
-            const amt = parseFloat(String(r.amount || "0")) || 0;
-            return acc + amt;
-        }, 0);
-    };
+    const computeSubtotal = (items: ItemRow[]) =>
+        items.reduce((acc, r) => acc + (parseFloat(String(r.amount)) || 0), 0);
 
     useEffect(() => {
         const subtotal = computeSubtotal(formData.itemTable);
-
         let rate = 0;
+
         if (taxInfo.type === "TDS") {
-            rate = Number(taxInfo.selectedTax || 0);
+            rate = Number(taxInfo.selectedTax);
         } else if (taxInfo.type === "TCS") {
             const opt = tcsOptions.find((o) => o.id === taxInfo.selectedTax);
             rate = opt ? opt.rate : 0;
         }
 
-        const taxAmount = +(subtotal * (rate / 100));
-        const grand =
-            taxInfo.type === "TDS"
-                ? subtotal - taxAmount + Number(taxInfo.adjustment || 0)
-                : subtotal + taxAmount + Number(taxInfo.adjustment || 0);
+        const taxAmount = subtotal * (rate / 100);
+        const grand = subtotal + taxAmount + Number(taxInfo.adjustment || 0);
 
         setTaxInfo((prev) => ({
             ...prev,
@@ -136,6 +130,7 @@ export default function AddDeliveryChallan() {
             taxAmount,
             total: grand,
         }));
+
         setTotals({
             subtotal,
             tax: taxAmount,
@@ -147,11 +142,10 @@ export default function AddDeliveryChallan() {
         taxInfo.type,
         taxInfo.selectedTax,
         taxInfo.adjustment,
-        tcsOptions,
     ]);
 
     // ---------------- Handlers ----------------
-    const handleTaxChange = (field: any, value: any) => {
+    const handleTaxChange = (field: string, value: any) => {
         setTaxInfo((prev) => ({ ...prev, [field]: value }));
     };
 
@@ -160,14 +154,12 @@ export default function AddDeliveryChallan() {
     };
 
     const handleChange = (
-        e: React.ChangeEvent<
-            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-        >
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            challan: { ...prev.challan, [name]: value },
+            credit: { ...prev.credit, [name]: value },
         }));
     };
 
@@ -176,13 +168,7 @@ export default function AddDeliveryChallan() {
             ...prev,
             itemTable: [
                 ...prev.itemTable,
-                {
-                    itemDetails: "",
-                    quantity: "",
-                    rate: "",
-                    discount: "",
-                    amount: "",
-                },
+                { itemDetails: "", quantity: "", rate: "", discount: "", amount: "" },
             ],
         }));
     };
@@ -194,59 +180,49 @@ export default function AddDeliveryChallan() {
         }));
     };
 
-    const handleRowChange = (
-        index: number,
-        e: React.ChangeEvent<HTMLInputElement>
-    ) => {
+    const handleRowChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        type Field = keyof ItemRow;
-        const field = name as Field;
+        const updated = [...formData.itemTable];
+        const row = { ...updated[index], [name]: value };
 
-        setFormData((prev) => {
-            const updated = [...prev.itemTable];
-            const row = { ...updated[index] };
-            row[field] = value;
+        const qty = parseFloat(String(row.quantity)) || 0;
+        const rate = parseFloat(String(row.rate)) || 0;
+        const discount = parseFloat(String(row.discount)) || 0;
 
-            const qty = parseFloat(String(row.quantity || "0")) || 0;
-            const rate = parseFloat(String(row.rate || "0")) || 0;
-            const discount = parseFloat(String(row.discount || "0")) || 0;
+        const before = qty * rate;
+        const final = before - (before * discount) / 100;
+        row.amount = final.toFixed(2);
 
-            const before = qty * rate;
-            const final = before - (before * discount) / 100;
-
-            row.amount = final ? final.toFixed(2) : "";
-
-            updated[index] = row;
-            return { ...prev, itemTable: updated };
-        });
+        updated[index] = row;
+        setFormData((prev) => ({ ...prev, itemTable: updated }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const finalPayload = {
+        const payload = {
             ...formData,
             totals,
             taxInfo,
-            challanId: Math.floor(100000 + Math.random() * 900000),
+            creditNoteId: Math.floor(100000 + Math.random() * 900000),
             createdOn: new Date().toISOString().split("T")[0],
             createdBy: "Admin",
         };
 
-        const existing = JSON.parse(localStorage.getItem("deliveryChallans") || "[]");
-        existing.push(finalPayload);
-        localStorage.setItem("deliveryChallans", JSON.stringify(existing));
+        const existing = JSON.parse(localStorage.getItem("creditNotes") || "[]");
+        existing.push(payload);
+        localStorage.setItem("creditNotes", JSON.stringify(existing));
 
-        navigate("/delivery/challan");
+        navigate("/credit-notes");
     };
 
-    const applyAutoSO = () => {
+    const applyAutoCN = () => {
         if (mode === "auto") {
             setFormData((prev) => ({
                 ...prev,
-                challan: {
-                    ...prev.challan,
-                    challanNo: prefix + nextNumber,
+                credit: {
+                    ...prev.credit,
+                    creditNoteNo: prefix + nextNumber,
                 },
             }));
         }
@@ -259,53 +235,63 @@ export default function AddDeliveryChallan() {
             <Header />
 
             <div style={{ padding: "0 1.8rem" }}>
-                <h1 className="h4 text-dark mb-4 pb-1">Delivery Challan</h1>
+                <h1 className="h4 text-dark mb-4 pb-1">New Credit Note</h1>
 
-                <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
+                <form onSubmit={handleSubmit} style={{ color: "#5E5E5E" }}>
 
+                    {/* ---------------- TWO COLUMN FORM ---------------- */}
                     <div className="two-column-form">
+
                         <div className="left-column">
 
-                            {/* Customer Name */}
                             <div className="form-row">
                                 <label>Customer Name:</label>
                                 <select
                                     name="customerName"
                                     className="form-control form-control-sm"
-                                    value={formData.challan.customerName}
+                                    value={formData.credit.customerName}
                                     onChange={handleChange}
                                 >
-                                    <option value="" disabled hidden >Select Customer</option>
+                                    <option value="">Select Customer</option>
                                     <option value="Customer A">Customer A</option>
                                     <option value="Customer B">Customer B</option>
                                 </select>
                             </div>
 
-                            {/* Challan Date */}
                             <div className="form-row">
-                                <label>Delivery Challan Date:</label>
+                                <label>Reference:</label>
                                 <input
-                                    type="date"
+                                    type="text"
+                                    name="referenceNo"
                                     className="form-control form-control-sm"
-                                    name="challanDate"
-                                    value={formData.challan.challanDate}
+                                    value={formData.credit.referenceNo}
                                     onChange={handleChange}
                                 />
                             </div>
 
-                            {/* Delivery Method */}
                             <div className="form-row">
-                                <label>Challan Type:</label>
-                                <select
-                                    name="deliveryMethod"
+                                <label className="form-label">Subject:</label>
+                                <textarea
                                     className="form-control form-control-sm"
-                                    value={formData.challan.deliveryMethod}
+                                    name="customerNotes"
+                                    value={formData.credit.subject}
+                                    onChange={handleChange}
+                                />
+                            </div>
+
+                            <div className="form-row">
+                                <label>Payment Terms:</label>
+                                <select
+                                    name="paymentTerms"
+                                    className="form-control form-control-sm"
+                                    value={formData.credit.paymentTerm}
                                     onChange={handleChange}
                                 >
-                                    <option value="">Select Delivery Method</option>
-                                    <option value="Courier">Courier</option>
-                                    <option value="Transport">Transport</option>
-                                    <option value="Pickup">Pickup</option>
+                                    <option value="">Select</option>
+                                    <option value="Advance">Advance</option>
+                                    <option value="Net 15">Net 15</option>
+                                    <option value="Net 30">Net 30</option>
+                                    <option value="Net 45">Net 45</option>
                                 </select>
                             </div>
 
@@ -313,14 +299,13 @@ export default function AddDeliveryChallan() {
 
                         <div className="right-column">
 
-                            {/* Challan No */}
                             <div className="form-row" style={{ position: "relative" }}>
-                                <label>Delivery Challan:</label>
+                                <label>Credit Note:</label>
                                 <input
                                     type="text"
-                                    name="challanNo"
+                                    name="creditNoteNo"
                                     className="form-control form-control-sm"
-                                    value={formData.challan.challanNo}
+                                    value={formData.credit.creditNoteNo}
                                     onChange={handleChange}
                                     style={{ paddingRight: "35px" }}
                                 />
@@ -338,13 +323,23 @@ export default function AddDeliveryChallan() {
                                 </div>
                             </div>
 
-                            {/* Salesperson */}
                             <div className="form-row">
-                                <label>Reference:</label>
+                                <label>Credit Note Date:</label>
+                                <input
+                                    type="date"
+                                    className="form-control form-control-sm"
+                                    name="creditDate"
+                                    value={formData.credit.creditDate}
+                                    onChange={handleChange}
+                                />
+                            </div>
+
+                            <div className="form-row">
+                                <label>Salesperson:</label>
                                 <select
                                     name="salesperson"
                                     className="form-control form-control-sm"
-                                    value={formData.challan.salesperson}
+                                    value={formData.credit.salesperson}
                                     onChange={handleChange}
                                 >
                                     <option value="">Select Salesperson</option>
@@ -354,12 +349,11 @@ export default function AddDeliveryChallan() {
                             </div>
 
                         </div>
+
                     </div>
 
-
-                    {/* Item Table Title */}
-                    <h5
-                        className="mt-4 fw-normal"
+                    {/* ---------------- ITEM TABLE ---------------- */}
+                    <h5 className="mt-4 fw-normal table-title"
                         style={{
                             width: "100%",
                             backgroundColor: "#EEEEEE",
@@ -379,27 +373,45 @@ export default function AddDeliveryChallan() {
                         onRemoveRow={handleRemoveRow}
                     />
 
-                    {/* Notes + Summary */}
-                    <div className="notes-summary-row" style={{ display: "flex", gap: 5, marginTop: 18 }}>
-                        {/* Left: notes */}
+                    {/* ---------------- NOTES + SUMMARY ---------------- */}
+                    <div className="notes-summary-row">
+
                         <div style={{ width: "50%" }}>
                             <div className="mb-3">
-                                <label className="form-label">Customer Notes:</label>
-                                <textarea className="form-control form-control-sm" name="customerNotes" value={formData.challan.customerNotes} onChange={handleChange} />
+                                <label className="form-label">Notes:</label>
+                                <textarea
+                                    className="form-control form-control-sm"
+                                    name="notes"
+                                    value={formData.credit.notes}
+                                    onChange={handleChange}
+                                />
                             </div>
 
                             <div className="mb-3">
-                                <label className="form-label">Terms & Conditions:</label>
-                                <textarea className="form-control form-control-sm" name="termsAndConditions" value={formData.challan.termsAndConditions} onChange={handleChange} />
+                                <label className="form-label">
+                                    Terms & Conditions:
+                                </label>
+                                <textarea
+                                    className="form-control form-control-sm"
+                                    name="terms"
+                                    value={formData.credit.terms}
+                                    onChange={handleChange}
+                                />
                             </div>
                         </div>
 
-                        {/* Right: summary */}
                         <div style={{ width: "50%" }}>
-                            <SummaryBox totals={totals} taxInfo={taxInfo} onTaxChange={handleTaxChange} tcsOptions={tcsOptions} onAddTcs={handleAddTcs} />
+                            <SummaryBox
+                                totals={totals}
+                                taxInfo={taxInfo}
+                                onTaxChange={handleTaxChange}
+                                tcsOptions={tcsOptions}
+                                onAddTcs={handleAddTcs}
+                            />
                         </div>
                     </div>
 
+                    {/* ---------------- DOCUMENT UPLOAD ---------------- */}
                     {/* Documents */}
                     <div className="row mb-4 mt-4">
                         <label className="col-sm-1 col-form-label">Documents:</label>
@@ -438,7 +450,7 @@ export default function AddDeliveryChallan() {
                         </div>
                     </div>
 
-                    {/* Buttons */}
+                    {/* ---------------- BUTTONS ---------------- */}
                     <div className="d-flex justify-content-center mt-4 pt-4 border-top">
                         <button
                             type="button"
@@ -459,7 +471,7 @@ export default function AddDeliveryChallan() {
                 </form>
             </div>
 
-            {/* ---------------- Settings Modal ---------------- */}
+            {/* ---------------- SETTINGS MODAL ---------------- */}
             {showSettings && (
                 <div className="settings-overlay" onClick={closePopup}>
                     <div
@@ -469,7 +481,7 @@ export default function AddDeliveryChallan() {
                     >
                         <div className="modal-header custom-header">
                             <h4 className="mb-0 p-4">
-                                Configure Delivery Challan Number
+                                Configure Credit Note Number Preferences
                             </h4>
                             <X
                                 size={20}
@@ -479,12 +491,12 @@ export default function AddDeliveryChallan() {
                         </div>
 
                         <div className="modal-body mt-3">
-                            <p style={{ fontSize: "14px", color: "#555" }}>
-                                Your Delivery Challans are currently set to auto-generate
-                                numbers. Change settings if needed.
+                            <p className="small text-muted">
+                                Your Credit Notes are currently set to auto-generate numbers.
+                                Change settings if needed.
                             </p>
 
-                            {/* Auto Mode */}
+                            {/* AUTO MODE */}
                             <div className="form-check mb-3">
                                 <input
                                     type="radio"
@@ -493,10 +505,10 @@ export default function AddDeliveryChallan() {
                                     checked={mode === "auto"}
                                     onChange={() => setMode("auto")}
                                 />
-                                <label className="form-check-label" style={{ fontWeight: 500 }}>
-                                    Continue auto-generating Challan Numbers
+                                <label className="form-check-label">
+                                    Continue auto-generating Credit Note Numbers
                                 </label>
-                                <span style={{ marginLeft: "6px", cursor: "pointer" }}>
+                                <span style={{ marginLeft: "6px" }}>
                                     <Info size={18} />
                                 </span>
                             </div>
@@ -510,7 +522,7 @@ export default function AddDeliveryChallan() {
                                                 value={prefix}
                                                 onChange={(e) => setPrefix(e.target.value)}
                                                 className="form-control"
-                                                placeholder="DC-"
+                                                placeholder="CN-"
                                             />
                                         </div>
 
@@ -529,7 +541,9 @@ export default function AddDeliveryChallan() {
                                             <input
                                                 type="checkbox"
                                                 checked={restartYear}
-                                                onChange={(e) => setRestartYear(e.target.checked)}
+                                                onChange={(e) =>
+                                                    setRestartYear(e.target.checked)
+                                                }
                                                 className="me-2"
                                             />
                                             Restart numbering every fiscal year.
@@ -538,7 +552,7 @@ export default function AddDeliveryChallan() {
                                 </div>
                             )}
 
-                            {/* Manual Mode */}
+                            {/* MANUAL MODE */}
                             <div className="form-check mt-4">
                                 <input
                                     type="radio"
@@ -547,24 +561,18 @@ export default function AddDeliveryChallan() {
                                     checked={mode === "manual"}
                                     onChange={() => setMode("manual")}
                                 />
-                                <label className="form-check-label" style={{ fontWeight: 500 }}>
-                                    Enter Challan Numbers manually
+                                <label className="form-check-label">
+                                    Enter Credit Note Numbers manually
                                 </label>
                             </div>
 
-                            <div
-                                className="d-flex justify-content-end mt-4"
-                                style={{ gap: 10 }}
-                            >
-                                <button
-                                    className="btn btn-outline-secondary"
-                                    onClick={closePopup}
-                                >
+                            <div className="d-flex justify-content-end mt-4" style={{ gap: 10 }}>
+                                <button className="btn btn-outline-secondary" onClick={closePopup}>
                                     Cancel
                                 </button>
                                 <button
                                     className="btn btn-primary px-4"
-                                    onClick={applyAutoSO}
+                                    onClick={applyAutoCN}
                                 >
                                     Save
                                 </button>

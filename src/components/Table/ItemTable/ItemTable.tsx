@@ -68,7 +68,7 @@ function ItemTable({
                                             type="number"
                                             name="quantity"
                                             className="form-control form-control-sm no-spinner border-0"
-                                            placeholder="10.00"
+                                            placeholder="00.00"
                                             value={row.quantity}
                                             onChange={(e) => onRowChange(index, e)}
                                         />
@@ -79,7 +79,7 @@ function ItemTable({
                                             type="number"
                                             name="rate"
                                             className="form-control form-control-sm no-spinner border-0"
-                                            placeholder="20.00"
+                                            placeholder="00.00"
                                             value={row.rate}
                                             onChange={(e) => onRowChange(index, e)}
                                         />
@@ -90,7 +90,7 @@ function ItemTable({
                                             type="number"
                                             name="discount"
                                             className="form-control form-control-sm no-spinner border-0"
-                                            placeholder="20"
+                                            placeholder="00"
                                             value={row.discount}
                                             onChange={(e) => onRowChange(index, e)}
                                         />
@@ -294,8 +294,9 @@ export function SummaryBox({
                         <input
                             type="number"
                             className="form-control form-control-sm no-spinner border-0"
-                            style={{ width: 120, background: "#D9D9D9"}}
-                            value={taxInfo.adjustment}
+                            placeholder="0"
+                            style={{ width: 120, background: "#D9D9D9" }}
+                            value={taxInfo.adjustment === 0 ? "" : taxInfo.adjustment}
                             onChange={(e) => onTaxChange("adjustment", Number(e.target.value))}
                         />
                     </div>

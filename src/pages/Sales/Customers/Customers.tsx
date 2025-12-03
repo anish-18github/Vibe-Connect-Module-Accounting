@@ -15,9 +15,9 @@ export const salesTabs = [
     { label: "Sales Orders", path: "/sales/sales-orders" },
     { label: "Delivery Challans", path: "/sales/delivery-challans" },
     { label: "Invoices", path: "/sales/invoices" },
-    { label: "Payment Received", path: "/payment-received" },
-    { label: "Payment Invoices", path: "/payment-invoices" },
-    { label: "Credit Notes", path: "/credit-notes" },
+    { label: "Payment Received", path: "/sales/payment-received" },
+    { label: "Payment Invoices", path: "/sales/payment-invoices" },
+    { label: "Credit Notes", path: "/sales/credit-notes" },
 ];
 
 const columns = [
@@ -55,8 +55,8 @@ function Customer() {
                     data={customers}
                     actions={true}
                     rowsPerPage={10}
-                    onAdd={() => navigate("/add-customer")} //May be change it latter. "/add-customer"
-                    onView={(row) => navigate(`/view-customer/${row.customerId}`)} />
+                    onAdd={() => navigate("/sales/add-customer")} //May be change it latter. "/add-customer"
+                    onView={(row) => navigate(`/sales/view-customer/${row.customerId}`)} />
             </div>
 
         </>

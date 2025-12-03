@@ -122,12 +122,12 @@ const ViewCustomer: React.FC = () => {
                     {
                         title: "Invoices",
                         columns: ["Date", "Invoice Number", "Order Number", "Amount", "Balance Due", "Status"],
-                        path: "/add-invoice",
+                        path: "/sales/add-invoice",
                         emptyMessage: "There are no invoices",
                         // invoiceData <- new Invoice form
                         data: [
-                            ["INV-101", "2024-10-01", 5000],
-                            ["INV-102", "2024-10-05", 3000],
+                            ["12-11-25", "INV-587346598", 52364, "45,0000", "0", "Paid"],
+                            ["03-12-25", "INV-897487347", 31209, "20,000", "20,000", "Over due"],
                         ]
                     },
                     {
@@ -142,7 +142,7 @@ const ViewCustomer: React.FC = () => {
                     {
                         title: "Quotes",
                         columns: ["Date", "Quotes", "Reference Number", "Amount", "Status"],
-                        path: "/add-invoice",
+                        path: "/sales/add-quotes",
                         emptyMessage: "There are no quotes.",
                         data: [
 
@@ -151,7 +151,7 @@ const ViewCustomer: React.FC = () => {
                     {
                         title: "Sales Orders",
                         columns: ["Date", "Shipment Date", "Reference Number", "Sales Order", "Amount", "Status"],
-                        path: "/add-invoice",
+                        path: "/sales/add-salesOrders",
                         emptyMessage: "There are no Sales Orders.",
                         data: [
 
@@ -160,7 +160,7 @@ const ViewCustomer: React.FC = () => {
                     {
                         title: "Delivery Challans",
                         columns: ["Date", "Delivery Challan", "Reference Number", "Reference Number", "Status"],
-                        path: "/add-invoice",
+                        path: "/sales/add-deliveryChallans",
                         emptyMessage: "There are no Delivery Challans.",
                         data: [
 
@@ -169,7 +169,7 @@ const ViewCustomer: React.FC = () => {
                     {
                         title: "Recurring Invoices",
                         columns: ["Profile Name", "Frequency", "Last Invoice Date", "Next Invoice Date", "Status"],
-                        path: "/add-invoice",
+                        path: "/sales/add-recurringInvoice",
                         emptyMessage: "There are no recurring invoices.",
                         data: [
 
@@ -214,7 +214,7 @@ const ViewCustomer: React.FC = () => {
                     {
                         title: "Credit Notes",
                         columns: ["Date", "Credit Note Number", "Reference Number", "Reference Number", "Status"],
-                        path: "/add-invoice",
+                        path: "/sales/add-creditNote",
                         emptyMessage: "There are no Credit Note created.",
                         data: [
 
@@ -229,7 +229,7 @@ const ViewCustomer: React.FC = () => {
     );
 
     const renderMails = () => <MailSystem />;
-  
+
     const renderStatements = () => <div>Statements content…</div>;
 
     const tabs = [
@@ -248,7 +248,7 @@ const ViewCustomer: React.FC = () => {
 
             <div className="container-fluid ">
 
-                <div style={{padding: "0 1rem" }}>
+                <div style={{ padding: "0 1rem" }}>
 
                     {/* Tabs Header */}
                     <Tabs

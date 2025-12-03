@@ -444,9 +444,14 @@ export default function AddInvoice() {
 
                     {/* Buttons */}
                     <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                        <button type="button" className="btn border me-3 px-4">
+                        <button
+                            type="button"
+                            className="btn border me-3 px-4"
+                            onClick={() => navigate(-1)}
+                        >
                             Cancel
                         </button>
+
                         <button
                             type="submit"
                             className="btn px-4"

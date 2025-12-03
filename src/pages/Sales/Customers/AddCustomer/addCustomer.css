@@ -43,6 +43,16 @@
     border-color: #6c6c6c;
 }
 
+.btn-outline-primary {
+    background-color: #fff !important;
+    /* Custom default background color */
+    border-color: #D9D9D9 !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: #7991BB !important;
+    border-color: #7991BB !important;
+}
 
 
 /* === ROUND TABLE CORNERS === */
@@ -71,6 +81,8 @@
 .table-rounded thead tr th {
     /* background: #F8F8F8 !important; */
     border-bottom: none !important;
+    background-color: #D9D9D9 !important;
+
 }
 
 /* Top-left corner */

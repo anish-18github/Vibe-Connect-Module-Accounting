@@ -228,8 +228,15 @@ const Add = () => {
             HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
         >
     ) => {
-        const { name, value } = e.target;   // e.g. "customer.firstName"
+        const { name } = e.target;   // e.g. "customer.firstName"
+        let value = e.target.value;
+
         const keys = name.split(".");       // ["customer", "firstName"]
+
+        // Sanitize numbers only
+        if (name === "address.phoneNumber" || name === "address.countryCode") {
+            value = value.replace(/\D/g, "");
+        }
 
         setFormData((prev) => {
             const updated = { ...prev };
@@ -240,6 +247,7 @@ const Add = () => {
                 ref[keys[i]] = { ...ref[keys[i]] };
                 ref = ref[keys[i]];
             }
+
 
             // Set final nested property
             ref[keys[keys.length - 1]] = value;
@@ -306,7 +314,7 @@ const Add = () => {
                     <input
                         type="text"
                         name="otherDetails.pan"
-                        className="form-control form-control-sm"
+                        className="form-control form-control-sm border"
                         value={formData.otherDetails.pan}
                         onChange={handleChange}
                     />
@@ -426,7 +434,7 @@ const Add = () => {
                         name="address.attention"
                         value={formData.address.attention}
                         onChange={handleChange}
-                        className="form-control form-control-sm"
+                        className="form-control form-control-sm border"
                         placeholder="Enter attention name"
                     />
                 </div>
@@ -468,7 +476,7 @@ const Add = () => {
                         name="address.address1"
                         value={formData.address.address1}
                         onChange={handleChange}
-                        className="form-control form-control-sm"
+                        className="form-control form-control-sm border"
                         placeholder="Enter address line 1"
                     />
                 </div>
@@ -483,7 +491,7 @@ const Add = () => {
                         name="address.address2"
                         value={formData.address.address2}
                         onChange={handleChange}
-                        className="form-control form-control-sm"
+                        className="form-control form-control-sm border"
                         placeholder="Enter address line 2"
                     />
                 </div>
@@ -498,7 +506,7 @@ const Add = () => {
                         name="address.city"
                         value={formData.address.city}
                         onChange={handleChange}
-                        className="form-control form-control-sm"
+                        className="form-control form-control-sm border"
                         placeholder="Enter city"
                     />
                 </div>
@@ -539,7 +547,7 @@ const Add = () => {
                         name="address.zip"
                         value={formData.address.zip}
                         onChange={handleChange}
-                        className="form-control form-control-sm"
+                        className="form-control form-control-sm border"
                         placeholder="Enter ZIP / Postal Code"
                     />
                 </div>
@@ -554,7 +562,7 @@ const Add = () => {
                         name="address.fax"
                         value={formData.address.fax}
                         onChange={handleChange}
-                        className="form-control form-control-sm"
+                        className="form-control form-control-sm border"
                         placeholder="Enter fax number"
                     />
                 </div>
@@ -562,24 +570,30 @@ const Add = () => {
 
             {/* Phone */}
             <div className="row align-items-center mb-3">
-                <label className="col-sm-1 col-form-label">Phone:</label>
+                <label className="col-sm-2 col-form-label">Phone:</label>
+
                 <div className="col-sm-1">
                     <input
                         type="text"
                         name="address.countryCode"
-                        placeholder="+1"
-                        className="form-control form-control-sm"
+                        placeholder="+91"
+                        className="form-control form-control-sm border"
                         value={formData.address.countryCode}
                         onChange={handleChange}
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                     />
                 </div>
+
                 <div className="col-sm-4">
                     <input
-                        type="tel"
+                        type="text"
                         name="address.phoneNumber"
-                        className="form-control form-control-sm"
+                        className="form-control form-control-sm border"
                         value={formData.address.phoneNumber}
                         onChange={handleChange}
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                     />
                 </div>
             </div>
@@ -719,9 +733,13 @@ const Add = () => {
             <textarea
                 name="remarks"
                 rows={4}
-                className="form-control"
+                className="form-control border"
+                contentEditable="true"
                 value={formData.remarks}
                 onChange={handleChange}
+                style={{
+                    resize: "none"
+                }}
             />
         </>
     );
@@ -819,7 +837,7 @@ const Add = () => {
                                 name="customer.salutation"
                                 value={formData.customer.salutation}
                                 onChange={handleChange}
-                                className="form-select form-select-sm"
+                                className="form-select form-select-smv"
                                 style={{ color: formData.customer.salutation ? "#000" : "#9b9b9b" }}
                             >
                                 <option value="" disabled hidden >
@@ -837,7 +855,7 @@ const Add = () => {
                                 name="customer.firstName"
                                 value={formData.customer.firstName}
                                 onChange={handleChange}
-                                className="form-control form-control-sm"
+                                className="form-control form-control-sm border "
                                 placeholder="First Name"
                             />
 
@@ -850,7 +868,7 @@ const Add = () => {
                                 name="customer.lastName"
                                 value={formData.customer.lastName}
                                 onChange={handleChange}
-                                className="form-control form-control-sm"
+                                className="form-control form-control-sm border"
                                 placeholder="Last Name"
                             />
                         </div>
@@ -865,7 +883,7 @@ const Add = () => {
                                 name="customer.companyName"
                                 value={formData.customer.companyName}
                                 onChange={handleChange}
-                                className="form-control form-control-sm"
+                                className="form-control form-control-sm border"
                             />
 
                         </div>
@@ -880,7 +898,7 @@ const Add = () => {
                                 name="customer.displayName"
                                 value={formData.customer.displayName}
                                 onChange={handleChange}
-                                className="form-control form-control-sm"
+                                className="form-control form-control-sm border"
                             />
 
                         </div>
@@ -895,37 +913,42 @@ const Add = () => {
                                 name="customer.emailAddress"
                                 value={formData.customer.emailAddress}
                                 onChange={handleChange}
-                                className="form-control form-control-sm"
+                                className="form-control form-control-sm border"
                             />
 
                         </div>
                     </div>
 
                     {/* Phone */}
-                    <div className="row align-items-center mb-2">
+                    <div className="row align-items-center mb-3">
                         <label className="col-sm-2 col-form-label">Phone:</label>
-                        <div className="col-sm-2">
-                            {/* Country COde */}
+
+                        <div className="col-sm-1">
                             <input
                                 type="text"
-                                name="customer.countryCode"
+                                name="address.countryCode"
+                                placeholder="+91"
+                                className="form-control form-control-sm border"
                                 value={formData.customer.countryCode}
                                 onChange={handleChange}
-                                className="form-control form-control-sm"
-                                placeholder="+1"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
                             />
-
                         </div>
+
                         <div className="col-sm-4">
                             <input
-                                type="tel"
-                                name="customer.phoneNumber"
+                                type="text"
+                                name="address.phoneNumber"
+                                className="form-control form-control-sm border"
                                 value={formData.customer.phoneNumber}
                                 onChange={handleChange}
-                                className="form-control form-control-sm"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
                             />
                         </div>
                     </div>
+
 
                     {/* ————— TABS ————— */}
                     <div className="mt-4 border-bottom nav-tabs-container" ref={tabsContainerRef}>
@@ -952,9 +975,14 @@ const Add = () => {
 
                     {/* Submit Buttons */}
                     <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                        <button type="button" className="btn border me-3 px-4">
+                        <button
+                            type="button"
+                            className="btn border me-3 px-4"
+                            onClick={() => navigate(-1)}
+                        >
                             Cancel
                         </button>
+
                         <button type="submit" className="btn px-4" style={{ background: "#7991BB", color: "#FFFFFF" }}>
                             Save
                         </button>

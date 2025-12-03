@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "../pages/Dashboard/dashboard";
 import Customers from "../pages/Sales/Customers/Customers";
 import AddCustomer from "../pages/Sales/Customers/AddCustomer/Add";
@@ -12,6 +12,11 @@ import DeliveryChallans from "../pages/Sales/DeliveryChallans/DeliveryChallans";
 import AddDeliveryChallan from "../pages/Sales/DeliveryChallans/AddDeliveryChallan/AddDeliveryChallan";
 import Invoices from "../pages/Sales/Invoices/Invoices";
 import AddInvoice from "../pages/Sales/Invoices/AddInvoice/AddInvoice";
+import PaymentReceived from "../pages/Sales/PaymentReceived/PaymentReceived";
+import AddRecurringInvoices from "../pages/Sales/PaymentInvoices/AddRecurringInvoive/AddRecurringInvoice";
+import PaymentInvoices from "../pages/Sales/PaymentInvoices/PaymentInvoices";
+import CreditNote from "../pages/Sales/CreditNotes/CreditNotes";
+import AddCreditNote from "../pages/Sales/CreditNotes/AddCreditNotes/AddCreditNote";
 
 function AppRouter() {
     return (
@@ -20,14 +25,14 @@ function AppRouter() {
 
             <Route path="/" element={<Dashboard />} />
 
+            {/* SALES ROUTES */}
 
+            {/* Redirect /sales → /sales/customers */}
+            <Route path="/sales" element={<Navigate to="/sales/customers" replace />} />
 
-            {/*SALES ROUTES  */}
-            <Route path="/sales" element={<Customers />} />
             <Route path="/sales/customers" element={<Customers />} />
-            {/* <Route path="/sales/quotes" element={<Quotes />} /> */}
-            <Route path="/add-customer" element={<AddCustomer />} />
-            <Route path="/view-customer/:id" element={<ViewCustomer />} />
+            <Route path="/sales/add-customer" element={<AddCustomer />} />
+            <Route path="/sales/view-customer/:id" element={<ViewCustomer />} />
 
             <Route path="/sales/quotes" element={<Quotes />} />
             <Route path="/sales/add-quotes" element={<AddQuotes />} />
@@ -35,17 +40,20 @@ function AppRouter() {
             <Route path="/sales/sales-orders" element={<SalesOrders />} />
             <Route path="/sales/add-salesOrders" element={<AddSalesOrder />} />
 
-
             <Route path="/sales/delivery-challans" element={<DeliveryChallans />} />
             <Route path="/sales/add-deliveryChallans" element={<AddDeliveryChallan />} />
-            
+
             <Route path="/sales/invoices" element={<Invoices />} />
             <Route path="/sales/add-invoice" element={<AddInvoice />} />
 
+            <Route path="/sales/payment-received" element={<PaymentReceived />} />
 
+            <Route path="/sales/payment-invoices" element={<PaymentInvoices />} />
+            <Route path="/sales/add-recurringInvoice" element={<AddRecurringInvoices />} />
 
+            <Route path="/sales/credit-notes" element={<CreditNote />} />
+            <Route path="/sales/add-creditNote" element={<AddCreditNote />} />
         </Routes>
-
     );
 }
 
