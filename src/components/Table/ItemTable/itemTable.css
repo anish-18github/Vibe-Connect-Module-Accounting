@@ -163,3 +163,24 @@
 .total-box {
   box-shadow: none;
 }
+
+/* Remove input borders inside table */
+.table-rounded input.form-control,
+.table-rounded input.no-spinner,
+.table-rounded input {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* Keep disabled input also borderless */
+.table-rounded input[disabled] {
+  border: none !important;
+  background: transparent !important;
+}
+
+/* On focus always borderless */
+.table-rounded input:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}

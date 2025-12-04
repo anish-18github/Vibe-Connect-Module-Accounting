@@ -41,7 +41,7 @@ const PaymentReceived = () => {
                     data={customers}
                     actions={true}
                     rowsPerPage={10}
-                    onAdd={() => navigate("/sales/add-invoice")} //May be change it latter. "/add-customer"
+                    onAdd={() => navigate("/sales/record-payment")} //May be change it latter. "/add-customer"
                     onView={(row) => navigate(`/view-customer/${row.customerId}`)} />
             </div>
 

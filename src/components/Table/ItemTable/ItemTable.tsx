@@ -2,8 +2,9 @@
 
 import { PlusCircle, X } from "react-feather";
 
-import './itemTable.css'
 import React, { useState } from "react";
+import './itemTable.css'
+
 
 export interface ItemRow {
     itemDetails: string;
@@ -12,6 +13,7 @@ export interface ItemRow {
     discount: number | string;
     amount: number | string;
 }
+
 
 
 
@@ -35,7 +37,7 @@ function ItemTable({
     return (
         <>
             <div className="row">
-                <div className="col-md-12">
+                <div className=" col-md-12">
                     <table className="table table-bordered table-sm align-middle table-rounded">
                         <thead className="bg-light">
                             <tr>

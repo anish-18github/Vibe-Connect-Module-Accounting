@@ -17,6 +17,10 @@ import AddRecurringInvoices from "../pages/Sales/PaymentInvoices/AddRecurringInv
 import PaymentInvoices from "../pages/Sales/PaymentInvoices/PaymentInvoices";
 import CreditNote from "../pages/Sales/CreditNotes/CreditNotes";
 import AddCreditNote from "../pages/Sales/CreditNotes/AddCreditNotes/AddCreditNote";
+import RecordPayment from "../pages/Sales/PaymentReceived/RecordPayment/RecordPayment";
+import AddVendor from "../pages/Purcheses/Vendors/AddVender/AddVendor";
+import Vendors from "../pages/Purcheses/Vendors/Vendors";
+import ViewVendor from "../pages/Purcheses/Vendors/ViewVender/ViewVernder";
 
 function AppRouter() {
     return (
@@ -47,12 +51,20 @@ function AppRouter() {
             <Route path="/sales/add-invoice" element={<AddInvoice />} />
 
             <Route path="/sales/payment-received" element={<PaymentReceived />} />
+            <Route path="/sales/record-payment" element={<RecordPayment />} />
 
             <Route path="/sales/payment-invoices" element={<PaymentInvoices />} />
             <Route path="/sales/add-recurringInvoice" element={<AddRecurringInvoices />} />
 
             <Route path="/sales/credit-notes" element={<CreditNote />} />
             <Route path="/sales/add-creditNote" element={<AddCreditNote />} />
+
+            <Route path="/purchases" element={<Navigate to="/purchases/vendors" replace />} />
+            <Route path="/purchases/vendors" element={<Vendors />} />
+
+            <Route path="/purchases/add-vendor" element={<AddVendor />} />
+
+            <Route path="/purchases/view-vendor" element={<ViewVendor />} />
         </Routes>
     );
 }

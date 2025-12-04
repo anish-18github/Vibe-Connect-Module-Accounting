@@ -260,7 +260,7 @@ export default function AddRecurringInvoices() {
         <>
             <Header />
 
-            <div style={{ padding: "0 1.8rem" }}>
+            <div className="sales-orders-page" style={{ padding: "0 1.8rem" }}>
                 <h1 className="h4 text-dark mb-4 pb-1">
                     New Recurring Invoice
                 </h1>
@@ -321,6 +321,7 @@ export default function AddRecurringInvoices() {
                                 <label className="form-label">Subject:</label>
                                 <textarea
                                     className="form-control form-control-sm"
+                                    style={{ resize: "none", height: "50px" }}
                                     name="customerNotes"
                                     value={formData.invoice.customerNotes}
                                     onChange={handleChange}
@@ -432,6 +433,7 @@ export default function AddRecurringInvoices() {
                                 <label className="form-label">Customer Notes:</label>
                                 <textarea
                                     className="form-control form-control-sm border"
+                                    style={{ resize: "none", height: "90px" }}
                                     name="customerNotes"
                                     value={formData.invoice.customerNotes}
                                     onChange={handleChange}
@@ -442,6 +444,7 @@ export default function AddRecurringInvoices() {
                                 <label className="form-label">Terms & Conditions:</label>
                                 <textarea
                                     className="form-control form-control-sm"
+                                    style={{ resize: "none", height: "90px" }}
                                     name="termsAndConditions"
                                     value={formData.invoice.termsAndConditions}
                                     onChange={handleChange}

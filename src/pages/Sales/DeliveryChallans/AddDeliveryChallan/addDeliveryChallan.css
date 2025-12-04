@@ -1,20 +1,18 @@
-/* Container or Card Box */
+/* -------------------- Summary Box -------------------- */
 .summary-box {
-    /* border: 1px solid #878787; */
     border-radius: 10px;
     padding: 16px;
     background: #ffffff;
     margin-top: 16px;
 }
 
-/* Table box */
+/* -------------------- Item Table -------------------- */
 .item-table {
     border: 1px solid #878787;
     border-radius: 10px;
     overflow: hidden;
 }
 
-/* Table Headers */
 .item-table thead th {
     background: #f3f3f3;
     border-bottom: 1px solid #878787;
@@ -22,7 +20,6 @@
     font-weight: 600;
 }
 
-/* Table Rows */
 .item-table tbody tr {
     border-bottom: 1px solid #878787;
 }
@@ -31,9 +28,8 @@
     padding: 10px;
 }
 
-/* Inputs inside your quote form */
+/* -------------------- Inputs -------------------- */
 .input-field {
-    border: 1px solid #878787;
     border-radius: 6px;
     padding: 8px 10px;
     outline: none;
@@ -43,7 +39,7 @@
     border-color: #5a5a5a;
 }
 
-/* Buttons with border color */
+/* -------------------- Buttons -------------------- */
 .btn-outline {
     border: 1px solid #878787;
     padding: 8px 16px;
@@ -56,7 +52,7 @@
     background: #eeeeee;
 }
 
-/* Divider line */
+/* -------------------- Divider -------------------- */
 .divider {
     width: 100%;
     height: 1px;
@@ -64,7 +60,7 @@
     margin: 12px 0;
 }
 
-
+/* -------------------- Form Layout -------------------- */
 .two-column-form {
     display: flex;
     gap: 2rem;
@@ -83,12 +79,6 @@
     display: block;
 }
 
-.form-control,
-.form-control-sm {
-    border: 1px solid #878787 !important;
-    border-radius: 6px !important;
-}
-
 .form-row {
     display: flex;
     align-items: center;
@@ -98,23 +88,27 @@
 
 .form-row label {
     width: 160px;
-    /* fixed width to align all labels */
     font-size: 14px;
     font-weight: 400;
     color: #5E5E5E;
 }
 
-.form-row input,
-.form-row select,
-.form-row textarea {
-    flex: 1;
-    border: 1px solid #878787 !important;
-    padding: 6px 8px;
-    border-radius: 4px;
+.custom-border {
+    border-color: #D9D9D9;
 }
 
+/* -------------------- IMPORTANT: Override Bootstrap -------------------- */
+.sales-orders-page .form-control,
+.sales-orders-page .form-select,
+.sales-orders-page input,
+.sales-orders-page select,
+.sales-orders-page textarea {
+    border: 1px solid #D9D9D9 !important;
+    /* test color */
+    box-shadow: none !important;
+}
 
-
+/* -------------------- Responsive -------------------- */
 @media (max-width: 768px) {
     .two-column-form {
         flex-direction: column;
@@ -125,3 +119,14 @@
         width: 100%;
     }
 }
+
+
+
+
+/* Focus */
+/* .sales-orders-page .form-control:focus,
+.sales-orders-page .form-select:focus,
+.sales-orders-page textarea:focus {
+    border-color: #9f8cb8 !important;
+    box-shadow: none !important;
+} */

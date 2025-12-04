@@ -18,7 +18,7 @@ export const salesTabs = [
     { label: "Payment Received", path: "/sales/payment-received" },
     { label: "Payment Invoices", path: "/sales/payment-invoices" },
     { label: "Credit Notes", path: "/sales/credit-notes" },
-];
+];  
 
 const columns = [
     { key: "customerId", label: "Customer ID" },

@@ -234,7 +234,7 @@ export default function AddCreditNote() {
         <>
             <Header />
 
-            <div style={{ padding: "0 1.8rem" }}>
+            <div className="sales-orders-page" style={{ padding: "0 1.8rem" }}>
                 <h1 className="h4 text-dark mb-4 pb-1">New Credit Note</h1>
 
                 <form onSubmit={handleSubmit} style={{ color: "#5E5E5E" }}>
@@ -273,6 +273,7 @@ export default function AddCreditNote() {
                                 <label className="form-label">Subject:</label>
                                 <textarea
                                     className="form-control form-control-sm"
+                                    style={{ resize: "none" }}
                                     name="customerNotes"
                                     value={formData.credit.subject}
                                     onChange={handleChange}
@@ -378,9 +379,10 @@ export default function AddCreditNote() {
 
                         <div style={{ width: "50%" }}>
                             <div className="mb-3">
-                                <label className="form-label">Notes:</label>
+                                <label className="form-label">Customer Notes:</label>
                                 <textarea
                                     className="form-control form-control-sm"
+                                    style={{ resize: "none", height: "90px" }}
                                     name="notes"
                                     value={formData.credit.notes}
                                     onChange={handleChange}
@@ -393,6 +395,8 @@ export default function AddCreditNote() {
                                 </label>
                                 <textarea
                                     className="form-control form-control-sm"
+                                    style={{ resize: "none", height: "90px" }}
+
                                     name="terms"
                                     value={formData.credit.terms}
                                     onChange={handleChange}

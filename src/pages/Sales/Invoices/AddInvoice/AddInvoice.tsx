@@ -245,7 +245,7 @@ export default function AddInvoice() {
         <>
             <Header />
 
-            <div style={{ padding: "0 1.8rem" }}>
+            <div className="sales-orders-page" style={{ padding: "0 1.8rem" }}>
                 <h1 className="h4 text-dark mb-4 pb-1">Invoice</h1>
 
                 <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
@@ -374,20 +374,22 @@ export default function AddInvoice() {
                     >
                         <div style={{ width: "50%" }}>
                             <div className="mb-3">
-                                <label>Customer Notes:</label>
+                                <label className="form-label">Customer Notes:</label>
                                 <textarea
                                     name="customerNotes"
                                     className="form-control form-control-sm"
+                                    style={{ resize: "none", height: "90px" }}
                                     value={formData.invoice.customerNotes}
                                     onChange={handleChange}
                                 />
                             </div>
 
                             <div className="mb-3">
-                                <label>Terms & Conditions:</label>
+                                <label className="form-label">Terms & Conditions:</label>
                                 <textarea
                                     name="termsAndConditions"
                                     className="form-control form-control-sm"
+                                    style={{ resize: "none", height: "90px" }}
                                     value={formData.invoice.termsAndConditions}
                                     onChange={handleChange}
                                 />

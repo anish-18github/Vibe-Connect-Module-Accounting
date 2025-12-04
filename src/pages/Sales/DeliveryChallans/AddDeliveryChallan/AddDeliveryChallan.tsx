@@ -258,7 +258,7 @@ export default function AddDeliveryChallan() {
         <>
             <Header />
 
-            <div style={{ padding: "0 1.8rem" }}>
+            <div className="sales-orders-page" style={{ padding: "0 1.8rem" }}>
                 <h1 className="h4 text-dark mb-4 pb-1">Delivery Challan</h1>
 
                 <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
@@ -383,14 +383,16 @@ export default function AddDeliveryChallan() {
                     <div className="notes-summary-row" style={{ display: "flex", gap: 5, marginTop: 18 }}>
                         {/* Left: notes */}
                         <div style={{ width: "50%" }}>
-                            <div className="mb-3">
+                            <div className="mb-3" >
                                 <label className="form-label">Customer Notes:</label>
-                                <textarea className="form-control form-control-sm" name="customerNotes" value={formData.challan.customerNotes} onChange={handleChange} />
+                                <textarea className="form-control form-control-sm" style={{ resize: "none", height: "90px" }}
+                                    name="customerNotes" value={formData.challan.customerNotes} onChange={handleChange} />
                             </div>
 
                             <div className="mb-3">
                                 <label className="form-label">Terms & Conditions:</label>
-                                <textarea className="form-control form-control-sm" name="termsAndConditions" value={formData.challan.termsAndConditions} onChange={handleChange} />
+                                <textarea className="form-control form-control-sm" style={{ resize: "none", height: "90px" }}
+                                    name="termsAndConditions" value={formData.challan.termsAndConditions} onChange={handleChange} />
                             </div>
                         </div>
 

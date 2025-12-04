@@ -2,13 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../../components/Header/Header";
 import { Info, Settings, X } from "react-feather";
-import './salesOrders.css'
+
+import './salesOrders.css';
+
 
 import ItemTable, {
     SummaryBox,
     type TcsOption,
 } from "../../../../components/Table/ItemTable/ItemTable";
 import { FeatherUpload } from "../../Customers/AddCustomer/Add";
+
+
 
 interface ItemRow {
     itemDetails: string;
@@ -419,12 +423,12 @@ export default function AddSalesOrder() {
                         <div style={{ width: "50%" }}>
                             <div className="mb-3">
                                 <label className="form-label">Customer Notes:</label>
-                                <textarea className="form-control form-control-sm border" style={{ resize: "none", height: "90px" }} name="customerNotes" value={formData.salesOrder.customerNotes} onChange={handleChange} />
+                                <textarea className="form-control form-control-sm" style={{ resize: "none", height: "90px" }} name="customerNotes" value={formData.salesOrder.customerNotes} onChange={handleChange} />
                             </div>
 
                             <div className="mb-3">
                                 <label className="form-label">Terms & Conditions:</label>
-                                <textarea className="form-control form-control-sm border" style={{ resize: "none", height: "90px" }} name="termsAndConditions" value={formData.salesOrder.termsAndConditions} onChange={handleChange} />
+                                <textarea className="form-control form-control-sm" style={{ resize: "none", height: "90px" }} name="termsAndConditions" value={formData.salesOrder.termsAndConditions} onChange={handleChange} />
                             </div>
                         </div>
 

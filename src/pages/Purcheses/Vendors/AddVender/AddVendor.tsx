@@ -1,15 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-// import type { ChangeEvent, FormEvent } from 'react';
 import Header from '../../../../components/Header/Header';
-import { useNavigate } from "react-router-dom";
-
-
-import './addCustomer.css';
+import { useNavigate } from 'react-router-dom';
 import { Plus, X } from 'react-feather';
+import './addVendor.css'; // you may keep a separate CSS or reuse addCustomer.css
+import { FeatherUpload } from '../../../Sales/Customers/AddCustomer/Add';
 
-// ---------------------------------------------
-// 1. Interface Definitions
-// ---------------------------------------------
+
+
+// Interfaces (renamed customer to vendor)
 interface ContactPerson {
     salutation: string;
     firstName: string;
@@ -21,8 +19,8 @@ interface ContactPerson {
 }
 
 interface FormData {
-    customer: {
-        customerType: string,
+    vendor: {
+        vendorType: string;
         salutation: string;
         firstName: string;
         lastName: string;
@@ -54,59 +52,19 @@ interface FormData {
     remarks: string;
 }
 
-
-// ---------------------------------------------
-// 2. Dropdown Data
-// ---------------------------------------------
+// Dropdown data (reuse or customize)
 const salutations = ['Mr.', 'Ms.', 'Mrs.', 'Dr.', 'Sir', 'Madam'];
 const currencies = ['USD - US Dollar', 'EUR - Euro', 'INR - Indian Rupee'];
 const paymentTerms = ['Net 15', 'Net 30', 'Due on Receipt', 'Custom'];
 const languages = ['English', 'Spanish', 'French', 'German'];
-const countries = [
-    "India",
-    "United States",
-    "United Kingdom",
-    "Canada",
-    "Australia",
-];
-const states = [
-    "Maharashtra", "Gujarat", "Karnataka", "Tamil Nadu", "Uttar Pradesh"];
+const countries = ['India', 'United States', 'United Kingdom', 'Canada', 'Australia'];
+const states = ['Maharashtra', 'Gujarat', 'Karnataka', 'Tamil Nadu', 'Uttar Pradesh'];
 
-
-// ---------------------------------------------
-// 3. Icon Component
-// ---------------------------------------------
-export const FeatherUpload = ({ className = 'text-muted', size = 32 }: { className?: string; size?: number }) => (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={`feather feather-upload ${className}`}
-    >
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-        <polyline points="17 8 12 3 7 8"></polyline>
-        <line x1="12" y1="3" x2="12" y2="15"></line>
-    </svg>
-);
-
-// ---------------------------------------------
-// 4. Main Component
-// ---------------------------------------------
-const Add = () => {
-    // const [customerType, setCustomerType] = useState<'Business' | 'Individual'>('Business');
-
-    // ---------------------------------------------
-    // 5. FORM STATE (UPDATED INCLUDING ADDRESS)
-    // ---------------------------------------------
+// Component
+const AddVendor = () => {
     const [formData, setFormData] = useState<FormData>({
-        customer: {
-            customerType: "",
+        vendor: {
+            vendorType: "",
             salutation: "",
             firstName: "",
             lastName: "",
@@ -148,7 +106,8 @@ const Add = () => {
         remarks: "",
     });
 
-
+    // The rest of the handlers (addContactPerson, removeContactPerson, handleContactChange, handleChange, handleSubmit) 
+    // follow the exact same logic but adjust field names from customer -> vendor accordingly.
 
 
     const addContactPerson = () => {
@@ -188,7 +147,7 @@ const Add = () => {
 
 
 
-    const tabs = ['Other Details', 'Address', 'Contact Persons', 'Remarks'];
+    const tabs = ['Other Details', 'Address', 'Contact Persons', 'Bank Details','Remarks'];
     const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
     const tabsContainerRef = useRef<HTMLDivElement>(null);
 
@@ -258,54 +217,40 @@ const Add = () => {
     };
 
 
+    // Example: customerType → vendorType, customer → vendor (in the form data and UI)
 
-    // ---------------------------------------------
-    // 8. Submit Form
-    // ---------------------------------------------
+    // For brevity, you can copy & replace all logic with vendor-related field names.
+
+    // UseNavigate hook for navigation
     const navigate = useNavigate();
-
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const { customer } = formData;
-
-        // Generate RANDOM Customer ID (Temporary)
-        const customerId = Math.floor(100000 + Math.random() * 900000); // e.g. 345234
-
-        // Get current date (YYYY-MM-DD)
+        const { vendor } = formData;
+        const vendorId = Math.floor(100000 + Math.random() * 900000);
         const createdOn = new Date().toISOString().split("T")[0];
 
-        // Build Final Payload
         const finalPayload = {
-            customerId,
-            name: `${customer.firstName} ${customer.lastName}`,
-            customerType: customer.customerType,
-            createdOn: createdOn,
+            vendorId,
+            name: `${vendor.firstName} ${vendor.lastName}`,
+            vendorType: vendor.vendorType,
+            createdOn,
             createdBy: "Admin",
             ...formData,
         };
 
-        // 🔹 Get old customers from localStorage
-        const existing = JSON.parse(localStorage.getItem("customers") || "[]");
-
-        // 🔹 Add new customer
+        const existing = JSON.parse(localStorage.getItem("vendors") || "[]");
         existing.push(finalPayload);
-
-        // 🔹 Save back to localStorage
-        localStorage.setItem("customers", JSON.stringify(existing));
-
+        localStorage.setItem("vendors", JSON.stringify(existing));
         console.log("Final Payload:", finalPayload);
 
-        // Redirect to Customer Page
-        navigate("/sales/customers");
+        navigate("/sales/vendors");
     };
 
 
+    // RENDER OTHER DETAILS
 
-    // ---------------------------------------------
-    // 9. Render Other Details TAB
-    // ---------------------------------------------
     const renderOtherDetailsTab = () => (
         <>
             <div className="row align-items-center mb-3">
@@ -323,7 +268,44 @@ const Add = () => {
 
             {/* Currency */}
             <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">Openning Balance:</label>
+                <div className="col-sm-6">
+                    <select
+                        name="otherDetails.currency"
+                        value={formData.otherDetails.currency}
+                        onChange={handleChange}
+                        className="form-select form-select-sm"
+                        style={{ color: formData.otherDetails.currency ? "#000" : "#9b9b9b" }}
+                    >
+                        <option value="" disabled hidden >
+                            -- Select Country --</option>
+                        {currencies.map((c, i) => (
+                            <option key={i} value={c}>{c}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+            <div className="row align-items-center mb-3">
                 <label className="col-sm-2 col-form-label">Currency:</label>
+                <div className="col-sm-6">
+                    <select
+                        name="otherDetails.currency"
+                        value={formData.otherDetails.currency}
+                        onChange={handleChange}
+                        className="form-select form-select-sm"
+                        style={{ color: formData.otherDetails.currency ? "#000" : "#9b9b9b" }}
+                    >
+                        <option value="" disabled hidden >
+                            -- Select Country --</option>
+                        {currencies.map((c, i) => (
+                            <option key={i} value={c}>{c}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">TDS:</label>
                 <div className="col-sm-6">
                     <select
                         name="otherDetails.currency"
@@ -744,6 +726,75 @@ const Add = () => {
         </>
     );
 
+    const renderBankDetailsTab = () => (
+        <>
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">Account Holder Name:</label>
+                <div className="col-sm-6">
+                    <input
+                        type="text"
+                        name="address.city"
+                        value={formData.address.city}
+                        onChange={handleChange}
+                        className="form-control form-control-sm border"
+                        placeholder="Enter city"
+                    />
+                </div>
+            </div>
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">Bank Name:</label>
+                <div className="col-sm-6">
+                    <input
+                        type="text"
+                        name="address.city"
+                        value={formData.address.city}
+                        onChange={handleChange}
+                        className="form-control form-control-sm border"
+                        placeholder="Enter city"
+                    />
+                </div>
+            </div>
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">Account Number:</label>
+                <div className="col-sm-6">
+                    <input
+                        type="text"
+                        name="address.city"
+                        value={formData.address.city}
+                        onChange={handleChange}
+                        className="form-control form-control-sm border"
+                        placeholder="Enter city"
+                    />
+                </div>
+            </div>
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">Re-Enter Account Number:</label>
+                <div className="col-sm-6">
+                    <input
+                        type="text"
+                        name="address.city"
+                        value={formData.address.city}
+                        onChange={handleChange}
+                        className="form-control form-control-sm border"
+                        placeholder="Enter city"
+                    />
+                </div>
+            </div>
+            <div className="row align-items-center mb-3">
+                <label className="col-sm-2 col-form-label">IFSC:</label>
+                <div className="col-sm-6">
+                    <input
+                        type="text"
+                        name="address.city"
+                        value={formData.address.city}
+                        onChange={handleChange}
+                        className="form-control form-control-sm border"
+                        placeholder="Enter city"
+                    />
+                </div>
+            </div>
+        </>
+    )
 
 
 
@@ -759,6 +810,8 @@ const Add = () => {
                 return renderAddressTab();
             case 'Contact Persons':
                 return renderContactPersons();
+            case 'Bank Details':
+                return renderBankDetailsTab();
             case 'Remarks':
                 return renderRemarks();
             default:
@@ -770,64 +823,16 @@ const Add = () => {
         }
     };
 
-    // ---------------------------------------------
-    // 11. MAIN RETURN
-    // ---------------------------------------------
     return (
         <>
             <Header />
 
             <div style={{ padding: "0 1.8rem" }}>
-                <h1 className="h4 text-dark mb-4 pb-1">New Customer</h1>
-
-                {/* MAIN FORM */}
+                <h1 className="h4 text-dark mb-4 pb-1">New Vendor</h1>
 
                 <form onSubmit={handleSubmit} className="mt-4"
                     style={{ color: "#5E5E5E" }}
                 >
-
-                    {/* Customer Type */}
-                    <div className="row align-items-center mb-2"
-
-                    >
-                        <label className="col-sm-2 col-form-label fw-normal ">
-                            Customer Type:
-                        </label>
-                        <div className="col-sm-6 d-flex align-items-center">
-
-                            <div className="form-check me-4">
-                                <input
-                                    type="radio"
-                                    id="typeBusiness"
-                                    name="customer.customerType"
-                                    value="Business"
-                                    checked={formData.customer.customerType === "Business"}
-                                    onChange={handleChange}
-                                    className="form-check-input"
-                                />
-                                <label htmlFor="typeBusiness" className="form-check-label">
-                                    Business
-                                </label>
-                            </div>
-
-                            <div className="form-check">
-                                <input
-                                    type="radio"
-                                    id="typeIndividual"
-                                    name="customer.customerType"
-                                    value="Individual"
-                                    checked={formData.customer.customerType === "Individual"}
-                                    onChange={handleChange}
-                                    className="form-check-input"
-                                />
-                                <label htmlFor="typeIndividual" className="form-check-label">
-                                    Individual
-                                </label>
-                            </div>
-
-                        </div>
-                    </div>
-
 
                     {/* Salutation / First Name / Last Name */}
                     <div className="row mb-2 align-items-center">
@@ -835,10 +840,10 @@ const Add = () => {
                         <div className="col-sm-2">
                             <select
                                 name="customer.salutation"
-                                value={formData.customer.salutation}
+                                value={formData.vendor.salutation}
                                 onChange={handleChange}
                                 className="form-select form-select-smv"
-                                style={{ color: formData.customer.salutation ? "#000" : "#9b9b9b" }}
+                                style={{ color: formData.vendor.salutation ? "#000" : "#9b9b9b" }}
                             >
                                 <option value="" disabled hidden >
                                     Salutation</option>
@@ -853,7 +858,7 @@ const Add = () => {
                             <input
                                 type="text"
                                 name="customer.firstName"
-                                value={formData.customer.firstName}
+                                value={formData.vendor.firstName}
                                 onChange={handleChange}
                                 className="form-control form-control-sm border "
                                 placeholder="First Name"
@@ -866,7 +871,7 @@ const Add = () => {
                             <input
                                 type="text"
                                 name="customer.lastName"
-                                value={formData.customer.lastName}
+                                value={formData.vendor.lastName}
                                 onChange={handleChange}
                                 className="form-control form-control-sm border"
                                 placeholder="Last Name"
@@ -881,7 +886,7 @@ const Add = () => {
                             <input
                                 type="text"
                                 name="customer.companyName"
-                                value={formData.customer.companyName}
+                                value={formData.vendor.companyName}
                                 onChange={handleChange}
                                 className="form-control form-control-sm border"
                             />
@@ -896,7 +901,7 @@ const Add = () => {
                             <input
                                 type="text"
                                 name="customer.displayName"
-                                value={formData.customer.displayName}
+                                value={formData.vendor.displayName}
                                 onChange={handleChange}
                                 className="form-control form-control-sm border"
                             />
@@ -911,7 +916,7 @@ const Add = () => {
                             <input
                                 type="email"
                                 name="customer.emailAddress"
-                                value={formData.customer.emailAddress}
+                                value={formData.vendor.emailAddress}
                                 onChange={handleChange}
                                 className="form-control form-control-sm border"
                             />
@@ -929,7 +934,7 @@ const Add = () => {
                                 name="address.countryCode"
                                 placeholder="+91"
                                 className="form-control form-control-sm border"
-                                value={formData.customer.countryCode}
+                                value={formData.vendor.countryCode}
                                 onChange={handleChange}
                                 inputMode="numeric"
                                 pattern="[0-9]*"
@@ -941,10 +946,10 @@ const Add = () => {
                                 type="number"
                                 name="address.phoneNumber"
                                 className="form-control form-control-sm border"
-                                value={formData.customer.phone}
+                                value={formData.vendor.phone}
                                 onChange={handleChange}
-                                // inputMode="numeric"
-                                // pattern="[0-9]*"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
                             />
                         </div>
                     </div>
@@ -993,4 +998,4 @@ const Add = () => {
     );
 };
 
-export default Add;
+export default AddVendor;
