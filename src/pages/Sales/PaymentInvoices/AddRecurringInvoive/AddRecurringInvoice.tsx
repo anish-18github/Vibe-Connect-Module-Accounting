@@ -275,11 +275,11 @@ export default function AddRecurringInvoices() {
                                 <label>Customer Name:</label>
                                 <select
                                     name="customerName"
-                                    className="form-control form-control-sm"
+                                    className="form-select form-control-sm"
                                     value={formData.invoice.customerName}
                                     onChange={handleChange}
                                 >
-                                    <option value="">Select Customer</option>
+                                    <option value="" disabled>Select Customer</option>
                                     <option value="Customer A">Customer A</option>
                                     <option value="Customer B">Customer B</option>
                                 </select>
@@ -299,12 +299,12 @@ export default function AddRecurringInvoices() {
                             <div className="form-row">
                                 <label>Repeat Every:</label>
                                 <select
-                                    name="customerName"
-                                    className="form-control form-control-sm"
+                                    name="repeatEvery"
+                                    className="form-select form-control-sm"
                                     value={formData.invoice.customerName}
                                     onChange={handleChange}
                                 >
-                                    <option value="">Select</option>
+                                    <option value="" disabled>Select</option>
                                     <option value="Week">Week</option>
                                     <option value="Week">2 Weeks</option>
                                     <option value="Month">Month</option>
@@ -389,11 +389,11 @@ export default function AddRecurringInvoices() {
                                 <label>Payment Terms:</label>
                                 <select
                                     name="paymentTerms"
-                                    className="form-control form-control-sm"
+                                    className="form-select form-control-sm"
                                     value={formData.invoice.paymentTerms}
                                     onChange={handleChange}
                                 >
-                                    <option value="">Select</option>
+                                    <option value="" disabled>Select</option>
                                     <option value="Advance">Advance</option>
                                     <option value="Net 15">Net 15</option>
                                     <option value="Net 30">Net 30</option>

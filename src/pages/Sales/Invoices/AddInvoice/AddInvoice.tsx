@@ -255,12 +255,12 @@ export default function AddInvoice() {
                             <div className="form-row">
                                 <label>Customer Name:</label>
                                 <select
-                                    className="form-control form-control-sm"
+                                    className="form-select form-control-sm"
                                     name="customerName"
                                     value={formData.invoice.customerName}
                                     onChange={handleChange}
                                 >
-                                    <option value="">Select Customer</option>
+                                    <option value="" disabled>Select Customer</option>
                                     <option value="Customer A">Customer A</option>
                                     <option value="Customer B">Customer B</option>
                                 </select>
@@ -281,11 +281,11 @@ export default function AddInvoice() {
                                 <label>Payment Terms:</label>
                                 <select
                                     name="paymentTerms"
-                                    className="form-control form-control-sm"
+                                    className="form-select form-control-sm"
                                     value={formData.invoice.paymentTerms}
                                     onChange={handleChange}
                                 >
-                                    <option value="">Select</option>
+                                    <option value="" disabled>Select</option>
                                     <option value="Advance">Advance</option>
                                     <option value="Net 15">Net 15</option>
                                     <option value="Net 30">Net 30</option>
@@ -333,11 +333,11 @@ export default function AddInvoice() {
                                 <label>Salesperson:</label>
                                 <select
                                     name="salesperson"
-                                    className="form-control form-control-sm"
+                                    className="form-select form-control-sm"
                                     value={formData.invoice.salesperson}
                                     onChange={handleChange}
                                 >
-                                    <option value="">Select Salesperson</option>
+                                    <option value="" disabled>Select Salesperson</option>
                                     <option value="John">John</option>
                                     <option value="Maria">Maria</option>
                                 </select>

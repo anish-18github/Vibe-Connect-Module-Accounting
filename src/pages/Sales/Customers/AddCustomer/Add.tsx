@@ -237,7 +237,7 @@ const Add = () => {
                         name="otherDetails.currency"
                         value={formData.otherDetails.currency}
                         onChange={handleChange}
-                        className="form-select form-control-sm"
+                        className="form-select form-control-sm border"
                         style={{ color: formData.otherDetails.currency ? "#000" : "#9b9b9b" }}
                     >
                         <option value="" disabled hidden>-- Select Currency --</option>
@@ -256,7 +256,7 @@ const Add = () => {
                         name="otherDetails.paymentTerms"
                         value={formData.otherDetails.paymentTerms}
                         onChange={handleChange}
-                        className="form-select form-control-sm"
+                        className="form-select form-control-sm border"
                         style={{ color: formData.otherDetails.paymentTerms ? "#000" : "#9b9b9b" }}
                     >
                         <option value="" disabled hidden>-- Select Payment Term --</option>
@@ -275,7 +275,7 @@ const Add = () => {
                         name="otherDetails.portalLanguage"
                         value={formData.otherDetails.portalLanguage}
                         onChange={handleChange}
-                        className="form-select form-control-sm"
+                        className="form-select form-control-sm border"
                         style={{ color: formData.otherDetails.portalLanguage ? "#000" : "#9b9b9b" }}
                     >
                         <option value="" disabled hidden>-- Select Language --</option>
@@ -344,7 +344,7 @@ const Add = () => {
                         name="address.country"
                         value={formData.address.country}
                         onChange={handleChange}
-                        className="form-select form-control-sm"
+                        className="form-select form-control-sm border"
                         style={{ color: formData.address.country ? "#000" : "#9b9b9b" }}
                     >
                         <option value="" disabled hidden>-- Select Country --</option>
@@ -405,7 +405,7 @@ const Add = () => {
                         name="address.state"
                         value={formData.address.state}
                         onChange={handleChange}
-                        className="form-select form-control-sm"
+                        className="form-select form-control-sm border"
                         style={{ color: formData.address.state ? "#000" : "#9b9b9b" }}
                     >
                         <option value="" disabled hidden>-- Select State --</option>

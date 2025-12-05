@@ -21,6 +21,12 @@ import RecordPayment from "../pages/Sales/PaymentReceived/RecordPayment/RecordPa
 import AddVendor from "../pages/Purcheses/Vendors/AddVender/AddVendor";
 import Vendors from "../pages/Purcheses/Vendors/Vendors";
 import ViewVendor from "../pages/Purcheses/Vendors/ViewVender/ViewVernder";
+import ManualJournal from "../pages/Accountant/ManualJournal/ManualJournal";
+import AddJournal from "../pages/Accountant/ManualJournal/AddManualJournal/AddJournal";
+import ViewJournal from "../pages/Accountant/ManualJournal/ViewJournal/ViewJournal";
+import CurrencyAdjustments from "../pages/Accountant/CurrencyAdjustments/CurrencyAdjustment";
+import ChartsOfAccounts from "../pages/Accountant/ChartsOfAccounts/ChartsOfAccounts";
+import BulkUpdate from "../pages/Accountant/BulkUpdate/BulkUpdate";
 
 function AppRouter() {
     return (
@@ -65,6 +71,20 @@ function AppRouter() {
             <Route path="/purchases/add-vendor" element={<AddVendor />} />
 
             <Route path="/purchases/view-vendor" element={<ViewVendor />} />
+
+            {/* ACCOUNTANT ROUTES */}
+            <Route path="/accountant" element={<Navigate to="/accountant/manual-journal" replace />} />
+            <Route path="/accountant/manual-journal" element={<ManualJournal />} />
+            <Route path="/accountant/add-manualJournal" element={<AddJournal />} />
+
+            <Route path="/accountant/view-journal/:id" element={<ViewJournal />} />
+
+            <Route path="/accountant/bulk-update" element={<BulkUpdate />} />
+
+            <Route path="/accountant/currency-adjustments" element={<CurrencyAdjustments />} />
+
+            <Route path="/accountant/charts-of-accounts" element={<ChartsOfAccounts />} />
+
         </Routes>
     );
 }

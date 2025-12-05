@@ -277,7 +277,7 @@ export default function AddSalesOrder() {
                                 <label>Customer Name:</label>
                                 <select
                                     name="customerName"
-                                    className="form-control form-control-sm"
+                                    className="form-select form-control-sm"
                                     value={formData.salesOrder.customerName}
                                     onChange={handleChange}
                                 >
@@ -306,11 +306,11 @@ export default function AddSalesOrder() {
                                 <label>Payment Terms:</label>
                                 <select
                                     name="paymentTerms"
-                                    className="form-control form-control-sm"
+                                    className="form-select form-control-sm"
                                     value={formData.salesOrder.paymentTerms}
                                     onChange={handleChange}
                                 >
-                                    <option value="">Select</option>
+                                    <option value="" disabled>Select</option>
                                     <option value="Advance">Advance</option>
                                     <option value="Net 15">Net 15</option>
                                     <option value="Net 30">Net 30</option>
@@ -324,11 +324,11 @@ export default function AddSalesOrder() {
                                 <label>Delivery Method:</label>
                                 <select
                                     name="deliveryMethod"
-                                    className="form-control form-control-sm"
+                                    className="form-select form-control-sm"
                                     value={formData.salesOrder.deliveryMethod}
                                     onChange={handleChange}
                                 >
-                                    <option value="">Select Delivery Method</option>
+                                    <option value="" disabled>Select Delivery Method</option>
                                     <option value="Courier">Courier</option>
                                     <option value="Transport">Transport</option>
                                     <option value="Pickup">Pickup</option>
@@ -381,11 +381,11 @@ export default function AddSalesOrder() {
                                 <label>Salesperson:</label>
                                 <select
                                     name="salesperson"
-                                    className="form-control form-control-sm"
+                                    className="form-select form-control-sm"
                                     value={formData.salesOrder.salesperson}
                                     onChange={handleChange}
                                 >
-                                    <option value="">Select Salesperson</option>
+                                    <option value="" disabled >Select Salesperson</option>
                                     <option value="John">John</option>
                                     <option value="Maria">Maria</option>
                                 </select>

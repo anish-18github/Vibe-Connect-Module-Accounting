@@ -160,7 +160,7 @@ export default function AddPayment() {
             <Header />
 
             <div className="sales-orders-page" style={{ padding: "0 1.8rem" }}>
-                <h1 className="h4 text-dark mb-4 pb-1">Add Payment</h1>
+                <h1 className="h4 text-dark mb-4 pb-1">Record Payment</h1>
 
                 <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
 
@@ -176,9 +176,9 @@ export default function AddPayment() {
                                     name="customerName"
                                     value={formData.customerName}
                                     onChange={handleChange}
-                                    className="form-control"
+                                    className="form-select form-control-sm"
                                 >
-                                    <option value="">Select Customer</option>
+                                    <option value="" disabled>Select Customer</option>
                                     <option value="Customer A">Customer A</option>
                                     <option value="Customer B">Customer B</option>
                                 </select>
@@ -191,9 +191,9 @@ export default function AddPayment() {
                                     name="paymentMode"
                                     value={formData.paymentMode}
                                     onChange={handleChange}
-                                    className="form-control"
+                                    className="form-select form-control-sm"
                                 >
-                                    <option value="">Select Mode</option>
+                                    <option value="" disabled>Select Mode</option>
                                     <option value="Cash">Cash</option>
                                     <option value="Bank Transfer">Bank Transfer</option>
                                     <option value="UPI">UPI</option>

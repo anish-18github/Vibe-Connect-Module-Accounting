@@ -24,7 +24,7 @@ interface DeliveryChallanForm {
         challanDate: string;
         deliveryDate: string;
         deliveryMethod: string;
-        salesperson: string;
+        reference: string;
         customerNotes: string;
         termsAndConditions: string;
     };
@@ -67,7 +67,7 @@ export default function AddDeliveryChallan() {
             challanDate: "",
             deliveryDate: "",
             deliveryMethod: "",
-            salesperson: "",
+            reference: "",
             customerNotes: "",
             termsAndConditions: "",
         },
@@ -271,7 +271,7 @@ export default function AddDeliveryChallan() {
                                 <label>Customer Name:</label>
                                 <select
                                     name="customerName"
-                                    className="form-control form-control-sm"
+                                    className="form-select form-control-sm"
                                     value={formData.challan.customerName}
                                     onChange={handleChange}
                                 >
@@ -338,19 +338,16 @@ export default function AddDeliveryChallan() {
                                 </div>
                             </div>
 
-                            {/* Salesperson */}
+                            {/* Reference */}
                             <div className="form-row">
                                 <label>Reference:</label>
-                                <select
-                                    name="salesperson"
+                                <input
+                                    type="text"
                                     className="form-control form-control-sm"
-                                    value={formData.challan.salesperson}
+                                    name="referense"
+                                    value={formData.challan.reference}
                                     onChange={handleChange}
-                                >
-                                    <option value="">Select Salesperson</option>
-                                    <option value="John">John</option>
-                                    <option value="Maria">Maria</option>
-                                </select>
+                                />
                             </div>
 
                         </div>

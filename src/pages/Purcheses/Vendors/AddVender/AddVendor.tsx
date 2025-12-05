@@ -274,7 +274,7 @@ const AddVendor = () => {
                         name="otherDetails.currency"
                         value={formData.otherDetails.currency}
                         onChange={handleChange}
-                        className="form-select form-select-sm"
+                        className="form-select form-select-sm border"
                         style={{ color: formData.otherDetails.currency ? "#000" : "#9b9b9b" }}
                     >
                         <option value="" disabled hidden >
