@@ -11,8 +11,8 @@ export const accountantTabs = [
     { label: "Bulk Update", path: "/accountant/bulk-update" },
     { label: "Currency Adjustments", path: "/accountant/currency-adjustments" },
     { label: "Chart of accounts", path: "/accountant/charts-of-accounts" },
-    { label: "Budgets", path: "/sales/invoices" },
-    { label: "Transaction Locking", path: "/sales/payment-received" },
+    { label: "Budgets", path: "/accountant/budgets" },
+    { label: "Transaction Locking", path: "/accountant/transaction-locking" },
 ];
 
 const columns = [

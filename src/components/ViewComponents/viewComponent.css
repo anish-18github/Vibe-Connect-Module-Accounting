@@ -134,3 +134,12 @@
     right: 12px;
     cursor: pointer;
 }
+
+.chart-wrapper {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.chart-wrapper canvas {
+    border-radius: 8px;
+}

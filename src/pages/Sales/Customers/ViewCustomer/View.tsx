@@ -2,16 +2,22 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import Header from "../../../../components/Header/Header";
 import Tabs from "../../../../components/Tab/Tabs";
+
 import './viewCustomer.css'
 
 // import { Bold } from "react-feather";
 import CommentBox from "../../../../components/ViewComponents/CommentBox";
 import Transactions from "../../../../components/ViewComponents/Transactions";
 import MailSystem from "../../../../components/ViewComponents/MailSystem";
+// import ExpenseChart from "../../../../components/ViewComponents/CustomerExpences";
+// import Card from "../../../../components/Cards/Card";
+
+
 
 const ViewCustomer: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [activeKey, setActiveKey] = React.useState("overview");
+
 
     // ---------------- TAB CONTENT -----------------
 
@@ -99,7 +105,11 @@ const ViewCustomer: React.FC = () => {
 
                 {/* CHART AREA */}
                 <div className="p-4 text-center text-muted" style={{ height: 160 }}>
-                    Chart Placeholder
+                    {/* CHART AREA */}
+                    {/* <div className="chart-container-wrapper" style={{ height: 300 }}>  Increased height */}
+                        {/* <ExpenseChart /> */}
+                    {/* </div> */}
+
                 </div>
             </div>
 

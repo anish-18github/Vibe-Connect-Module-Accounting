@@ -64,6 +64,27 @@
     margin-bottom: 0.25rem;
 }
 
+.bulkupdate-checkbox-col {
+    display: flex;
+    flex-direction: column;
+    margin-right: 8px;
+}
+
+.bulkupdate-checkbox-header {
+    height: 40px;
+    /* approximately header row height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bulkupdate-checkbox-row {
+    height: 40px;
+    /* approximately row height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 
 /* Chrome, Edge, Safari */

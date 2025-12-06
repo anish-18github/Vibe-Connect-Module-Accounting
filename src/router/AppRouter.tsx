@@ -27,6 +27,10 @@ import ViewJournal from "../pages/Accountant/ManualJournal/ViewJournal/ViewJourn
 import CurrencyAdjustments from "../pages/Accountant/CurrencyAdjustments/CurrencyAdjustment";
 import ChartsOfAccounts from "../pages/Accountant/ChartsOfAccounts/ChartsOfAccounts";
 import BulkUpdate from "../pages/Accountant/BulkUpdate/BulkUpdate";
+import Budgets from "../pages/Accountant/Budgets/Budgets";
+import AddBudget from "../pages/Accountant/Budgets/AddBudget.tsx/AddBudget";
+import CalculateBudget from "../pages/Accountant/Budgets/CalculateBudget/CalculateBudget";
+import TransactionLocking from "../pages/Accountant/TransactionLocking/TransactionLocking";
 
 function AppRouter() {
     return (
@@ -84,6 +88,12 @@ function AppRouter() {
             <Route path="/accountant/currency-adjustments" element={<CurrencyAdjustments />} />
 
             <Route path="/accountant/charts-of-accounts" element={<ChartsOfAccounts />} />
+
+            <Route path="/accountant/budgets" element={<Budgets />} />
+            <Route path="/accountant/add-budgets" element={<AddBudget />} />
+            <Route path="/accountant/calculate-budget" element={<CalculateBudget />} />
+
+            <Route path="/accountant/transaction-locking" element={<TransactionLocking />} />
 
         </Routes>
     );
