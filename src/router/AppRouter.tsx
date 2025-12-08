@@ -18,9 +18,9 @@ import PaymentInvoices from "../pages/Sales/PaymentInvoices/PaymentInvoices";
 import CreditNote from "../pages/Sales/CreditNotes/CreditNotes";
 import AddCreditNote from "../pages/Sales/CreditNotes/AddCreditNotes/AddCreditNote";
 import RecordPayment from "../pages/Sales/PaymentReceived/RecordPayment/RecordPayment";
-import AddVendor from "../pages/Purcheses/Vendors/AddVender/AddVendor";
+import AddVendor from "../pages/Purcheses/Vendors/AddVendor/AddVendor";
 import Vendors from "../pages/Purcheses/Vendors/Vendors";
-import ViewVendor from "../pages/Purcheses/Vendors/ViewVender/ViewVernder";
+import ViewVendor from "../pages/Purcheses/Vendors/ViewVendor/ViewVerndor";
 import ManualJournal from "../pages/Accountant/ManualJournal/ManualJournal";
 import AddJournal from "../pages/Accountant/ManualJournal/AddManualJournal/AddJournal";
 import ViewJournal from "../pages/Accountant/ManualJournal/ViewJournal/ViewJournal";
@@ -31,6 +31,10 @@ import Budgets from "../pages/Accountant/Budgets/Budgets";
 import AddBudget from "../pages/Accountant/Budgets/AddBudget.tsx/AddBudget";
 import CalculateBudget from "../pages/Accountant/Budgets/CalculateBudget/CalculateBudget";
 import TransactionLocking from "../pages/Accountant/TransactionLocking/TransactionLocking";
+import Expenses from "../pages/Purcheses/Expenses/Expenses";
+import AddExpense from "../pages/Purcheses/Expenses/AddExpense/AddExpense";
+import RecurringExpenses from "../pages/Purcheses/RecurringExpenses/RecurringExpenses";
+import AddRecurringExpense from "../pages/Purcheses/RecurringExpenses/AddRecurringExpenses/AddRecurringExpense";
 
 function AppRouter() {
     return (
@@ -69,12 +73,19 @@ function AppRouter() {
             <Route path="/sales/credit-notes" element={<CreditNote />} />
             <Route path="/sales/add-creditNote" element={<AddCreditNote />} />
 
+            {/* PURCHESES ROUTES */}
+
             <Route path="/purchases" element={<Navigate to="/purchases/vendors" replace />} />
             <Route path="/purchases/vendors" element={<Vendors />} />
 
             <Route path="/purchases/add-vendor" element={<AddVendor />} />
-
             <Route path="/purchases/view-vendor" element={<ViewVendor />} />
+
+            <Route path="/purchases/expense" element={<Expenses />} />
+            <Route path="/purchases/add-expense" element={<AddExpense />} />
+
+            <Route path="/purchases/recurring-expenses" element={<RecurringExpenses />} />
+            <Route path="/purchases/add-recurringExpenses" element={<AddRecurringExpense />} />
 
             {/* ACCOUNTANT ROUTES */}
             <Route path="/accountant" element={<Navigate to="/accountant/manual-journal" replace />} />

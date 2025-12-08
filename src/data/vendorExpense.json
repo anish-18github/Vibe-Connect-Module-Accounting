@@ -26,5 +26,13 @@
     {
         "month": "Jun 2025",
         "expense": 10000
+    },
+    {
+        "month": "Jul 2025",
+        "expense": 5000
+    },
+    {
+        "month": "Aug 2025",
+        "expense": 12000
     }
 ]

@@ -16,6 +16,30 @@ interface BudgetForm {
     equityAccount: string;
 }
 
+interface AssetOption {
+    label: string;
+    value: string;
+}
+
+interface AssetGroup {
+    key: string;
+    label: string;
+    children?: AssetGroup[];
+    items?: AssetOption[];
+}
+
+interface LiabilityOption {
+    label: string;
+    value: string;
+}
+
+interface LiabilityGroup {
+    key: string;
+    label: string;
+    items?: LiabilityOption[];
+    children?: LiabilityGroup[]; // for future nesting if needed
+}
+
 const incomeOptions: string[] = [
     "Discount",
     "General Income",
@@ -39,6 +63,19 @@ const costOfGoodsSoldOptions: string[] = [
     "Materials",
     "Subcontractor",
 ];
+
+const equityOptions: string[] = [
+    "Capital Stock",
+    "Current Year Earnings",
+    "Distributions",
+    "Dividends Paid",
+    "Drawings",
+    "Investments",
+    "Opening Balance Offset",
+    "Owner's Equity",
+    "Retained Earnings",
+];
+
 
 export default function AddBudget() {
 
@@ -72,6 +109,25 @@ export default function AddBudget() {
     const [showOtherExpenseGroup, setShowOtherExpenseGroup] = useState(false);
     const [selectedExpenseOptions, setSelectedExpenseOptions] = useState<string[]>([]);
 
+    // Asset modal
+    const [showAssetModal, setShowAssetModal] = useState(false);
+    const [expandedAssetGroups, setExpandedAssetGroups] = useState<string[]>([]);
+    const [selectedAssetOptions, setSelectedAssetOptions] = useState<string[]>([]);
+
+    // Liability modal
+    const [showLiabilityModal, setShowLiabilityModal] = useState(false);
+    const [expandedLiabilityGroups, setExpandedLiabilityGroups] = useState<string[]>([]);
+    const [selectedLiabilityOptions, setSelectedLiabilityOptions] = useState<string[]>([]);
+
+    // Equity modal
+    const [showEquityModal, setShowEquityModal] = useState(false);
+    const [selectedEquityOptions, setSelectedEquityOptions] = useState<string[]>([]);
+    const [showEquityGroup, setShowEquityGroup] = useState(true);
+
+
+
+
+
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
@@ -97,8 +153,41 @@ export default function AddBudget() {
             // Simulate API delay
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            alert("Budget created successfully!");
-            navigate("/accountant/calculate-budget");
+            // inside handleSubmit, just before navigate(...)
+            const incomeAccounts = form.incomeAccount
+                ? form.incomeAccount.split(",").map(s => s.trim()).filter(Boolean)
+                : [];
+
+            const expenseAccounts = form.expenseAccount
+                ? form.expenseAccount.split(",").map(s => s.trim()).filter(Boolean)
+                : [];
+
+            const assetAccounts = form.assetAccount
+                ? form.assetAccount.split(",").map(s => s.trim()).filter(Boolean)
+                : [];
+            const liabilityAccounts = form.liabilityAccount
+                ? form.liabilityAccount.split(",").map(s => s.trim()).filter(Boolean)
+                : [];
+            const equityAccounts = form.equityAccount
+                ? form.equityAccount.split(",").map(s => s.trim()).filter(Boolean)
+                : [];
+
+            navigate("/accountant/calculate-budget", {
+                state: {
+                    name: form.name,
+                    fiscalYear: form.fiscalYear,
+                    period: form.period,
+                    incomeAccounts,
+                    expenseAccounts,
+                    assetAccounts,     
+                    liabilityAccounts,   
+                    equityAccounts,
+                },
+            });
+
+
+            // alert("Budget created successfully!");
+            // navigate("/accountant/calculate-budget");
         } catch (error) {
             console.error("Failed to create budget:", error);
             alert("Failed to create budget. Please try again.");
@@ -143,6 +232,159 @@ export default function AddBudget() {
         applyExpenseSelection();
         setShowExpenseModal(false);
     };
+
+    // ASSET TREE
+
+    const assetTree: AssetGroup[] = [
+        {
+            key: "current-assets",
+            label: "Current Assets",
+            children: [
+                {
+                    key: "accounts-receivable",
+                    label: "Accounts Receivable",
+                    items: [
+                        { label: "Accounts Receivable", value: "Accounts Receivable" },
+                    ],
+                },
+                {
+                    key: "other-current-assets",
+                    label: "Other Current Assets",
+                    items: [
+                        { label: "Advance Tax", value: "Advance Tax" },
+                        { label: "Employee Advance", value: "Employee Advance" },
+                        { label: "Inventory Asset", value: "Inventory Asset" },
+                        { label: "Prepaid Expenses", value: "Prepaid Expenses" },
+                        { label: "TCS Receivable", value: "TCS Receivable" },
+                        { label: "TDS Receivable", value: "TDS Receivable" },
+                    ],
+                },
+            ],
+        },
+        {
+            key: "cash-equivalent",
+            label: "Cash and Cash Equivalent",
+            items: [
+                { label: "Petty Cash", value: "Petty Cash" },
+                { label: "Undeposited Funds", value: "Undeposited Funds" },
+            ],
+        },
+        {
+            key: "other-assets",
+            label: "Other Assets",
+            // no items yet
+        },
+        {
+            key: "fixed-assets",
+            label: "Fixed Assets",
+            items: [
+                { label: "Furniture and Equipment", value: "Furniture and Equipment" },
+            ],
+        },
+    ];
+
+    const toggleAssetGroup = (key: string) => {
+        setExpandedAssetGroups(prev =>
+            prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+        );
+    };
+
+    const toggleAssetSelection = (value: string) => {
+        setSelectedAssetOptions(prev =>
+            prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
+        );
+    };
+
+    const applyAssetSelection = () => {
+        setForm(prev => ({
+            ...prev,
+            assetAccount: selectedAssetOptions.join(", "),
+        }));
+    };
+
+    const closeAssetModal = () => {
+        applyAssetSelection();
+        setShowAssetModal(false);
+    };
+
+    // LIABILITY TREE
+    const liabilityTree: LiabilityGroup[] = [
+        {
+            key: "current-liabilities",
+            label: "Current Liabilities",
+            items: [
+                { label: "Accounts Payable", value: "Accounts Payable" },
+                { label: "Employee Reimbursements", value: "Employee Reimbursements" },
+                {
+                    label: "Opening Balance Adjustments",
+                    value: "Opening Balance Adjustments",
+                },
+                { label: "Tax Payable", value: "Tax Payable" },
+                { label: "TCS Payable", value: "TCS Payable" },
+                { label: "TDS Payable", value: "TDS Payable" },
+                { label: "Unearned Revenue", value: "Unearned Revenue" },
+            ],
+        },
+        {
+            key: "long-term-liabilities",
+            label: "Long Term Liabilities",
+            items: [
+                { label: "Construction Loans", value: "Construction Loans" },
+                { label: "Mortgages", value: "Mortgages" },
+            ],
+        },
+        {
+            key: "other-liabilities",
+            label: "Other Liabilities",
+            // no items yet
+        },
+    ];
+
+    const toggleLiabilityGroup = (key: string) => {
+        setExpandedLiabilityGroups(prev =>
+            prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+        );
+    };
+
+    const toggleLiabilitySelection = (value: string) => {
+        setSelectedLiabilityOptions(prev =>
+            prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
+        );
+    };
+
+    const applyLiabilitySelection = () => {
+        setForm(prev => ({
+            ...prev,
+            liabilityAccount: selectedLiabilityOptions.join(", "),
+        }));
+    };
+
+    const closeLiabilityModal = () => {
+        applyLiabilitySelection();
+        setShowLiabilityModal(false);
+    };
+
+    // EQUITY Toggle + apply functions
+
+    const toggleEquitySelection = (name: string) => {
+        setSelectedEquityOptions(prev =>
+            prev.includes(name) ? prev.filter(n => n !== name) : [...prev, name]
+        );
+    };
+
+    const applyEquitySelection = () => {
+        setForm(prev => ({
+            ...prev,
+            equityAccount: selectedEquityOptions.join(", "),
+        }));
+    };
+
+    const closeEquityModal = () => {
+        applyEquitySelection();
+        setShowEquityModal(false);
+    };
+
+
 
     return (
         <>
@@ -292,8 +534,17 @@ export default function AddBudget() {
                                         name="assetAccount"
                                         className="form-control form-control-sm border"
                                         value={form.assetAccount}
-                                        onChange={handleChange}
+                                        readOnly
+                                        onClick={() => {
+                                            setSelectedAssetOptions(
+                                                form.assetAccount
+                                                    ? form.assetAccount.split(",").map(s => s.trim()).filter(Boolean)
+                                                    : []
+                                            );
+                                            setShowAssetModal(true);
+                                        }}
                                     />
+
                                 </div>
                             </div>
 
@@ -305,8 +556,17 @@ export default function AddBudget() {
                                         name="liabilityAccount"
                                         className="form-control form-control-sm border"
                                         value={form.liabilityAccount}
-                                        onChange={handleChange}
+                                        readOnly
+                                        onClick={() => {
+                                            setSelectedLiabilityOptions(
+                                                form.liabilityAccount
+                                                    ? form.liabilityAccount.split(",").map(s => s.trim()).filter(Boolean)
+                                                    : []
+                                            );
+                                            setShowLiabilityModal(true);
+                                        }}
                                     />
+
                                 </div>
                             </div>
 
@@ -318,8 +578,17 @@ export default function AddBudget() {
                                         name="equityAccount"
                                         className="form-control form-control-sm border"
                                         value={form.equityAccount}
-                                        onChange={handleChange}
+                                        readOnly
+                                        onClick={() => {
+                                            setSelectedEquityOptions(
+                                                form.equityAccount
+                                                    ? form.equityAccount.split(",").map(s => s.trim()).filter(Boolean)
+                                                    : []
+                                            );
+                                            setShowEquityModal(true);
+                                        }}
                                     />
+
                                 </div>
                             </div>
                         </>
@@ -716,6 +985,434 @@ export default function AddBudget() {
                     </div>
                 </div>
             )}
+
+            {showAssetModal && (
+                <div
+                    className="d-flex align-items-center justify-content-center"
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+                        backgroundColor: "rgba(0,0,0,0.35)",
+                        zIndex: 1050,
+                    }}
+                >
+                    <div
+                        className="bg-white"
+                        style={{
+                            width: "520px",
+                            maxWidth: "90%",
+                            borderRadius: "6px",
+                            boxShadow: "0 4px 18px rgba(0,0,0,0.15)",
+                        }}
+                    >
+                        {/* Header */}
+                        <div
+                            className="d-flex justify-content-between align-items-center px-3 py-2 border-bottom"
+                            style={{ backgroundColor: "#f5f5f5" }}
+                        >
+                            <h6 className="mb-0">Select Asset Accounts</h6>
+                            <button
+                                type="button"
+                                className="btn btn-sm border-0 text-danger"
+                                onClick={closeAssetModal}
+                            >
+                                <X />
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        <div className="p-3" style={{ fontSize: "0.9rem", color: "#5E5E5E" }}>
+                            {/* optional search input here if you want */}
+
+                            <ul className="list-unstyled mb-0">
+                                {assetTree.map(group => {
+                                    const isExpanded = expandedAssetGroups.includes(group.key);
+                                    const hasChildren = group.children && group.children.length > 0;
+                                    const hasItems = group.items && group.items.length > 0;
+
+                                    return (
+                                        <li key={group.key} className="mb-1">
+                                            {/* top-level group row with +/- */}
+                                            <button
+                                                type="button"
+                                                className="btn btn-link p-0 d-flex align-items-center w-100 text-start"
+                                                onClick={() => toggleAssetGroup(group.key)}
+                                                style={{ textDecoration: "none", color: "#5E5E5E" }}
+                                            >
+                                                <span
+                                                    className="d-inline-flex align-items-center justify-content-center me-2"
+                                                    style={{
+                                                        width: 16,
+                                                        height: 16,
+                                                        borderRadius: 2,
+                                                        border: "1px solid #4a7cc2",
+                                                        fontSize: 12,
+                                                        lineHeight: 1,
+                                                    }}
+                                                >
+                                                    {isExpanded ? "−" : "+"}
+                                                </span>
+                                                <strong>{group.label}</strong>
+                                            </button>
+
+                                            {isExpanded && (
+                                                <div className="ms-4 mt-1">
+                                                    {/* direct items under this group */}
+                                                    {hasItems && (
+                                                        <ul className="list-unstyled mb-1">
+                                                            {group.items!.map(opt => {
+                                                                const selected = selectedAssetOptions.includes(
+                                                                    opt.value
+                                                                );
+                                                                return (
+                                                                    <li key={opt.value} className="mb-1">
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-sm w-100 d-flex align-items-center text-start"
+                                                                            style={{
+                                                                                border: "none",
+                                                                                backgroundColor: "#fff",
+                                                                                fontSize: "0.85rem",
+                                                                            }}
+                                                                            onClick={() => toggleAssetSelection(opt.value)}
+                                                                        >
+                                                                            <span>{opt.label}</span>
+                                                                            {selected && (
+                                                                                <Check
+                                                                                    size={14}
+                                                                                    color="#4a7cc2"
+                                                                                    style={{ marginLeft: 6 }}
+                                                                                />
+                                                                            )}
+                                                                        </button>
+                                                                    </li>
+                                                                );
+                                                            })}
+                                                        </ul>
+                                                    )}
+
+                                                    {/* nested child groups (Current Assets sub-categories) */}
+                                                    {hasChildren && (
+                                                        <ul className="list-unstyled mb-0">
+                                                            {group.children!.map(child => {
+                                                                const childExpanded = expandedAssetGroups.includes(
+                                                                    child.key
+                                                                );
+                                                                return (
+                                                                    <li key={child.key} className="mb-1">
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-link p-0 d-flex align-items-center w-100 text-start"
+                                                                            onClick={() => toggleAssetGroup(child.key)}
+                                                                            style={{
+                                                                                textDecoration: "none",
+                                                                                color: "#5E5E5E",
+                                                                            }}
+                                                                        >
+                                                                            <span
+                                                                                className="d-inline-flex align-items-center justify-content-center me-2"
+                                                                                style={{
+                                                                                    width: 16,
+                                                                                    height: 16,
+                                                                                    borderRadius: 2,
+                                                                                    border: "1px solid #4a7cc2",
+                                                                                    fontSize: 12,
+                                                                                    lineHeight: 1,
+                                                                                }}
+                                                                            >
+                                                                                {childExpanded ? "−" : "+"}
+                                                                            </span>
+                                                                            {child.label}
+                                                                        </button>
+
+                                                                        {childExpanded && child.items && (
+                                                                            <ul className="list-unstyled ms-3 mt-1 mb-0">
+                                                                                {child.items.map(opt => {
+                                                                                    const selected =
+                                                                                        selectedAssetOptions.includes(
+                                                                                            opt.value
+                                                                                        );
+                                                                                    return (
+                                                                                        <li key={opt.value} className="mb-1">
+                                                                                            <button
+                                                                                                type="button"
+                                                                                                className="btn btn-sm w-100 d-flex align-items-center text-start"
+                                                                                                style={{
+                                                                                                    border: "none",
+                                                                                                    backgroundColor: "#fff",
+                                                                                                    fontSize: "0.85rem",
+                                                                                                }}
+                                                                                                onClick={() =>
+                                                                                                    toggleAssetSelection(opt.value)
+                                                                                                }
+                                                                                            >
+                                                                                                <span>{opt.label}</span>
+                                                                                                {selected && (
+                                                                                                    <Check
+                                                                                                        size={14}
+                                                                                                        color="#4a7cc2"
+                                                                                                        style={{ marginLeft: 6 }}
+                                                                                                    />
+                                                                                                )}
+                                                                                            </button>
+                                                                                        </li>
+                                                                                    );
+                                                                                })}
+                                                                            </ul>
+                                                                        )}
+                                                                    </li>
+                                                                );
+                                                            })}
+                                                        </ul>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="d-flex justify-content-end px-3 py-2 border-top">
+                            <button
+                                type="button"
+                                className="btn btn-sm border px-3"
+                                onClick={closeAssetModal}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showLiabilityModal && (
+                <div
+                    className="d-flex align-items-center justify-content-center"
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+                        backgroundColor: "rgba(0,0,0,0.35)",
+                        zIndex: 1050,
+                    }}
+                >
+                    <div
+                        className="bg-white"
+                        style={{
+                            width: "520px",
+                            maxWidth: "90%",
+                            borderRadius: "6px",
+                            boxShadow: "0 4px 18px rgba(0,0,0,0.15)",
+                        }}
+                    >
+                        {/* Header */}
+                        <div
+                            className="d-flex justify-content-between align-items-center px-3 py-2 border-bottom"
+                            style={{ backgroundColor: "#f5f5f5" }}
+                        >
+                            <h6 className="mb-0">Select Liability Accounts</h6>
+                            <button
+                                type="button"
+                                className="btn btn-sm border-0 text-danger"
+                                onClick={closeLiabilityModal}
+                            >
+                                <X />
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        <div className="p-3" style={{ fontSize: "0.9rem", color: "#5E5E5E" }}>
+                            <ul className="list-unstyled mb-0">
+                                {liabilityTree.map(group => {
+                                    const isExpanded = expandedLiabilityGroups.includes(group.key);
+                                    const hasItems = group.items && group.items.length > 0;
+
+                                    return (
+                                        <li key={group.key} className="mb-1">
+                                            {/* group header with +/- */}
+                                            <button
+                                                type="button"
+                                                className="btn btn-link p-0 d-flex align-items-center w-100 text-start"
+                                                onClick={() => toggleLiabilityGroup(group.key)}
+                                                style={{ textDecoration: "none", color: "#5E5E5E" }}
+                                            >
+                                                <span
+                                                    className="d-inline-flex align-items-center justify-content-center me-2"
+                                                    style={{
+                                                        width: 16,
+                                                        height: 16,
+                                                        borderRadius: 2,
+                                                        border: "1px solid #4a7cc2",
+                                                        fontSize: 12,
+                                                        lineHeight: 1,
+                                                    }}
+                                                >
+                                                    {isExpanded ? "−" : "+"}
+                                                </span>
+                                                <strong>{group.label}</strong>
+                                            </button>
+
+                                            {isExpanded && hasItems && (
+                                                <ul className="list-unstyled ms-4 mt-1 mb-0">
+                                                    {group.items!.map(opt => {
+                                                        const selected = selectedLiabilityOptions.includes(opt.value);
+                                                        return (
+                                                            <li key={opt.value} className="mb-1">
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm w-100 d-flex align-items-center text-start"
+                                                                    style={{
+                                                                        border: "none",
+                                                                        backgroundColor: "#fff",
+                                                                        fontSize: "0.85rem",
+                                                                    }}
+                                                                    onClick={() => toggleLiabilitySelection(opt.value)}
+                                                                >
+                                                                    <span>{opt.label}</span>
+                                                                    {selected && (
+                                                                        <Check
+                                                                            size={14}
+                                                                            color="#4a7cc2"
+                                                                            style={{ marginLeft: 6 }}
+                                                                        />
+                                                                    )}
+                                                                </button>
+                                                            </li>
+                                                        );
+                                                    })}
+                                                </ul>
+                                            )}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="d-flex justify-content-end px-3 py-2 border-top">
+                            <button
+                                type="button"
+                                className="btn btn-sm border px-3"
+                                onClick={closeLiabilityModal}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showEquityModal && (
+                <div
+                    className="d-flex align-items-center justify-content-center"
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+                        backgroundColor: "rgba(0,0,0,0.35)",
+                        zIndex: 1050,
+                    }}
+                >
+                    <div
+                        className="bg-white"
+                        style={{
+                            width: "520px",
+                            maxWidth: "90%",
+                            borderRadius: "6px",
+                            boxShadow: "0 4px 18px rgba(0,0,0,0.15)",
+                        }}
+                    >
+                        {/* Header */}
+                        <div
+                            className="d-flex justify-content-between align-items-center px-3 py-2 border-bottom"
+                            style={{ backgroundColor: "#f5f5f5" }}
+                        >
+                            <h6 className="mb-0">Select Equity Accounts</h6>
+                            <button
+                                type="button"
+                                className="btn btn-sm border-0 text-danger"
+                                onClick={closeEquityModal}
+                            >
+                                <X />
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        {/* Body */}
+                        <div className="p-3" style={{ fontSize: "0.9rem", color: "#5E5E5E" }}>
+                            {/* Equity category as single dropdown */}
+                            <div className="mb-2">
+                                <button
+                                    type="button"
+                                    className="btn btn-link p-0 d-flex align-items-center w-100 text-start"
+                                    onClick={() => setShowEquityGroup((prev) => !prev)}
+                                    style={{ textDecoration: "none", color: "#5E5E5E" }}
+                                >
+                                    <span
+                                        className="d-inline-flex align-items-center justify-content-center me-2"
+                                        style={{
+                                            width: 16,
+                                            height: 16,
+                                            borderRadius: 2,
+                                            border: "1px solid #4a7cc2",
+                                            fontSize: 12,
+                                            lineHeight: 1,
+                                        }}
+                                    >
+                                        {showEquityGroup ? "−" : "+"}
+                                    </span>
+                                    <strong>Equity</strong>
+                                </button>
+
+                                {showEquityGroup && (
+                                    <ul className="list-unstyled ms-4 mt-2 mb-0">
+                                        {equityOptions.map((name) => {
+                                            const isSelected = selectedEquityOptions.includes(name);
+                                            return (
+                                                <li key={name} className="mb-1">
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-sm w-100 d-flex align-items-center text-start"
+                                                        style={{
+                                                            border: "none",
+                                                            backgroundColor: "#fff",
+                                                            fontSize: "0.85rem",
+                                                        }}
+                                                        onClick={() => toggleEquitySelection(name)}
+                                                    >
+                                                        <span>{name}</span>
+                                                        {isSelected && (
+                                                            <Check
+                                                                size={14}
+                                                                color="#4a7cc2"
+                                                                style={{ marginLeft: 6 }}
+                                                            />
+                                                        )}
+                                                    </button>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                )}
+                            </div>
+                        </div>
+
+
+                        {/* Footer */}
+                        <div className="d-flex justify-content-end px-3 py-2 border-top">
+                            <button
+                                type="button"
+                                className="btn btn-sm border px-3"
+                                onClick={closeEquityModal}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
         </>
     );
 }

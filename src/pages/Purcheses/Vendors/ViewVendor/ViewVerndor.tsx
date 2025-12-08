@@ -1,19 +1,95 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Header from "../../../../components/Header/Header";
 import Tabs from "../../../../components/Tab/Tabs";
 import CommentBox from "../../../../components/ViewComponents/CommentBox";
 import Transactions from "../../../../components/ViewComponents/Transactions";
 import MailSystem from "../../../../components/ViewComponents/MailSystem";
+import Chart from 'chart.js/auto';
+import vendorExpenseData from '../../../../data/vendorExpense.json';
+
+
+interface ExpenseData {
+    month: string;
+    expense: number;
+}
 
 export default function ViewVendor() {
 
     // const { id } = useParams<{ id: string }>();
     const [activeKey, setActiveKey] = React.useState("overview");
+    const chartRef = useRef<HTMLCanvasElement>(null);
+    const chartInstanceRef = useRef<Chart | null>(null);
 
-    // Overview Tab
+    // Chart data from JSON
+    const expenseData: ExpenseData[] = vendorExpenseData as ExpenseData[];
+
+
+    // Create chart on mount and cleanup
+    useEffect(() => {
+        if (chartRef.current && expenseData.length > 0) {
+            const ctx = chartRef.current.getContext('2d');
+            if (ctx) {
+                // Destroy existing chart if it exists
+                if (chartInstanceRef.current) {
+                    chartInstanceRef.current.destroy();
+                }
+
+                chartInstanceRef.current = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: expenseData.map(item => item.month),
+                        datasets: [{
+                            label: 'Expenses (₹)',
+                            data: expenseData.map(item => item.expense),
+                            backgroundColor: 'rgba(220, 53, 69, 0.8)', // Red theme for expenses
+                            borderColor: 'rgba(220, 53, 69, 1)',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            borderSkipped: false,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function (value) {
+                                        return '₹' + (value as number).toLocaleString();
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(0,0,0,0.1)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Cleanup function
+        return () => {
+            if (chartInstanceRef.current) {
+                chartInstanceRef.current.destroy();
+            }
+        };
+    }, [expenseData]);
+
+
     const renderOverview = () => (
         <div>
-
             <div className="mb-2">
                 <p style={{ color: "#5E5E5E", margin: 0, fontSize: "14px" }}>
                     Payment Due Period
@@ -23,13 +99,13 @@ export default function ViewVendor() {
                 </p>
             </div>
 
-            <h5 className="fw-bold">Receivables</h5>
+            <h5 className="fw-bold">Payables</h5>
 
             <table className="table mt-3 rounded-table">
                 <thead className="table-light">
                     <tr>
                         <th>Currency</th>
-                        <th>Outstanding Receivables</th>
+                        <th>Outstanding Payables</th>
                         <th>Unused Credits</th>
                     </tr>
                 </thead>
@@ -42,17 +118,14 @@ export default function ViewVendor() {
                 </tbody>
             </table>
 
-            <h4 className="chart-header">Enter Opening Balance</h4>
+            <h4 className="chart-header">Vendor Expenses</h4>
 
-            <div className="border rounded p-3 chart-container"
-                style={{ background: "#FFFFFF" }}>
-
-                {/* ROW: Income + helper text + dropdowns */}
+            <div className="border rounded p-3 chart-container" style={{ background: "#FFFFFF" }}>
+                {/* ROW: Expenses + helper text + dropdowns */}
                 <div className="d-flex justify-content-between align-items-center">
-
                     {/* LEFT SIDE TEXT */}
                     <div className="d-flex align-items-center gap-2">
-                        <h6 className="fw-bold mb-0">Income</h6>
+                        <h6 className="fw-bold mb-0">Expenses</h6>
                         <p className="text-muted mb-0" style={{ fontSize: "13px", whiteSpace: "nowrap" }}>
                             This chart is displayed in the organization base currency.
                         </p>
@@ -60,13 +133,12 @@ export default function ViewVendor() {
 
                     {/* RIGHT SIDE DROPDOWNS */}
                     <div className="d-flex gap-2">
-
                         {/* Last 6 months dropdown */}
                         <select className="form-select form-select-sm" style={{
                             color: "#0D6EFD",
                             width: "150px",
                             border: "none",
-                            borderRight: "1px solid #D0D0D0", // Divider line
+                            borderRight: "1px solid #D0D0D0",
                             paddingRight: "12px"
                         }}>
                             <option>Last 6 Months</option>
@@ -75,34 +147,32 @@ export default function ViewVendor() {
                             <option>Last Year</option>
                         </select>
 
-                        {/* Accrual dropdown (blue text) */}
-                        <select
-                            className="form-select form-select-sm"
-                            style={{
-                                width: "120px",
-                                color: "#0D6EFD",
-                                fontWeight: 500,
-                                border: "none",
-                                paddingLeft: "12px"
-                            }}
-                        >
+                        {/* Accrual dropdown */}
+                        <select className="form-select form-select-sm" style={{
+                            width: "120px",
+                            color: "#0D6EFD",
+                            fontWeight: 500,
+                            border: "none",
+                            paddingLeft: "12px"
+                        }}>
                             <option value="accrual">Accrual</option>
                             <option value="cash">Cash</option>
                         </select>
                     </div>
                 </div>
 
-                {/* CHART AREA */}
-                <div className="p-4 text-center text-muted" style={{ height: 160 }}>
-                    Chart Placeholder
+                {/* CHART AREA - Updated with Canvas */}
+                <div style={{ height: 200, position: 'relative' }}>
+                    <canvas ref={chartRef}></canvas>
                 </div>
             </div>
 
             <p className="mt-3" style={{ fontSize: "15px" }}>
-                Total Income (Last 6 Months): <span className="fw-semibold">₹0.00</span>
+                Total Expenses (Last 6 Months): <span className="fw-semibold text-danger">₹52,500</span>
             </p>
         </div>
     );
+
 
     const renderComments = () => <CommentBox />;
 
