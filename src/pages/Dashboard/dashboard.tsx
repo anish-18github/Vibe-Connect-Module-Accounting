@@ -122,119 +122,124 @@ function Dashboard() {
     return (
         <>
             <Header />
-            <Navbar tabs={dashboardTabs} />
+            <div style={{ padding: "56px 0px 0px" }}>
 
-            <div className="dashboard-container">
+                <Navbar tabs={dashboardTabs} />
 
-                {/* Total Receivables */}
-                <Card title="Total Receivables" actions>
-                    <p>Total Unpaid Invoice <span>₹ 0.00</span></p>
-                    <div className="bar"></div>
-                    <div className="row-values">
-                        <h2>
-                            Current <span>₹ 0.00</span>
-                        </h2>
-                        <h2>
-                            Overdue <span>₹ 0.00</span>
-                        </h2>
-                    </div>
+                <div className="dashboard-container">
 
-                </Card>
-
-                {/* Total Payables */}
-                <Card title="Total Payables" actions>
-                    <p>Total Unpaid Invoice <span>₹ 0.00</span></p>
-                    <div className="bar"></div>
-                    <div className="row-values">
-                        <h2>
-                            Current <span>₹ 0.00</span>
-                        </h2>
-                        <h2>
-                            Overdue <span>₹ 0.00</span>
-                        </h2>
-                    </div>
-
-                </Card>
-
-                <Card title="Income and Expense" selectable>
-                    {/* Toggle buttons */}
-                    <div className="chart-toggle">
-                        <button className="toggle-btn accrual active">Accrual</button>
-                        <button className="toggle-btn cash ">Cash</button>
-                    </div>
-
-                    {/* Chart */}
-
-                    <div className="dataCard customerCard">
-                        <Bar data={formattedIncomeExpense} />
-                    </div>
-
-
-
-                    {/* Summary section */}
-                    <div className="chart-summary">
-                        <div className="summary-item">
-                            <span className="dot income"></span> Income
-                            <h3>Total Income</h3>
-                            <h2>₹0.00</h2>
+                    {/* Total Receivables */}
+                    <Card title="Total Receivables" actions>
+                        <p>Total Unpaid Invoice <span>₹ 0.00</span></p>
+                        <div className="bar"></div>
+                        <div className="row-values">
+                            <h2>
+                                Current <span>₹ 0.00</span>
+                            </h2>
+                            <h2>
+                                Overdue <span>₹ 0.00</span>
+                            </h2>
                         </div>
 
-                        <div className="summary-item">
-                            <span className="dot expense"></span> Expense
-                            <h3>Total Expenses</h3>
-                            <h2>₹0.00</h2>
+                    </Card>
+
+                    {/* Total Payables */}
+                    <Card title="Total Payables" actions>
+                        <p>Total Unpaid Invoice <span>₹ 0.00</span></p>
+                        <div className="bar"></div>
+                        <div className="row-values">
+                            <h2>
+                                Current <span>₹ 0.00</span>
+                            </h2>
+                            <h2>
+                                Overdue <span>₹ 0.00</span>
+                            </h2>
                         </div>
-                    </div>
 
-                    {/* Footer note */}
-                    <p className="chart-note">
-                        * Income and expense values displayed are exclusive of taxes.
-                    </p>
-                </Card>
+                    </Card>
+
+                    <Card title="Income and Expense" selectable>
+                        {/* Toggle buttons */}
+                        <div className="chart-toggle">
+                            <button className="toggle-btn accrual active">Accrual</button>
+                            <button className="toggle-btn cash ">Cash</button>
+                        </div>
+
+                        {/* Chart */}
+
+                        <div className="dataCard customerCard">
+                            <Bar data={formattedIncomeExpense} />
+                        </div>
 
 
-                {/* Top Expenses (NO CHART) */}
-                <Card title="Top Expenses" selectable>
-                    <div className="dataCard customerCard">
-                        <Bar data={formattedTopExpenses} />
-                    </div>
-                </Card>
 
-
-                {/* Cash Flow (WITH DATA) */}
-                <Card title="Cash Flow" selectable className="wide-card">
-
-                    <div className="cashflow-content">
-                        <Line data={formattedCashFlow} />
-
-                        <div className="cashflow-summary">
+                        {/* Summary section */}
+                        <div className="chart-summary">
                             <div className="summary-item">
-                                <h3>Cash as on 01/04/2025</h3>
+                                <span className="dot income"></span> Income
+                                <h3>Total Income</h3>
                                 <h2>₹0.00</h2>
                             </div>
 
                             <div className="summary-item">
-
-                                <h3 style={{ color: "red" }}>Incoming</h3>
-                                <h2>₹0.00 +</h2>
-                            </div>
-
-                            <div className="summary-item">
-                                <h3 >Outgoing</h3>
-                                <h2>₹0.00 -</h2>
-                            </div>
-
-                            <div className="summary-item">
-                                <h3>Cash as on 01/04/2025</h3>
-                                <h2>₹0.00 =</h2>
+                                <span className="dot expense"></span> Expense
+                                <h3>Total Expenses</h3>
+                                <h2>₹0.00</h2>
                             </div>
                         </div>
-                    </div>
 
-                </Card>
+                        {/* Footer note */}
+                        <p className="chart-note">
+                            * Income and expense values displayed are exclusive of taxes.
+                        </p>
+                    </Card>
 
+
+                    {/* Top Expenses (NO CHART) */}
+                    <Card title="Top Expenses" selectable>
+                        <div className="dataCard customerCard">
+                            <Bar data={formattedTopExpenses} />
+                        </div>
+                    </Card>
+
+
+                    {/* Cash Flow (WITH DATA) */}
+                    <Card title="Cash Flow" selectable className="wide-card">
+
+                        <div className="cashflow-content">
+                            <Line data={formattedCashFlow} />
+
+                            <div className="cashflow-summary">
+                                <div className="summary-item">
+                                    <h3>Cash as on 01/04/2025</h3>
+                                    <h2>₹0.00</h2>
+                                </div>
+
+                                <div className="summary-item">
+
+                                    <h3 style={{ color: "red" }}>Incoming</h3>
+                                    <h2>₹0.00 +</h2>
+                                </div>
+
+                                <div className="summary-item">
+                                    <h3 >Outgoing</h3>
+                                    <h2>₹0.00 -</h2>
+                                </div>
+
+                                <div className="summary-item">
+                                    <h3>Cash as on 01/04/2025</h3>
+                                    <h2>₹0.00 =</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                    </Card>
+
+
+                </div>
 
             </div>
+
         </>
     );
 

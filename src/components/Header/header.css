@@ -4,7 +4,7 @@ body {
   margin: auto;
 }
 
-.header {
+/* .header {
   display: flex;
   align-items: center;
   gap: 20px;
@@ -14,7 +14,24 @@ body {
   border-radius: 0px 0px 60px 60px;
   position: relative;
   z-index: 2;
+} */
+/* Fixed header stays at top */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 25px;
+  background: #19376D;
+  color: white;
+  border-radius: 0px 0px 60px 60px;
+  z-index: 1050;
 }
+
+
 
 
 .header h2 {
@@ -53,15 +70,23 @@ body {
 }
 
 /* Breadcrumb container */
-/* Breadcrumb container */
+/* Fixed breadcrumb stays right below header */
 .breadcrumb {
+  position: relative;
+  top: 69px;
+  left: 20px;
+  right: 0;
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 10px 25px;
-  font-size: 14px;
+  font-size: 13px !important;
   color: #5E5E5E;
-  margin-left: 1.8rem;
+  background: white;
+  /* border-bottom: 1px solid #eee; */
+  /* Subtle separator */
+  margin-left: 0;
+  z-index: 999;
 }
 
 /* Rotate + size for icons */
@@ -72,20 +97,29 @@ body {
   rotate: 180deg;
 }
 
-/* Breadcrumb clickable links */
+.breadcrumb-item-flex {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .breadcrumb-link {
+  /* color: #2563eb; */
   text-decoration: none;
-  color: #5E5E5E;
 }
 
 .breadcrumb-link:hover {
   text-decoration: underline;
 }
 
-/* Fix alignment between icon + link */
-.breadcrumb-item-flex {
-  display: flex;
+/* reset button to look like link */
+.btn-reset {
+  border: none;
+  background: transparent;
+  padding: 0;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  /* Match breadcrumb gap */
+  gap: 4px;
+  /* color: #2563eb; */
+  cursor: pointer;
 }

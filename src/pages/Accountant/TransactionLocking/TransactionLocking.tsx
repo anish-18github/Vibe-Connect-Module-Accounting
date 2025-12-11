@@ -127,6 +127,8 @@ const TransactionLocking: React.FC = () => {
     return (
         <>
             <Header />
+
+            <div style={{ padding: "56px 0px 0px" }}></div>
             <Navbar tabs={dashboardTabs} />
             <Navbar tabs={accountantTabs} />
 

@@ -33,17 +33,22 @@ const Expenses = () => {
 
             <Header />
 
-            <Navbar tabs={dashboardTabs} />
-            <Navbar tabs={parchasesTabs} />
+            <div style={{ padding: "56px 0px 0px" }}>
 
-            <div className=" mt-3">
-                <DynamicTable
-                    columns={columns}
-                    data={expenses}
-                    actions={false}
-                    rowsPerPage={10}
-                    onAdd={() => navigate("/purchases/add-expense")} 
-                    onView={(row) => navigate(`/purchases/view-vendor/`)} />
+
+
+                <Navbar tabs={dashboardTabs} />
+                <Navbar tabs={parchasesTabs} />
+
+                <div className=" mt-3">
+                    <DynamicTable
+                        columns={columns}
+                        data={expenses}
+                        actions={false}
+                        rowsPerPage={10}
+                        onAdd={() => navigate("/purchases/add-expense")}
+                        onView={(row) => navigate(`/purchases/view-vendor/`)} />
+                </div>
             </div>
 
         </>

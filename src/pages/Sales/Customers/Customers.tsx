@@ -18,7 +18,7 @@ export const salesTabs = [
     { label: "Payment Received", path: "/sales/payment-received" },
     { label: "Payment Invoices", path: "/sales/payment-invoices" },
     { label: "Credit Notes", path: "/sales/credit-notes" },
-];  
+];
 
 const columns = [
     { key: "customerId", label: "Customer ID" },
@@ -46,18 +46,24 @@ function Customer() {
     return (
         <>
             <Header />
-            <Navbar tabs={dashboardTabs} />
-            <Navbar tabs={salesTabs} />
 
-            <div className=" mt-3">
-                <DynamicTable
-                    columns={columns}
-                    data={customers}
-                    actions={true}
-                    rowsPerPage={10}
-                    onAdd={() => navigate("/sales/add-customer")} //May be change it latter. "/add-customer"
-                    onView={(row) => navigate(`/sales/view-customer/${row.customerId}`)} />
+            <div style={{ padding: "56px 0px 0px" }} >
+
+                <Navbar tabs={dashboardTabs} />
+                <Navbar tabs={salesTabs} />
+
+                <div className=" mt-3">
+                    <DynamicTable
+                        columns={columns}
+                        data={customers}
+                        actions={true}
+                        rowsPerPage={10}
+                        onAdd={() => navigate("/sales/add-customer")} //May be change it latter. "/add-customer"
+                        onView={(row) => navigate(`/sales/view-customer/${row.customerId}`)} />
+                </div>
+
             </div>
+
 
         </>
     );

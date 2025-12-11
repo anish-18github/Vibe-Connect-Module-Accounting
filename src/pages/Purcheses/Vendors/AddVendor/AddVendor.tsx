@@ -147,7 +147,7 @@ const AddVendor = () => {
 
 
 
-    const tabs = ['Other Details', 'Address', 'Contact Persons', 'Bank Details','Remarks'];
+    const tabs = ['Other Details', 'Address', 'Contact Persons', 'Bank Details', 'Remarks'];
     const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
     const tabsContainerRef = useRef<HTMLDivElement>(null);
 
@@ -827,135 +827,116 @@ const AddVendor = () => {
         <>
             <Header />
 
-            <div style={{ padding: "0 1.8rem" }}>
+            <div style={{ padding: "69px 1.8rem 0 1.8rem" }}> {/* Updated for header + breadcrumb */}
                 <h1 className="h4 text-dark mb-4 pb-1">New Vendor</h1>
 
-                <form onSubmit={handleSubmit} className="mt-4"
-                    style={{ color: "#5E5E5E" }}
-                >
+                <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
 
-                    {/* Salutation / First Name / Last Name */}
-                    <div className="row mb-2 align-items-center">
-                        <label className="col-sm-2 col-form-label">Primary Contact: </label>
-                        <div className="col-sm-2">
-                            <select
-                                name="customer.salutation"
-                                value={formData.vendor.salutation}
-                                onChange={handleChange}
-                                className="form-select form-select-smv"
-                                style={{ color: formData.vendor.salutation ? "#000" : "#9b9b9b" }}
-                            >
-                                <option value="" disabled hidden >
-                                    Salutation</option>
-                                {salutations.map((s, i) => (
-                                    <option key={i} value={s}>{s}</option>
-                                ))}
-                            </select>
+                    <div className="row mb-4">
+                        {/* COLUMN 1: Primary Contact + Company Name */}
+                        <div className="col-lg-4">
+                            {/* Primary Contact */}
+                            <div className="row mb-2 align-items-center">
+                                <label className="col-sm-5 col-form-label">Primary Contact:</label>
+                                <div className="col-sm-4">
+                                    <select
+                                        name="vendor.salutation"  // Fixed: vendor.*
+                                        value={formData.vendor.salutation}
+                                        onChange={handleChange}
+                                        className="form-select form-select-sm border"
+                                        style={{ color: formData.vendor.salutation ? "#000" : "#9b9b9b" }}
+                                    >
+                                        <option value="" disabled hidden>Salutation</option>
+                                        {salutations.map((s, i) => (
+                                            <option key={i} value={s}>{s}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Company Name */}
+                            <div className="row align-items-center mb-2">
+                                <label className="col-sm-5 col-form-label">Company Name:</label>
+                                <div className="col-sm-7">
+                                    <input
+                                        type="text"
+                                        name="vendor.companyName"  // Fixed: vendor.*
+                                        value={formData.vendor.companyName}
+                                        onChange={handleChange}
+                                        className="form-control form-control-sm border"
+                                    />
+                                </div>
+                            </div>
                         </div>
 
-                        {/* <label className="col-sm-2 col-form-label">First Name:</label> */}
-                        <div className="col-sm-3">
-                            <input
-                                type="text"
-                                name="customer.firstName"
-                                value={formData.vendor.firstName}
-                                onChange={handleChange}
-                                className="form-control form-control-sm border "
-                                placeholder="First Name"
-                            />
+                        {/* COLUMN 2: Display Name + Email */}
+                        <div className="col-lg-4">
+                            {/* Display Name */}
+                            <div className="row align-items-center mb-2">
+                                <label className="col-sm-4 col-form-label">Display Name:</label>
+                                <div className="col-sm-7">
+                                    <input
+                                        type="text"
+                                        name="vendor.displayName"  // Fixed: vendor.*
+                                        value={formData.vendor.displayName}
+                                        onChange={handleChange}
+                                        className="form-control form-control-sm border"
+                                    />
+                                </div>
+                            </div>
 
+                            {/* Email Address */}
+                            <div className="row align-items-center mb-2">
+                                <label className="col-sm-4 col-form-label">Email Address:</label>
+                                <div className="col-sm-7">
+                                    <input
+                                        type="email"
+                                        name="vendor.emailAddress"  // Fixed: vendor.*
+                                        value={formData.vendor.emailAddress}
+                                        onChange={handleChange}
+                                        className="form-control form-control-sm border"
+                                    />
+                                </div>
+                            </div>
                         </div>
 
-                        {/* <label className="col-sm-1 col-form-label">Last:</label> */}
-                        <div className="col-sm-2">
-                            <input
-                                type="text"
-                                name="customer.lastName"
-                                value={formData.vendor.lastName}
-                                onChange={handleChange}
-                                className="form-control form-control-sm border"
-                                placeholder="Last Name"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Company Name */}
-                    <div className="row align-items-center mb-2">
-                        <label className="col-sm-2 col-form-label">Company Name:</label>
-                        <div className="col-sm-6">
-                            <input
-                                type="text"
-                                name="customer.companyName"
-                                value={formData.vendor.companyName}
-                                onChange={handleChange}
-                                className="form-control form-control-sm border"
-                            />
-
-                        </div>
-                    </div>
-
-                    {/* Display Name */}
-                    <div className="row align-items-center mb-2">
-                        <label className="col-sm-2 col-form-label">Display Name:</label>
-                        <div className="col-sm-6">
-                            <input
-                                type="text"
-                                name="customer.displayName"
-                                value={formData.vendor.displayName}
-                                onChange={handleChange}
-                                className="form-control form-control-sm border"
-                            />
-
-                        </div>
-                    </div>
-
-                    {/* Email */}
-                    <div className="row align-items-center mb-2">
-                        <label className="col-sm-2 col-form-label">Email Address:</label>
-                        <div className="col-sm-6">
-                            <input
-                                type="email"
-                                name="customer.emailAddress"
-                                value={formData.vendor.emailAddress}
-                                onChange={handleChange}
-                                className="form-control form-control-sm border"
-                            />
-
-                        </div>
-                    </div>
-
-                    {/* Phone */}
-                    <div className="row align-items-center mb-3">
-                        <label className="col-sm-2 col-form-label">Phone:</label>
-
-                        <div className="col-sm-1">
-                            <input
-                                type="text"
-                                name="address.countryCode"
-                                placeholder="+91"
-                                className="form-control form-control-sm border"
-                                value={formData.vendor.countryCode}
-                                onChange={handleChange}
-                                inputMode="numeric"
-                                pattern="[0-9]*"
-                            />
-                        </div>
-
-                        <div className="col-sm-4">
-                            <input
-                                type="number"
-                                name="address.phoneNumber"
-                                className="form-control form-control-sm border"
-                                value={formData.vendor.phone}
-                                onChange={handleChange}
-                                inputMode="numeric"
-                                pattern="[0-9]*"
-                            />
+                        {/* COLUMN 3: Phone (country code + number) */}
+                        <div className="col-lg-4">
+                            <div className="row align-items-center mb-2">
+                                <label className="col-sm-2 col-form-label">Phone:</label>
+                                <div className="col-sm-8">
+                                    <div className="row">
+                                        <div className="col-sm-3">
+                                            <input
+                                                type="number"
+                                                name="vendor.countryCode"  // Fixed: vendor.*
+                                                placeholder="+91"
+                                                className="form-control form-control-sm border"
+                                                value={formData.vendor.countryCode}
+                                                onChange={handleChange}
+                                                pattern="[0-9]*"
+                                            />
+                                        </div>
+                                        <div className="col-sm-8">
+                                            <input
+                                                type="text"
+                                                name="vendor.phoneNumber"  // Fixed: vendor.phoneNumber (not phone)
+                                                className="form-control form-control-sm border"
+                                                value={formData.vendor.phoneNumber}
+                                                onChange={handleChange}
+                                                inputMode="numeric"
+                                                pattern="[0-9]*"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
 
-                    {/* ————— TABS ————— */}
+
+                    {/* ————— TABS ————— (unchanged) */}
                     <div className="mt-4 border-bottom nav-tabs-container" ref={tabsContainerRef}>
                         <ul className="nav nav-tabs border-0">
                             {tabs.map((tab, index) => (
@@ -971,14 +952,13 @@ const AddVendor = () => {
                                 </li>
                             ))}
                         </ul>
-
                         <div className="tab-indicator" style={indicatorStyle}></div>
                     </div>
 
-                    {/* TAB CONTENT */}
+                    {/* TAB CONTENT (unchanged) */}
                     <div className="pt-4">{renderTabContent()}</div>
 
-                    {/* Submit Buttons */}
+                    {/* Submit Buttons (unchanged) */}
                     <div className="d-flex justify-content-center mt-4 pt-4 border-top">
                         <button
                             type="button"
@@ -987,13 +967,13 @@ const AddVendor = () => {
                         >
                             Cancel
                         </button>
-
                         <button type="submit" className="btn px-4" style={{ background: "#7991BB", color: "#FFFFFF" }}>
                             Save
                         </button>
                     </div>
                 </form>
             </div>
+
         </>
     );
 };

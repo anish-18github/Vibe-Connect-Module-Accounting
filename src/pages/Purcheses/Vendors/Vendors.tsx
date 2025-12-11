@@ -6,17 +6,17 @@ import DynamicTable from "../../../components/Table/DynamicTable";
 import { dashboardTabs } from "../../Dashboard/dashboard";
 
 export const parchasesTabs = [
-    { label: "Vender", path: "/purchases/vendors" },
+    { label: "Vendor", path: "/purchases/vendors" },
     { label: "Expenses", path: "/purchases/expense" },
     { label: "Recurring Expenses", path: "/purchases/recurring-expenses" },
-    { label: "Purchase Orders", path: "/sales/delivery-challans" },
-    { label: "Bills", path: "/sales/invoices" },
-    { label: "Payment Made", path: "/sales/payment-received" },
-    { label: "Recurring Bills", path: "/sales/payment-invoices" },
+    { label: "Purchase Orders", path: "/purchases/PurchaseOrders" },
+    { label: "Bills", path: "/purchases/bills" },
+    { label: "Payment Made", path: "/sales/payment-received" }, //yet to be done 
+    { label: "Recurring Bills", path: "/purchases/recurringBills" },
     { label: "Vender Credits", path: "/sales/credit-notes" },
 ];
 
-export const columns = [
+ const columns = [
     { key: "vendorId", label: "Vendor Id" },
     { key: "name", label: "Name" },
     { key: "paymentDuePeriod", label: "Customer Type" },
@@ -40,18 +40,23 @@ const Vendors = () => {
 
     return (
         <>
-            <Header />
-            <Navbar tabs={dashboardTabs} />
-            <Navbar tabs={parchasesTabs} />
 
-            <div className=" mt-3">
-                <DynamicTable
-                    columns={columns}
-                    data={customers}
-                    actions={true}
-                    rowsPerPage={10}
-                    onAdd={() => navigate("/purchases/add-vendor")} //May be change it latter. "/add-customer"
-                    onView={(row) => navigate(`/purchases/view-vendor`)} />
+            <Header />
+            <div style={{ padding: "56px 0px 0px" }}>
+
+                <Navbar tabs={dashboardTabs} />
+                <Navbar tabs={parchasesTabs} />
+
+                <div className=" mt-3" >
+                    <DynamicTable
+                        columns={columns}
+                        data={customers}
+                        actions={true}
+                        rowsPerPage={10}
+                        onAdd={() => navigate("/purchases/add-vendor")} //May be change it latter. "/add-customer"
+                        onView={(row) => navigate(`/purchases/view-vendor`)} />
+                </div>
+
             </div>
 
         </>

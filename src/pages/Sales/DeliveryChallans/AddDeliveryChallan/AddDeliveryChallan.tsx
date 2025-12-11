@@ -258,205 +258,206 @@ export default function AddDeliveryChallan() {
         <>
             <Header />
 
-            <div className="sales-orders-page" style={{ padding: "0 1.8rem" }}>
-                <h1 className="h4 text-dark mb-4 pb-1">Delivery Challan</h1>
+            <div className="sales-orders-page">
+                <form onSubmit={handleSubmit} className="sales-order-form">
+                    {/* TOP DETAILS CARD - 5 fields in 3 columns */}
+                    <div className="so-details-card mx-5 mb-4">
+                        <h1 className="sales-order-title mb-4">Delivery Challan</h1>
 
-                <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
+                        <div className="row g-3 three-column-form">
+                            {/* COLUMN 1: Customer + Challan Date */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Customer:
+                                    </label>
+                                    <select
+                                        name="customerName"
+                                        className="form-select so-control"
+                                        value={formData.challan.customerName}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select Customer</option>
+                                        <option value="Customer A">Customer A</option>
+                                        <option value="Customer B">Customer B</option>
+                                    </select>
+                                </div>
 
-                    <div className="two-column-form">
-                        <div className="left-column">
-
-                            {/* Customer Name */}
-                            <div className="form-row">
-                                <label>Customer Name:</label>
-                                <select
-                                    name="customerName"
-                                    className="form-select form-control-sm"
-                                    value={formData.challan.customerName}
-                                    onChange={handleChange}
-                                >
-                                    <option value="" disabled hidden >Select Customer</option>
-                                    <option value="Customer A">Customer A</option>
-                                    <option value="Customer B">Customer B</option>
-                                </select>
-                            </div>
-
-                            {/* Challan Date */}
-                            <div className="form-row">
-                                <label>Delivery Challan Date:</label>
-                                <input
-                                    type="date"
-                                    className="form-control form-control-sm"
-                                    name="challanDate"
-                                    value={formData.challan.challanDate}
-                                    onChange={handleChange}
-                                />
-                            </div>
-
-                            {/* Delivery Method */}
-                            <div className="form-row">
-                                <label>Challan Type:</label>
-                                <select
-                                    name="deliveryMethod"
-                                    className="form-control form-control-sm"
-                                    value={formData.challan.deliveryMethod}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Select Delivery Method</option>
-                                    <option value="Courier">Courier</option>
-                                    <option value="Transport">Transport</option>
-                                    <option value="Pickup">Pickup</option>
-                                </select>
-                            </div>
-
-                        </div>
-
-                        <div className="right-column">
-
-                            {/* Challan No */}
-                            <div className="form-row" style={{ position: "relative" }}>
-                                <label>Delivery Challan:</label>
-                                <input
-                                    type="text"
-                                    name="challanNo"
-                                    className="form-control form-control-sm"
-                                    value={formData.challan.challanNo}
-                                    onChange={handleChange}
-                                    style={{ paddingRight: "35px" }}
-                                />
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        right: "12px",
-                                        top: "65%",
-                                        transform: "translateY(-85%)",
-                                        cursor: "pointer",
-                                    }}
-                                    onClick={() => setShowSettings(true)}
-                                >
-                                    <Settings size={16} style={{ color: "#555" }} />
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Challan Date:
+                                    </label>
+                                    <input
+                                        type="date"
+                                        name="challanDate"
+                                        className="form-control so-control"
+                                        value={formData.challan.challanDate}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                             </div>
 
-                            {/* Reference */}
-                            <div className="form-row">
-                                <label>Reference:</label>
-                                <input
-                                    type="text"
-                                    className="form-control form-control-sm"
-                                    name="referense"
-                                    value={formData.challan.reference}
-                                    onChange={handleChange}
+                            {/* COLUMN 2: Challan Type + Challan No */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Challan Type:
+                                    </label>
+                                    <select
+                                        name="deliveryMethod"
+                                        className="form-select so-control"
+                                        value={formData.challan.deliveryMethod}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select Delivery Method</option>
+                                        <option value="Courier">Courier</option>
+                                        <option value="Transport">Transport</option>
+                                        <option value="Pickup">Pickup</option>
+                                    </select>
+                                </div>
+
+                                <div className="so-form-group mb-4 position-relative">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Challan No:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="challanNo"
+                                        className="form-control so-control"
+                                        value={formData.challan.challanNo}
+                                        onChange={handleChange}
+                                        placeholder="Auto-generated"
+                                        style={{ paddingRight: "35px" }}
+                                    />
+                                    <span
+                                        className="so-settings-icon"
+                                        onClick={() => setShowSettings(true)}
+                                    >
+                                        <Settings size={16} />
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* COLUMN 3: Reference (single field - takes top space) */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Reference:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="reference"
+                                        className="form-control so-control"
+                                        value={formData.challan.reference}
+                                        onChange={handleChange}
+                                        placeholder="Enter reference"
+                                    />
+                                </div>
+                                {/* Empty space to balance height */}
+                                <div className="so-form-group mb-4">&nbsp;</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* OUTSIDE CARD - Identical to Sales Order */}
+                    <div className="mx-5">
+                        <ItemTable
+                            rows={formData.itemTable}
+                            onRowChange={handleRowChange}
+                            onAddRow={handleAddRow}
+                            onRemoveRow={handleRemoveRow}
+                        />
+
+                        <div className="notes-summary-row">
+                            <div className="notes-column">
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Customer Notes:
+                                    </label>
+                                    <textarea
+                                        className="form-control so-control textarea"
+                                        name="customerNotes"
+                                        value={formData.challan.customerNotes}
+                                        onChange={handleChange}
+                                        placeholder="Add note for customer..."
+                                    />
+                                </div>
+
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Terms & Conditions:
+                                    </label>
+                                    <textarea
+                                        className="form-control so-control textarea"
+                                        name="termsAndConditions"
+                                        value={formData.challan.termsAndConditions}
+                                        onChange={handleChange}
+                                        placeholder="Enter terms and conditions..."
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="summary-column">
+                                <SummaryBox
+                                    totals={totals}
+                                    taxInfo={taxInfo}
+                                    onTaxChange={handleTaxChange}
+                                    tcsOptions={tcsOptions}
+                                    onAddTcs={handleAddTcs}
                                 />
                             </div>
-
                         </div>
-                    </div>
 
-
-                    {/* Item Table Title */}
-                    <h5
-                        className="mt-4 fw-normal"
-                        style={{
-                            width: "100%",
-                            backgroundColor: "#EEEEEE",
-                            padding: "6px",
-                            borderRadius: "5px",
-                            border: "1px solid #D9D9D9",
-                            color: "#5E5E5E",
-                        }}
-                    >
-                        Item Table
-                    </h5>
-
-                    <ItemTable
-                        rows={formData.itemTable}
-                        onRowChange={handleRowChange}
-                        onAddRow={handleAddRow}
-                        onRemoveRow={handleRemoveRow}
-                    />
-
-                    {/* Notes + Summary */}
-                    <div className="notes-summary-row" style={{ display: "flex", gap: 5, marginTop: 18 }}>
-                        {/* Left: notes */}
-                        <div style={{ width: "50%" }}>
-                            <div className="mb-3" >
-                                <label className="form-label">Customer Notes:</label>
-                                <textarea className="form-control form-control-sm" style={{ resize: "none", height: "90px" }}
-                                    name="customerNotes" value={formData.challan.customerNotes} onChange={handleChange} />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="form-label">Terms & Conditions:</label>
-                                <textarea className="form-control form-control-sm" style={{ resize: "none", height: "90px" }}
-                                    name="termsAndConditions" value={formData.challan.termsAndConditions} onChange={handleChange} />
+                        <div className="row mb-4 mt-4 align-items-start">
+                            <label className="so-label text-sm text-muted-foreground fw-bold">
+                                Documents:
+                            </label>
+                            <div className="col-sm-11">
+                                <div
+                                    className="doc-upload-box"
+                                    onClick={() => document.getElementById("fileUploadInput")?.click()}
+                                >
+                                    <FeatherUpload size={32} className="text-muted mb-2" />
+                                    <span className="text-secondary small">
+                                        Click to Upload Documents
+                                    </span>
+                                    <input
+                                        id="fileUploadInput"
+                                        type="file"
+                                        multiple
+                                        className="d-none"
+                                        onChange={(e) => {
+                                            const files = e.target.files;
+                                            if (files?.length) {
+                                                console.log("Files uploaded:", files);
+                                                alert(`${files.length} file(s) selected!`);
+                                            }
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
 
-                        {/* Right: summary */}
-                        <div style={{ width: "50%" }}>
-                            <SummaryBox totals={totals} taxInfo={taxInfo} onTaxChange={handleTaxChange} tcsOptions={tcsOptions} onAddTcs={handleAddTcs} />
-                        </div>
-                    </div>
-
-                    {/* Documents */}
-                    <div className="row mb-4 mt-4">
-                        <label className="col-sm-1 col-form-label">Documents:</label>
-                        <div className="col-sm-11">
-                            <div
-                                onClick={() =>
-                                    document.getElementById("fileUploadInput")?.click()
-                                }
-                                className="d-flex flex-column align-items-center justify-content-center w-100 p-4 bg-light"
-                                style={{
-                                    minHeight: "120px",
-                                    border: "2px dotted #a0a0a0",
-                                    borderRadius: "8px",
-                                    cursor: "pointer",
-                                }}
+                        <div className="form-actions">
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary me-3 px-4"
+                                onClick={() => navigate(-1)}
                             >
-                                <FeatherUpload size={32} className="text-muted mb-2" />
-                                <span className="text-secondary small">
-                                    Click to Upload Documents
-                                </span>
-
-                                <input
-                                    id="fileUploadInput"
-                                    type="file"
-                                    multiple
-                                    className="d-none"
-                                    onChange={(e) => {
-                                        const files = e.target.files;
-                                        if (files?.length) {
-                                            console.log("Files uploaded:", files);
-                                            alert(`${files.length} file(s) selected!`);
-                                        }
-                                    }}
-                                />
-                            </div>
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="btn px-4"
+                                style={{ background: "#7991BB", color: "#FFF" }}
+                            >
+                                Save
+                            </button>
                         </div>
-                    </div>
-
-                    {/* Buttons */}
-                    <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                        <button
-                            type="button"
-                            className="btn border me-3 px-4"
-                            onClick={() => navigate(-1)}
-                        >
-                            Cancel
-                        </button>
-
-                        <button
-                            type="submit"
-                            className="btn px-4"
-                            style={{ background: "#7991BB", color: "#FFF" }}
-                        >
-                            Save
-                        </button>
                     </div>
                 </form>
             </div>
+
 
             {/* ---------------- Settings Modal ---------------- */}
             {showSettings && (

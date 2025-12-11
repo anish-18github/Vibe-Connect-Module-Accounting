@@ -71,117 +71,144 @@ const AddExpense: React.FC = () => {
                 className="mt-3"
                 style={{ color: "#5E5E5E" }}
             >
-                {/* Row 1: Date / Expense Account / Amount currency */}
-                <div className="row mb-3 align-items-center">
-                    <label className="col-sm-2 col-form-label">
-                        Date<span className="text-danger">*</span>
-                    </label>
-                    <div className="col-sm-3">
-                        <input
-                            type="date"
-                            className="form-control form-control-sm border"
-                            defaultValue={new Date().toISOString().split("T")[0]}
-                        />
+                {/* SECTION 1: Date / Expense Account / Amount (3 columns) */}
+                <div className="row mb-4">
+                    {/* Column 1: Date */}
+                    <div className="col-lg-4">
+                        <div className="row align-items-center mb-2">
+                            <label className="col-sm-2 col-form-label">
+                                Date:<span className="text-danger">*</span>
+                            </label>
+                            <div className="col-sm-8">
+                                <input
+                                    type="date"
+                                    name="date"
+                                    className="form-control form-control-sm border"
+                                    defaultValue={new Date().toISOString().split("T")[0]}
+                                />
+                            </div>
+                        </div>
                     </div>
 
-                    <label className="col-sm-2 col-form-label">
-                        Expense Account<span className="text-danger">*</span>
-                    </label>
-                    <div className="col-sm-3">
-                        <select className="form-select form-select-sm">
-                            <option value="">-- select Expense Account --</option>
-                            <option>IT and Internet Expenses</option>
-                            <option>Office Supplies</option>
-                            <option>Travel Expenses</option>
-                            <option>Meals & Entertainment</option>
-                        </select>
-                        {/* Itemize link */}
-                        <button
-                            type="button"
-                            className="btn btn-link p-0 mt-1"
-                            style={{ fontSize: "12px" }}
-                        >
-                            Itemize
-                        </button>
+                    {/* Column 2: Expense Account */}
+                    <div className="col-lg-4">
+                        <div className="row align-items-center mb-2">
+                            <label className="col-sm-4 col-form-label">
+                                Expense Account:<span className="text-danger">*</span>
+                            </label>
+                            <div className="col-sm-8">
+                                <select name="expenseAccount" className="form-select form-select-sm border">
+                                    <option value="">-- select Expense Account --</option>
+                                    <option>IT and Internet Expenses</option>
+                                    <option>Office Supplies</option>
+                                    <option>Travel Expenses</option>
+                                    <option>Meals & Entertainment</option>
+                                </select>
+                                <button
+                                    type="button"
+                                    className="btn btn-link p-0 mt-1"
+                                    style={{ fontSize: "12px" }}
+                                >
+                                    Itemize
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                {/* Row 2: Amount currency (left) */}
-                <div className="row mb-3 align-items-center">
-                    <label className="col-sm-2 col-form-label">
-                        Amount<span className="text-danger">*</span>
-                    </label>
-                    <div className="col-sm-3 d-flex">
-                        <select className="form-select form-select-sm" style={{ maxWidth: "90px" }}>
-                            <option>INR</option>
-                            <option>USD</option>
-                        </select>
-                        <input
-                            type="number"
-                            className="form-control form-control-sm border ms-2"
-                            placeholder="0.00"
-                        />
+                    {/* Column 3: Amount + Currency */}
+                    <div className="col-lg-4">
+                        <div className="row align-items-center mb-2">
+                            <label className="col-sm-3 col-form-label">
+                                Amount:<span className="text-danger">*</span>
+                            </label>
+                            <div className="col-sm-8">
+                                <div className="d-flex">
+                                    <select name="currency" className="form-select form-select-sm" style={{ maxWidth: "90px" }}>
+                                        <option>INR</option>
+                                        <option>USD</option>
+                                    </select>
+                                    <input
+                                        type="number"
+                                        name="amount"
+                                        className="form-control form-control-sm border ms-2"
+                                        placeholder="0.00"
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <hr className="my-4" />
 
-                {/* Row 3: Paid Through / Vendor */}
-                <div className="row mb-3 align-items-center">
-                    <label className="col-sm-2 col-form-label">
-                        Paid Through<span className="text-danger">*</span>
-                    </label>
-                    <div className="col-sm-3">
-                        <select className="form-select form-select-sm">
-                            <option value="">Select an account</option>
-                            <option>Cash</option>
-                            <option>Bank</option>
-                            <option>Credit Card</option>
-                        </select>
+                {/* SECTION 2: Paid Through / Vendor / Invoice# / Notes (3 columns) */}
+                <div className="row mb-4">
+                    {/* Column 1: Paid Through */}
+                    <div className="col-lg-4">
+                        <div className="row align-items-center mb-2">
+                            <label className="col-sm-4 col-form-label">
+                                Paid Through:<span className="text-danger">*</span>
+                            </label>
+                            <div className="col-sm-8">
+                                <select name="paidThrough" className="form-select form-select-sm border">
+                                    <option value="">Select an account</option>
+                                    <option>Cash</option>
+                                    <option>Bank</option>
+                                    <option>Credit Card</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
-                    <label className="col-sm-2 col-form-label">Vendor</label>
-                    <div className="col-sm-3">
-                        <select
-                            className="form-select form-select-sm"
-                        // value={selectedVendor}
-                        // onChange={(e) => setSelectedVendor(e.target.value)}
-                        >
-                            <option value="">Select or add a vendor</option>
-                            <option value="vendor1">Vendor 1</option>
-                            <option value="vendor2">Vendor 2</option>
-                            <option value="vendor3">Vendor 3</option>
-                        </select>
+                    {/* Column 2: Vendor */}
+                    <div className="col-lg-4">
+                        <div className="row align-items-center mb-2">
+                            <label className="col-sm-3 col-form-label">Vendor:</label>
+                            <div className="col-sm-8">
+                                <select name="vendor" className="form-select form-select-sm border">
+                                    <option value="">Select or add a vendor</option>
+                                    <option value="vendor1">Vendor 1</option>
+                                    <option value="vendor2">Vendor 2</option>
+                                    <option value="vendor3">Vendor 3</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Column 3: Invoice# + Notes */}
+                    <div className="col-lg-4">
+                        <div className="row align-items-start mb-2">
+                            <label className="col-sm-3 col-form-label">Invoice#:</label>
+                            <div className="col-sm-8">
+                                <input
+                                    type="text"
+                                    name="invoiceNo"
+                                    className="form-control form-control-sm border"
+                                />
+                            </div>
+                        </div>
+                        <div className="row align-items-start">
+                            <label className="col-sm-3 col-form-label">Notes:</label>
+                            <div className="col-sm-8">
+                                <textarea
+                                    name="notes"
+                                    className="form-control form-control-sm border"
+                                    rows={3}
+                                    placeholder="Max. 500 characters"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
 
-                {/* Row 4: Invoice# / Notes */}
-                <div className="row mb-3 align-items-start">
-                    <label className="col-sm-2 col-form-label">Invoice#</label>
-                    <div className="col-sm-3">
-                        <input
-                            type="text"
-                            className="form-control form-control-sm border"
-                        />
-                    </div>
-
-                    <label className="col-sm-2 col-form-label">Notes</label>
-                    <div className="col-sm-3">
-                        <textarea
-                            className="form-control form-control-sm border"
-                            rows={3}
-                            placeholder="Max. 500 characters"
-                        />
-                    </div>
-                </div>
 
                 <hr className="my-4" />
 
                 {/* Row 5: Customer Name */}
                 <div className="row mb-3 align-items-center">
-                    <label className="col-sm-2 col-form-label">Customer Name</label>
-                    <div className="col-sm-4">
+                    <label className="col-sm-2 col-form-label">Customer Name:</label>
+                    <div className="col-sm-3">
                         <select
                             className="form-select form-select-sm"
                         // value={selectedCustomer}
@@ -257,174 +284,210 @@ const AddExpense: React.FC = () => {
             <h1 className="h4 text-dark mb-4 pb-1">Record Mileage</h1>
 
             <form className="mt-3" style={{ color: "#5E5E5E" }}>
-                {/* Row 1: Date / Employee */}
-                <div className="row mb-3 align-items-center">
-                    <label className="col-sm-2 col-form-label">
-                        Date<span className="text-danger">*</span>
-                    </label>
-                    <div className="col-sm-3">
-                        <input
-                            type="date"
-                            className="form-control form-control-sm border"
-                            defaultValue={new Date().toISOString().split("T")[0]}
-                        />
-                    </div>
-
-                    <label className="col-sm-2 col-form-label">Employee</label>
-                    <div className="col-sm-3">
-                        <select className="form-select form-select-sm">
-                            <option value="">Select employee</option>
-                            <option value="emp1">Employee 1</option>
-                            <option value="emp2">Employee 2</option>
-                        </select>
-                    </div>
-                </div>
-
-                {/* Row 2: Calculate mileage using */}
-                <div className="row mb-3">
-                    <label className="col-sm-2 col-form-label">
-                        Calculate mileage using<span className="text-danger">*</span>
-                    </label>
-                    <div className="col-sm-6 d-flex align-items-center">
-                        <div className="form-check me-4">
-                            <input
-                                className="form-check-input"
-                                type="radio"
-                                name="mileageType"
-                                id="distanceTravelled"
-                                defaultChecked
-                            />
-                            <label className="form-check-label" htmlFor="distanceTravelled">
-                                Distance travelled
+                {/* SECTION 1: Date/Employee + Mileage + Distance/Amount (3 columns) */}
+                <div className="row mb-4">
+                    {/* Column 1: Date + Employee */}
+                    <div className="col-lg-4">
+                        {/* Date */}
+                        <div className="row align-items-center mb-2">
+                            <label className="col-sm-4 col-form-label">
+                                Date<span className="text-danger">*</span>
                             </label>
+                            <div className="col-sm-8">
+                                <input
+                                    type="date"
+                                    name="date"
+                                    className="form-control form-control-sm border"
+                                    defaultValue={new Date().toISOString().split("T")[0]}
+                                />
+                            </div>
                         </div>
-                        <div className="form-check">
-                            <input
-                                className="form-check-input"
-                                type="radio"
-                                name="mileageType"
-                                id="odometerReading"
-                            />
-                            <label className="form-check-label" htmlFor="odometerReading">
-                                Odometer reading
+
+                        {/* Calculate mileage using */}
+                        <div className="row align-items-center mb-2">
+                            <label className="col-sm-4 col-form-label">
+                                Calculate mileage using<span className="text-danger">*</span>
                             </label>
+                            <div className="col-sm-8">
+                                <div className="d-flex align-items-center flex-column">
+                                    <div className="form-check me-2 mb-1 w-100">
+                                        <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="mileageType"
+                                            id="distanceTravelled"
+                                            defaultChecked
+                                        />
+                                        <label className="form-check-label small" htmlFor="distanceTravelled">
+                                            Distance travelled
+                                        </label>
+                                    </div>
+                                    <div className="form-check w-100">
+                                        <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="mileageType"
+                                            id="odometerReading"
+                                        />
+                                        <label className="form-check-label small" htmlFor="odometerReading">
+                                            Odometer reading
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    {/* Column 2: Calculate Mileage + Distance Helper */}
+                    <div className="col-lg-4">
+                        {/* Employee */}
+                        <div className="row align-items-center mb-2">
+                            <label className="col-sm-4 col-form-label">Employee</label>
+                            <div className="col-sm-8">
+                                <select name="employee" className="form-select form-select-sm border">
+                                    <option value="">Select employee</option>
+                                    <option value="emp1">Employee 1</option>
+                                    <option value="emp2">Employee 2</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Amount */}
+                        <div className="row align-items-center">
+                            <label className="col-sm-4 col-form-label">
+                                Amount<span className="text-danger">*</span>
+                            </label>
+                            <div className="col-sm-8">
+                                <div className="d-flex">
+                                    <select name="amountCurrency" className="form-select form-select-sm" style={{ maxWidth: "90px" }}>
+                                        <option>INR</option>
+                                        <option>USD</option>
+                                    </select>
+                                    <input
+                                        type="number"
+                                        name="amount"
+                                        className="form-control form-control-sm border ms-2"
+                                        placeholder="0.00"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Row 3: Distance + unit */}
-                <div className="row mb-1 align-items-center">
-                    <label className="col-sm-2 col-form-label">
-                        Distance<span className="text-danger">*</span>
-                    </label>
-                    <div className="col-sm-4 d-flex">
-                        <input
-                            type="number"
-                            className="form-control form-control-sm border"
-                            placeholder="0.00"
-                            step="0.1"
-                        />
-                        <select
-                            className="form-select form-select-sm ms-2"
-                            style={{ maxWidth: "130px" }}
-                        >
-                            <option>Kilometer(s)</option>
-                            <option>Mile(s)</option>
-                        </select>
-                    </div>
-                </div>
+                    {/* Column 3: Distance + Amount */}
+                    <div className="col-lg-4">
+                        {/* Distance */}
+                        <div className="row align-items-center mb-2">
+                            <label className="col-sm-3 col-form-label">
+                                Distance<span className="text-danger">*</span>
+                            </label>
+                            <div className="col-sm-8">
+                                <div className="d-flex">
+                                    <input
+                                        type="number"
+                                        name="distance"
+                                        className="form-control form-control-sm border"
+                                        placeholder="0.00"
+                                        step="0.1"
+                                    />
+                                    <select name="distanceUnit" className="form-select form-select-sm ms-2" style={{ maxWidth: "130px" }}>
+                                        <option>Kilometer(s)</option>
+                                        <option>Mile(s)</option>
+                                    </select>
+                                </div>
+                                <small className="text-muted d-block mt-1">
+                                    Rate per km = ₹12,000.00
+                                    <button type="button" className="btn btn-link p-0 ms-1" style={{ fontSize: "12px" }}>
+                                        Change
+                                    </button>
+                                </small>
+                            </div>
+                        </div>
 
-                {/* Row 3 helper text: rate per km */}
-                <div className="row mb-3">
-                    <div className="col-sm-2" />
-                    <div className="col-sm-4">
-                        <small className="text-muted">
-                            Rate per km = ₹12,000.00&nbsp;
-                            <button type="button" className="btn btn-link p-0" style={{ fontSize: "12px" }}>
-                                Change
-                            </button>
-                        </small>
-                    </div>
-                </div>
 
-                {/* Row 4: Amount (INR + value) */}
-                <div className="row mb-4 align-items-center">
-                    <label className="col-sm-2 col-form-label">
-                        Amount<span className="text-danger">*</span>
-                    </label>
-                    <div className="col-sm-3 d-flex">
-                        <select
-                            className="form-select form-select-sm"
-                            style={{ maxWidth: "90px" }}
-                        >
-                            <option>INR</option>
-                            <option>USD</option>
-                        </select>
-                        <input
-                            type="number"
-                            className="form-control form-control-sm border ms-2"
-                            placeholder="0.00"
-                        />
                     </div>
                 </div>
 
                 <hr className="my-4" />
 
-                {/* Row 5: Paid Through / Vendor (select) */}
-                <div className="row mb-3 align-items-center">
-                    <label className="col-sm-2 col-form-label">
-                        Paid Through<span className="text-danger">*</span>
-                    </label>
-                    <div className="col-sm-3">
-                        <select className="form-select form-select-sm">
-                            <option value="">Select an account</option>
-                            <option>Cash</option>
-                            <option>Bank</option>
-                            <option>Credit Card</option>
-                        </select>
+                {/* SECTION 2: Paid Through/Vendor + Invoice#/Notes + Customer (3 columns) */}
+                <div className="row mb-4">
+                    {/* Column 1: Paid Through */}
+                    <div className="col-lg-4">
+                        <div className="row align-items-center mb-2">
+                            <label className="col-sm-4 col-form-label">
+                                Paid Through<span className="text-danger">*</span>
+                            </label>
+                            <div className="col-sm-8">
+                                <select name="paidThrough" className="form-select form-select-sm border">
+                                    <option value="">Select an account</option>
+                                    <option>Cash</option>
+                                    <option>Bank</option>
+                                    <option>Credit Card</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Customer Name (standalone below) */}
+                        <div className="row mb-3 align-items-center">
+                            <label className="col-sm-4 col-form-label">Customer Name</label>
+                            <div className="col-sm-5">
+                                <select name="customerName" className="form-select form-select-sm border">
+                                    <option value="">Select customer</option>
+                                    <option value="customer1">Customer 1</option>
+                                    <option value="customer2">Customer 2</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
-                    <label className="col-sm-2 col-form-label">Vendor</label>
-                    <div className="col-sm-3">
-                        <select className="form-select form-select-sm">
-                            <option value="">Select a vendor</option>
-                            <option value="vendor1">Vendor 1</option>
-                            <option value="vendor2">Vendor 2</option>
-                        </select>
+                    {/* Column 2: Vendor */}
+                    <div className="col-lg-4">
+                        <div className="row align-items-center mb-2">
+                            <label className="col-sm-3 col-form-label">Vendor:</label>
+                            <div className="col-sm-6">
+                                <select name="vendor" className="form-select form-select-sm border">
+                                    <option value="">Select a vendor</option>
+                                    <option value="vendor1">Vendor 1</option>
+                                    <option value="vendor2">Vendor 2</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Column 3: Invoice# + Notes + Customer */}
+                    <div className="col-lg-4">
+                        {/* Invoice# */}
+                        <div className="row align-items-start mb-2">
+                            <label className="col-sm-3 col-form-label">Invoice#:</label>
+                            <div className="col-sm-8">
+                                <input
+                                    type="text"
+                                    name="invoiceNo"
+                                    className="form-control form-control-sm border"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Notes */}
+                        <div className="row align-items-start mb-2">
+                            <label className="col-sm-3 col-form-label">Notes:</label>
+                            <div className="col-sm-8">
+                                <textarea
+                                    name="notes"
+                                    className="form-control form-control-sm border"
+                                    rows={2}
+                                    placeholder="Max. 500 characters"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                {/* Row 6: Invoice# / Notes */}
-                <div className="row mb-3 align-items-start">
-                    <label className="col-sm-2 col-form-label">Invoice#</label>
-                    <div className="col-sm-3">
-                        <input
-                            type="text"
-                            className="form-control form-control-sm border"
-                        />
-                    </div>
 
-                    <label className="col-sm-2 col-form-label">Notes</label>
-                    <div className="col-sm-3">
-                        <textarea
-                            className="form-control form-control-sm border"
-                            rows={3}
-                            placeholder="Max. 500 characters"
-                        />
-                    </div>
-                </div>
 
-                {/* Row 7: Customer Name select (no search icon) */}
-                <div className="row mb-3 align-items-center">
-                    <label className="col-sm-2 col-form-label">Customer Name</label>
-                    <div className="col-sm-4">
-                        <select className="form-select form-select-sm">
-                            <option value="">Select or add a customer</option>
-                            <option value="customer1">Customer 1</option>
-                            <option value="customer2">Customer 2</option>
-                        </select>
-                    </div>
-                </div>
 
                 {/* Buttons – same theme as other forms */}
                 <div className="d-flex justify-content-center mt-4 pt-4 border-top">
@@ -489,7 +552,7 @@ const AddExpense: React.FC = () => {
                                     <td>
                                         <input
                                             type="date"
-                                            className="form-control form-control-sm border"
+                                            className="form-control form-control-sm border-0"
                                             value={row.date}
                                             onChange={(e) =>
                                                 handleRowChange(index, "date", e.target.value)
@@ -500,7 +563,7 @@ const AddExpense: React.FC = () => {
                                     {/* Expense Account */}
                                     <td>
                                         <select
-                                            className="form-select form-select-sm"
+                                            className="form-select form-select-sm border"
                                             value={row.account}
                                             onChange={(e) =>
                                                 handleRowChange(index, "account", e.target.value)
@@ -517,7 +580,7 @@ const AddExpense: React.FC = () => {
                                     <td>
                                         <input
                                             type="number"
-                                            className="form-control form-control-sm border"
+                                            className="form-control form-control-sm border-0"
                                             placeholder="0.00"
                                             value={row.amount}
                                             onChange={(e) =>
@@ -661,17 +724,19 @@ const AddExpense: React.FC = () => {
     return (
         <>
             <Header />
+            <div style={{ padding: "56px 0px 0px" }}>
 
-            <div className="ps-4">
-                <Tabs
-                    tabs={tabs}
-                    defaultActiveKey="record-expense"
-                    onChange={setActiveKey}
-                />
-            </div>
+                <div className="ps-4">
+                    <Tabs
+                        tabs={tabs}
+                        defaultActiveKey="record-expense"
+                        onChange={setActiveKey}
+                    />
+                </div>
 
-            <div className="mt-3">
-                {tabs.find((t) => t.key === activeTab)?.content}
+                <div className="mt-3">
+                    {tabs.find((t) => t.key === activeTab)?.content}
+                </div>
             </div>
 
         </>

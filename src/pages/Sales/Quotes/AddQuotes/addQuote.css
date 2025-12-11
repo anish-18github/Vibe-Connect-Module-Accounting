@@ -1,169 +1,135 @@
-/* DARK BACKDROP */
+/* Page background and card */
+.quotes-page {
+    padding: 80px 1.8rem 24px 1.8rem;
+    background: #f5f7fb;
+}
+
+.quotes-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 24px 24px 32px;
+    border: 1px solid #e2e2e2;
+}
+
+.quotes-title {
+    font-size: 19px;
+    font-weight: 600;
+    color: #1f2933;
+    margin-bottom: 20px;
+}
+
+.quotes-form {
+    color: #5e5e5e;
+}
+
+/* shared with Sales Orders – copy same values */
+.so-form-group {
+    margin-bottom: 12px;
+}
+
+.so-label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 3px;
+    color: #4b5563;
+}
+
+/* main controls on this page */
+.quotes-page .form-control,
+.quotes-page .form-select,
+.quotes-page input,
+.quotes-page select,
+.quotes-page textarea {
+    font-size: 0.78rem;
+    padding: 0.25rem 0.5rem;
+    height: 2rem;
+    border: 1px solid #d9d9d9 !important;
+    box-shadow: none !important;
+}
+
+.so-control {
+    font-size: 0.78rem;
+    height: 2rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #d9d9d9;
+}
+
+.so-control:focus {
+    box-shadow: 0 0 0 2px rgba(121, 145, 187, 0.25);
+    border-color: #7991bb;
+}
+
+.so-control.textarea {
+    height: 80px;
+    resize: none;
+}
+
+/* Item table header */
+.item-table-title {
+    margin-top: 18px;
+    font-size: 14px;
+    font-weight: 500;
+    background-color: #eeeeee;
+    padding: 6px 10px;
+    border-radius: 5px;
+    border: 1px solid #d9d9d9;
+    color: #5e5e5e;
+}
+
+/* Notes + summary layout */
+.notes-summary-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.notes-column,
+.summary-column {
+    width: 50%;
+}
+
+/* Documents upload */
+.doc-upload-box {
+    min-height: 110px;
+    border: 2px dotted #d9d9d9;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #f9fafb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Actions row */
+.form-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    padding-top: 14px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Settings modal – reuse same theme */
 .settings-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(2px);
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    z-index: 9999;
-}
-
-/* POPUP BOX */
-.settings-modal {
-    width: 650px;
-    max-width: 95%;
-    background: #ffffff;
-    border-radius: 10px;
-    padding: 0;
-    box-shadow: 0px 6px 22px rgba(0, 0, 0, 0.20);
-    animation: fadeIn 0.25s ease-out;
-    position: relative;
-}
-
-/* OPEN ANIMATION */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px) scale(0.96);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* CLEAN CARD STYLE HEADER */
-.custom-header {
-    background: #F4F4F4;
-    padding: 14px 18px;
-    border-bottom: 1px solid #ddd;
-    border-radius: 10px 10px 0 0 !important;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-/* BODY */
-.settings-modal .modal-body {
-    padding: 22px;
-}
-
-.modal-body label {
-    font-weight: 500;
-    margin-bottom: 5px;
-    display: block;
-}
-
-/* FOOTER (OPTIONAL) */
-.settings-modal .modal-footer {
-    padding: 14px 18px;
-    border-top: 1px solid #ddd;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-/* REMOVE PAGE SCROLL WHEN POPUP IS OPEN */
-body.no-scroll {
-    overflow: hidden !important;
-}
-
-/* ----------------------------------
-   MAIN NOTES + SUMMARY LAYOUT
----------------------------------- */
-.notes-summary-row {
-    display: flex;
-    gap: 20px;
-    margin-top: 25px;
-}
-
-/* LEFT SIDE (Notes + Terms) */
-.left-fields {
-    width: 50%;
-    /* padding: 15px; */
-    /* background: #fafafa; */
-    /* border: 1px solid #ddd; */
-    /* border-radius: 8px; */
-}
-
-/* RIGHT SIDE (Summary Box) */
-.right-summary {
-    width: 50%;
-    /* padding: 15px;
-    background: #ffffff; */
-    /* border: 1px solid #ddd; */
-    /* border-radius: 8px; */
-}
-
-/* ----------------------------------
-   TABLE CONTAINER FIXES
----------------------------------- */
-.item-table-container {
-    overflow-x: auto;
-    width: 100%;
-    padding-right: 15px;
-    /* prevents touching right side */
-}
-
-.item-table-container table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-}
-
-.item-table-container th,
-.item-table-container td {
-    padding: 8px 10px;
-    /* border: 1px solid #ddd; */
-    font-size: 14px;
-}
-
-/* ----------------------------------
-   SUMMARY BOX DESIGN
----------------------------------- */
-
-.summary-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.summary-label {
-    color: #444;
-    font-weight: 500;
-}
-
-.summary-value {
-    font-weight: 600;
-}
-
-/* ----------------------------------
-   POPUP (SETTINGS MODAL)
----------------------------------- */
-.settings-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
     z-index: 3000;
 }
 
 .settings-modal {
     width: 550px;
-    background: #fff;
+    max-width: 95%;
+    background: #ffffff;
     border-radius: 10px;
+    box-shadow: 0px 6px 22px rgba(0, 0, 0, 0.2);
     overflow: hidden;
     max-height: 90vh;
     animation: popupOpen 0.25s ease-out;
@@ -175,7 +141,7 @@ body.no-scroll {
 
 @keyframes popupOpen {
     from {
-        transform: scale(0.85);
+        transform: scale(0.9);
         opacity: 0;
     }
 
@@ -192,36 +158,28 @@ body.no-scroll {
     }
 
     to {
-        transform: scale(0.85);
+        transform: scale(0.9);
         opacity: 0;
     }
 }
 
 .custom-header {
-    background: #f7f7f7;
+    background: #f4f4f4;
     padding: 12px 20px;
     border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-/* ----------------------------------
-   RESPONSIVE DESIGN
----------------------------------- */
+/* Responsive */
 @media (max-width: 992px) {
     .notes-summary-row {
         flex-direction: column;
     }
 
-    .left-fields,
-    .right-summary {
+    .notes-column,
+    .summary-column {
         width: 100%;
-    }
-}
-
-@media (max-width: 600px) {
-
-    .item-table-container th,
-    .item-table-container td {
-        font-size: 12px;
-        padding: 6px;
     }
 }

@@ -179,8 +179,8 @@ export default function AddBudget() {
                     period: form.period,
                     incomeAccounts,
                     expenseAccounts,
-                    assetAccounts,     
-                    liabilityAccounts,   
+                    assetAccounts,
+                    liabilityAccounts,
                     equityAccounts,
                 },
             });
@@ -390,68 +390,75 @@ export default function AddBudget() {
         <>
             <Header />
 
-            <div style={{ padding: "0 1.8rem" }}>
+            <div style={{ padding: "69px 1.8rem 0 1.8rem" }}>
                 <h1 className="h4 text-dark mb-4 pb-1">New Budget</h1>
 
                 <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
-                    {/* Name */}
-                    <div className="row align-items-center mb-3">
-                        <label className="col-sm-2 col-form-label">
-                            Name:<span className="text-danger"> *</span>
-                        </label>
-                        <div className="col-sm-4">
-                            <input
-                                type="text"
-                                name="name"
-                                className="form-control form-control-sm border"
-                                value={form.name}
-                                onChange={handleChange}
-                            />
+
+                    {/* FIRST SECTION: 3 columns - Name | Fiscal Year | Budget Period */}
+                    <div className="row mb-4">
+                        {/* Column 1: Name */}
+                        <div className="col-lg-4">
+                            <div className="row align-items-center mb-3">
+                                <label className="col-sm-3 col-form-label">
+                                    Name:<span className="text-danger"> *</span>
+                                </label>
+                                <div className="col-sm-7">
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        className="form-control form-control-sm border"
+                                        value={form.name}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Column 2: Fiscal Year */}
+                        <div className="col-lg-4">
+                            <div className="row align-items-center mb-3">
+                                <label className="col-sm-3 col-form-label">Fiscal Year:</label>
+                                <div className="col-sm-7">
+                                    <select
+                                        name="fiscalYear"
+                                        className="form-select form-control-sm border"
+                                        value={form.fiscalYear}
+                                        onChange={handleChange}
+                                        style={{ color: form.fiscalYear ? "#000000" : "#9b9b9b" }}
+                                    >
+                                        <option value="" disabled>-- Select Fiscal Year --</option>
+                                        <option value="2024-2025">2024-2025</option>
+                                        <option value="2025-2026">2025-2026</option>
+                                        <option value="2026-2027">2026-2027</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Column 3: Budget Period */}
+                        <div className="col-lg-4">
+                            <div className="row align-items-center mb-3">
+                                <label className="col-sm-4 col-form-label">Budget Period:</label>
+                                <div className="col-sm-7">
+                                    <select
+                                        name="period"
+                                        className="form-select form-control-sm border"
+                                        value={form.period}
+                                        onChange={handleChange}
+                                        style={{ color: form.period ? "#000000" : "#9b9b9b" }}
+                                    >
+                                        <option value="" disabled>-- Select Budget Period --</option>
+                                        <option value="monthly">Monthly</option>
+                                        <option value="quarterly">Quarterly</option>
+                                        <option value="half-yearly">Half-yearly</option>
+                                        <option value="yearly">Yearly</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Fiscal Year */}
-                    <div className="row align-items-center mb-3">
-                        <label className="col-sm-2 col-form-label">Fiscal Year:</label>
-                        <div className="col-sm-4">
-                            <select
-                                name="fiscalYear"
-                                className="form-select form-control-sm border"
-                                value={form.fiscalYear}
-                                onChange={handleChange}
-                                style={{ color: form.fiscalYear ? "#000000" : "#9b9b9b" }}
-                            >
-                                <option value="" disabled>
-                                    -- Select Fiscal Year --
-                                </option>
-                                <option value="2024-2025">2024-2025</option>
-                                <option value="2025-2026">2025-2026</option>
-                                <option value="2026-2027">2026-2027</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Budget Period */}
-                    <div className="row align-items-center mb-3">
-                        <label className="col-sm-2 col-form-label">Budget Period:</label>
-                        <div className="col-sm-4">
-                            <select
-                                name="period"
-                                className="form-select form-control-sm border"
-                                value={form.period}
-                                onChange={handleChange}
-                                style={{ color: form.period ? "#000000" : "#9b9b9b" }}
-                            >
-                                <option value="" disabled>
-                                    -- Select Budget Period --
-                                </option>
-                                <option value="monthly">Monthly</option>
-                                <option value="quarterly">Quarterly</option>
-                                <option value="half-yearly">Half-yearly</option>
-                                <option value="yearly">Yearly</option>
-                            </select>
-                        </div>
-                    </div>
 
                     {/* Section title */}
                     <div className="row mb-2">
@@ -460,45 +467,56 @@ export default function AddBudget() {
                         </div>
                     </div>
 
-                    {/* Income Account */}
-                    <div className="row align-items-center mb-3">
-                        <label className="col-sm-2 col-form-label">Income Account:</label>
-                        <div className="col-sm-4">
-                            <input
-                                type="text"
-                                name="incomeAccount"
-                                className="form-control form-control-sm border"
-                                value={form.incomeAccount}
-                                readOnly
-                                onClick={() => {
-                                    setSelectedIncomeOptions([]);
-                                    setShowIncomeModal(true);
-                                }}
-                            />
+                    {/* SECOND SECTION: Income Account (left), Expense Account (right) – unchanged */}
+                    <div className="row mb-3">
+                        {/* LEFT: Income Account */}
+                        <div className="col-lg-6">
+                            <div className="row align-items-center">
+                                <label className="col-sm-3 col-form-label">Income Account:</label>
+                                <div className="col-sm-8">
+                                    <input
+                                        type="text"
+                                        name="incomeAccount"
+                                        className="form-control form-control-sm border"
+                                        value={form.incomeAccount}
+                                        readOnly
+                                        onClick={() => {
+                                            setSelectedIncomeOptions([]);
+                                            setShowIncomeModal(true);
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* RIGHT: Expense Account */}
+                        <div className="col-lg-6">
+                            <div className="row align-items-center">
+                                <label className="col-sm-3 col-form-label">Expense Accounts:</label>
+                                <div className="col-sm-8">
+                                    <input
+                                        type="text"
+                                        name="expenseAccount"
+                                        className="form-control form-control-sm border"
+                                        value={form.expenseAccount}
+                                        readOnly
+                                        onClick={() => {
+                                            setSelectedExpenseOptions([]);
+                                            setShowExpenseModal(true);
+                                        }}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Expense Accounts */}
-                    <div className="row align-items-center mb-3">
-                        <label className="col-sm-2 col-form-label">Expense Accounts:</label>
-                        <div className="col-sm-4">
-                            <input
-                                type="text"
-                                name="expenseAccount"
-                                className="form-control form-control-sm border"
-                                value={form.expenseAccount}
-                                readOnly
-                                onClick={() => {
-                                    setSelectedExpenseOptions([]);
-                                    setShowExpenseModal(true);
-                                }}
-                            />
-                        </div>
-                    </div>
 
-                    {/* + Include Asset, Liability, Equity */}
-                    <div className="row align-items-center mb-3">
-                        <div className="col-sm-8">
+                    {/* + Include Asset, Liability, Equity (dropdown button) - 2 columns */}
+                    <div className="align-items-center mb-3">
+                        <div className="col-lg-6">
+                            {/* Left empty space for alignment */}
+                        </div>
+                        <div className="col-lg-6">
                             <button
                                 type="button"
                                 className="btn btn-link p-0 d-flex align-items-center"
@@ -523,74 +541,80 @@ export default function AddBudget() {
                         </div>
                     </div>
 
-                    {/* Extra fields appear when plus is clicked */}
+                    {/* Extra fields appear when plus is clicked (unchanged structure) */}
                     {showAle && (
                         <>
-                            <div className="row align-items-center mb-3">
-                                <label className="col-sm-2 col-form-label">Asset Accounts:</label>
-                                <div className="col-sm-4">
-                                    <input
-                                        type="text"
-                                        name="assetAccount"
-                                        className="form-control form-control-sm border"
-                                        value={form.assetAccount}
-                                        readOnly
-                                        onClick={() => {
-                                            setSelectedAssetOptions(
-                                                form.assetAccount
-                                                    ? form.assetAccount.split(",").map(s => s.trim()).filter(Boolean)
-                                                    : []
-                                            );
-                                            setShowAssetModal(true);
-                                        }}
-                                    />
+                            <div className="row">
+                                {/* LEFT COLUMN: Asset + Liability */}
+                                <div className="col-lg-6">
+                                    <div className="row align-items-center mb-3">
+                                        <label className="col-sm-3 col-form-label">Asset Accounts:</label>
+                                        <div className="col-sm-8">
+                                            <input
+                                                type="text"
+                                                name="assetAccount"
+                                                className="form-control form-control-sm border"
+                                                value={form.assetAccount}
+                                                readOnly
+                                                onClick={() => {
+                                                    setSelectedAssetOptions(
+                                                        form.assetAccount
+                                                            ? form.assetAccount.split(",").map(s => s.trim()).filter(Boolean)
+                                                            : []
+                                                    );
+                                                    setShowAssetModal(true);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
 
+                                    <div className="row align-items-center mb-3">
+                                        <label className="col-sm-3 col-form-label">Liability Accounts:</label>
+                                        <div className="col-sm-8">
+                                            <input
+                                                type="text"
+                                                name="liabilityAccount"
+                                                className="form-control form-control-sm border"
+                                                value={form.liabilityAccount}
+                                                readOnly
+                                                onClick={() => {
+                                                    setSelectedLiabilityOptions(
+                                                        form.liabilityAccount
+                                                            ? form.liabilityAccount.split(",").map(s => s.trim()).filter(Boolean)
+                                                            : []
+                                                    );
+                                                    setShowLiabilityModal(true);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* RIGHT COLUMN: Equity */}
+                                <div className="col-lg-6">
+                                    <div className="row align-items-center mb-3">
+                                        <label className="col-sm-3 col-form-label">Equity Accounts:</label>
+                                        <div className="col-sm-8">
+                                            <input
+                                                type="text"
+                                                name="equityAccount"
+                                                className="form-control form-control-sm border"
+                                                value={form.equityAccount}
+                                                readOnly
+                                                onClick={() => {
+                                                    setSelectedEquityOptions(
+                                                        form.equityAccount
+                                                            ? form.equityAccount.split(",").map(s => s.trim()).filter(Boolean)
+                                                            : []
+                                                    );
+                                                    setShowEquityModal(true);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="row align-items-center mb-3">
-                                <label className="col-sm-2 col-form-label">Liability Accounts:</label>
-                                <div className="col-sm-4">
-                                    <input
-                                        type="text"
-                                        name="liabilityAccount"
-                                        className="form-control form-control-sm border"
-                                        value={form.liabilityAccount}
-                                        readOnly
-                                        onClick={() => {
-                                            setSelectedLiabilityOptions(
-                                                form.liabilityAccount
-                                                    ? form.liabilityAccount.split(",").map(s => s.trim()).filter(Boolean)
-                                                    : []
-                                            );
-                                            setShowLiabilityModal(true);
-                                        }}
-                                    />
-
-                                </div>
-                            </div>
-
-                            <div className="row align-items-center mb-4">
-                                <label className="col-sm-2 col-form-label">Equity Accounts:</label>
-                                <div className="col-sm-4">
-                                    <input
-                                        type="text"
-                                        name="equityAccount"
-                                        className="form-control form-control-sm border"
-                                        value={form.equityAccount}
-                                        readOnly
-                                        onClick={() => {
-                                            setSelectedEquityOptions(
-                                                form.equityAccount
-                                                    ? form.equityAccount.split(",").map(s => s.trim()).filter(Boolean)
-                                                    : []
-                                            );
-                                            setShowEquityModal(true);
-                                        }}
-                                    />
-
-                                </div>
-                            </div>
                         </>
                     )}
 
@@ -608,6 +632,7 @@ export default function AddBudget() {
                         </button>
                     </div>
                 </form>
+
             </div>
 
             {/* INCOME MODAL - Only Income categories */}

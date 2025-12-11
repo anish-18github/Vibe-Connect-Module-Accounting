@@ -61,41 +61,41 @@
 }
 
 /* -------------------- Form Layout -------------------- */
-.two-column-form {
-    display: flex;
-    gap: 2rem;
-    margin-bottom: 2rem;
-}
+    /* .two-column-form {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    } */
 
-.left-column,
+/* .left-column,
 .right-column {
     width: 50%;
-}
+} */
 
-.left-column label,
+/* .left-column label,
 .right-column label {
     font-weight: 500;
     margin-bottom: 4px;
     display: block;
-}
+} */
 
-.form-row {
+/* .form-row {
     display: flex;
     align-items: center;
     margin-bottom: 12px;
     gap: 12px;
-}
+} */
 
-.form-row label {
+/* .form-row label {
     width: 160px;
     font-size: 14px;
     font-weight: 400;
     color: #5E5E5E;
-}
+} */
 
-.custom-border {
+/* .custom-border {
     border-color: #D9D9D9;
-}
+} */
 
 /* -------------------- IMPORTANT: Override Bootstrap -------------------- */
 .sales-orders-page .form-control,

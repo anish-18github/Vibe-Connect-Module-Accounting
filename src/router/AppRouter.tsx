@@ -35,6 +35,12 @@ import Expenses from "../pages/Purcheses/Expenses/Expenses";
 import AddExpense from "../pages/Purcheses/Expenses/AddExpense/AddExpense";
 import RecurringExpenses from "../pages/Purcheses/RecurringExpenses/RecurringExpenses";
 import AddRecurringExpense from "../pages/Purcheses/RecurringExpenses/AddRecurringExpenses/AddRecurringExpense";
+import PurchaseOrders from "../pages/Purcheses/PurchaseOrders/PurchaseOrders";
+import AddPurchaseOrder from "../pages/Purcheses/PurchaseOrders/AddPurchaseorder/AddPurchaseOrder";
+import Bills from "../pages/Purcheses/Bills/Bills";
+import AddBill from "../pages/Purcheses/Bills/AddBill/AddBill";
+import RecurringBills from "../pages/Purcheses/RecurringBills/RecurringBills";
+import AddrecurringBill from "../pages/Purcheses/RecurringBills/AddRecurringBills/AddRecurringBill";
 
 function AppRouter() {
     return (
@@ -86,6 +92,15 @@ function AppRouter() {
 
             <Route path="/purchases/recurring-expenses" element={<RecurringExpenses />} />
             <Route path="/purchases/add-recurringExpenses" element={<AddRecurringExpense />} />
+
+            <Route path="/purchases/PurchaseOrders" element={<PurchaseOrders />} />
+            <Route path="/purchases/add-purchaseOrders" element={<AddPurchaseOrder />} />
+
+            <Route path="/purchases/bills" element={<Bills />} />
+            <Route path="/purchases/add-bill" element={<AddBill />} />
+
+            <Route path="/purchases/recurringBills" element={<RecurringBills />} />
+            <Route path="/purchases/add-recurringBill" element={<AddrecurringBill />} />
 
             {/* ACCOUNTANT ROUTES */}
             <Route path="/accountant" element={<Navigate to="/accountant/manual-journal" replace />} />

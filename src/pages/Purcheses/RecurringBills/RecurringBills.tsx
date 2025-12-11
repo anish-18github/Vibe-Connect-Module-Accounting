@@ -1,16 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import Header from "../../../components/Header/Header";
+import Header from "../../../components/Header/Header"
+import { useState, useEffect } from "react";
 import Navbar from "../../../components/Navbar/NavBar";
 import DynamicTable from "../../../components/Table/DynamicTable";
 import { dashboardTabs } from "../../Dashboard/dashboard";
 import { parchasesTabs } from "../Vendors/Vendors";
-import { useState, useEffect } from "react";
-
 
 const columns = [
-    { key: "profileName", label: "Profile Name" },
-    { key: "expenseAccount", label: "Expense Account" },
     { key: "vendorName", label: "Vendor Name" },
+    { key: "profileName", label: "Profile Name" },
     { key: "frequency", label: "Frequency" },
     { key: "lastExpenseDate", label: "Last Expense Date" },
     { key: "nextExpenseDate", label: "Next Expense Date" },
@@ -18,10 +16,10 @@ const columns = [
     { key: "amount", label: "Amount" },
 ];
 
-const RecurringExpenses = () => {
+const RecurringBills = () => {
 
     const navigate = useNavigate();
-    const [recurringExpenses, setRecurringExpenses] = useState<any[]>([]);
+    const [recurringBills, setRecurringBills] = useState<any[]>([]);
 
 
 
@@ -29,8 +27,8 @@ const RecurringExpenses = () => {
     // INFUTURE HERE'S GET API CALL
     // Load from localStorage
     useEffect(() => {
-        const stored = JSON.parse(localStorage.getItem("recurringExpenses") || "[]");
-        setRecurringExpenses(stored);
+        const stored = JSON.parse(localStorage.getItem("recurringBills") || "[]");
+        setRecurringBills(stored);
     }, []);
 
     return (
@@ -39,23 +37,22 @@ const RecurringExpenses = () => {
 
             <div style={{ padding: "56px 0px 0px" }}>
 
-
-
                 <Navbar tabs={dashboardTabs} />
                 <Navbar tabs={parchasesTabs} />
 
-                <div className=" mt-3">
+                <div className=" mt-3" >
                     <DynamicTable
                         columns={columns}
-                        data={recurringExpenses}
+                        data={recurringBills}
                         actions={true}
                         rowsPerPage={10}
-                        onAdd={() => navigate("/purchases/add-recurringExpenses")} //May be change it latter. "/add-customer"
+                        onAdd={() => navigate("/purchases/add-recurringBill")} //May be change it latter. "/add-customer"
                         onView={(row) => navigate(`/purchases/view-vendor`)} />
                 </div>
+
             </div>
         </>
     )
 }
 
-export default RecurringExpenses;
+export default RecurringBills;

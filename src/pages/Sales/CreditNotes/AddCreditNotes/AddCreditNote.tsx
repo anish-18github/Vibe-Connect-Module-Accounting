@@ -234,124 +234,151 @@ export default function AddCreditNote() {
         <>
             <Header />
 
-            <div className="sales-orders-page" style={{ padding: "0 1.8rem" }}>
+            <div className="sales-orders-page" style={{ padding: "69px 1.8rem 0 1.8rem" }}>
                 <h1 className="h4 text-dark mb-4 pb-1">New Credit Note</h1>
 
                 <form onSubmit={handleSubmit} style={{ color: "#5E5E5E" }}>
 
                     {/* ---------------- TWO COLUMN FORM ---------------- */}
-                    <div className="two-column-form">
-
-                        <div className="left-column">
-
-                            <div className="form-row">
-                                <label>Customer Name:</label>
-                                <select
-                                    name="customerName"
-                                    className="form-select form-control-sm"
-                                    value={formData.credit.customerName}
-                                    onChange={handleChange}
-                                >
-                                    <option value="" disabled>Select Customer</option>
-                                    <option value="Customer A">Customer A</option>
-                                    <option value="Customer B">Customer B</option>
-                                </select>
-                            </div>
-
-                            <div className="form-row">
-                                <label>Reference:</label>
-                                <input
-                                    type="text"
-                                    name="referenceNo"
-                                    className="form-control form-control-sm"
-                                    value={formData.credit.referenceNo}
-                                    onChange={handleChange}
-                                />
-                            </div>
-
-                            <div className="form-row">
-                                <label className="form-label">Subject:</label>
-                                <textarea
-                                    className="form-control form-control-sm"
-                                    style={{ resize: "none" }}
-                                    name="customerNotes"
-                                    value={formData.credit.subject}
-                                    onChange={handleChange}
-                                />
-                            </div>
-
-                            <div className="form-row">
-                                <label>Payment Terms:</label>
-                                <select
-                                    name="paymentTerms"
-                                    className="form-select form-control-sm"
-                                    value={formData.credit.paymentTerm}
-                                    onChange={handleChange}
-                                >
-                                    <option value="" disabled>Select</option>
-                                    <option value="Advance">Advance</option>
-                                    <option value="Net 15">Net 15</option>
-                                    <option value="Net 30">Net 30</option>
-                                    <option value="Net 45">Net 45</option>
-                                </select>
-                            </div>
-
-                        </div>
-
-                        <div className="right-column">
-
-                            <div className="form-row" style={{ position: "relative" }}>
-                                <label>Credit Note:</label>
-                                <input
-                                    type="text"
-                                    name="creditNoteNo"
-                                    className="form-control form-control-sm"
-                                    value={formData.credit.creditNoteNo}
-                                    onChange={handleChange}
-                                    style={{ paddingRight: "35px" }}
-                                />
-                                <div
-                                    style={{
-                                        position: "absolute",
-                                        right: "12px",
-                                        top: "65%",
-                                        transform: "translateY(-85%)",
-                                        cursor: "pointer",
-                                    }}
-                                    onClick={() => setShowSettings(true)}
-                                >
-                                    <Settings size={16} style={{ color: "#555" }} />
+                    <div className="row mb-4">
+                        {/* COLUMN 1: 3 fields (Customer, Reference, Subject) */}
+                        <div className="col-lg-4">
+                            {/* Customer Name */}
+                            <div className="row align-items-center mb-2">
+                                <label className="col-sm-3 col-form-label">Customer:</label>
+                                <div className="col-sm-6">
+                                    <select
+                                        name="customerName"
+                                        className="form-select form-select-sm border"
+                                        value={formData.credit.customerName}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="" disabled>
+                                            Select Customer
+                                        </option>
+                                        <option value="Customer A">Customer A</option>
+                                        <option value="Customer B">Customer B</option>
+                                    </select>
                                 </div>
                             </div>
 
-                            <div className="form-row">
-                                <label>Credit Note Date:</label>
-                                <input
-                                    type="date"
-                                    className="form-control form-control-sm"
-                                    name="creditDate"
-                                    value={formData.credit.creditDate}
-                                    onChange={handleChange}
-                                />
+                            {/* Reference */}
+                            <div className="row align-items-center mb-2">
+                                <label className="col-sm-3 col-form-label">Reference:</label>
+                                <div className="col-sm-8">
+                                    <input
+                                        type="text"
+                                        name="referenceNo"
+                                        className="form-control form-control-sm border"
+                                        value={formData.credit.referenceNo}
+                                        onChange={handleChange}
+                                    />
+                                </div>
                             </div>
 
-                            <div className="form-row">
-                                <label>Salesperson:</label>
-                                <select
-                                    name="salesperson"
-                                    className="form-select form-control-sm"
-                                    value={formData.credit.salesperson}
-                                    onChange={handleChange}
-                                >
-                                    <option value="" disabled>Select Salesperson</option>
-                                    <option value="John">John</option>
-                                    <option value="Maria">Maria</option>
-                                </select>
+                            {/* Subject */}
+                            <div className="row align-items-start mb-2">
+                                <label className="col-sm-3 col-form-label">Subject:</label>
+                                <div className="col-sm-8">
+                                    <textarea
+                                        className="form-control form-control-sm border"
+                                        style={{ resize: "none", height: "50px" }}
+                                        name="customerNotes"
+                                        value={formData.credit.subject}
+                                        onChange={handleChange}
+                                    />
+                                </div>
                             </div>
-
                         </div>
 
+                        {/* COLUMN 2: 2 fields (Payment Terms, Credit Note No) */}
+                        <div className="col-lg-4">
+                            {/* Payment Terms */}
+                            <div className="row align-items-center mb-2">
+                                <label className="col-sm-4 col-form-label">Payment Terms:</label>
+                                <div className="col-sm-5">
+                                    <select
+                                        name="paymentTerms"
+                                        className="form-select form-select-sm border"
+                                        value={formData.credit.paymentTerm}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="" disabled>
+                                            Select
+                                        </option>
+                                        <option value="Advance">Advance</option>
+                                        <option value="Net 15">Net 15</option>
+                                        <option value="Net 30">Net 30</option>
+                                        <option value="Net 45">Net 45</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Credit Note No */}
+                            <div className="row align-items-center mb-2" style={{ position: "relative" }}>
+                                <label className="col-sm-4 col-form-label">Credit Note:</label>
+                                <div className="col-sm-7">
+                                    <input
+                                        type="text"
+                                        name="creditNoteNo"
+                                        className="form-control form-control-sm border"
+                                        value={formData.credit.creditNoteNo}
+                                        onChange={handleChange}
+                                        style={{ paddingRight: "35px" }}
+                                    />
+                                    <div
+                                        style={{
+                                            position: "absolute",
+                                            right: "55px",
+                                            top: "50%",
+                                            transform: "translateY(-55%)",
+                                            cursor: "pointer",
+                                        }}
+                                        onClick={() => setShowSettings(true)}
+                                    >
+                                        <Settings size={16} style={{ color: "#555" }} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* COLUMN 3: 2 fields (Credit Date, Salesperson) */}
+                        <div className="col-lg-4">
+                            {/* Credit Note Date */}
+                            <div className="row align-items-center mb-2">
+                                <label className="col-sm-5 col-form-label">Credit Note Date:</label>
+                                <div className="col-sm-7">
+                                    <input
+                                        type="date"
+                                        className="form-control form-control-sm border"
+                                        name="creditDate"
+                                        value={formData.credit.creditDate}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Salesperson */}
+                            <div className="row align-items-center mb-2">
+                                <label className="col-sm-5 col-form-label">Salesperson:</label>
+                                <div className="col-sm-6">
+                                    <select
+                                        name="salesperson"
+                                        className="form-select form-select-sm border"
+                                        value={formData.credit.salesperson}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="" disabled>
+                                            Select Salesperson
+                                        </option>
+                                        <option value="John">John</option>
+                                        <option value="Maria">Maria</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
 
                     {/* ---------------- ITEM TABLE ---------------- */}
                     <h5 className="mt-4 fw-normal table-title"

@@ -23,7 +23,8 @@ interface RecurringInvoiceForm {
     invoice: {
         customerName: string;
         invoiceNo: string;
-        invoiceDate: string;
+        orderNumber: string;
+        repeatEvery: string;
         startOn: string;
         endOn: string;
         paymentTerms: string;
@@ -67,7 +68,8 @@ export default function AddRecurringInvoices() {
         invoice: {
             customerName: "",
             invoiceNo: "",
-            invoiceDate: "",
+            orderNumber: "",
+            repeatEvery: "",
             startOn: "",
             endOn: "",
             paymentTerms: "",
@@ -260,149 +262,174 @@ export default function AddRecurringInvoices() {
         <>
             <Header />
 
-            <div className="sales-orders-page" style={{ padding: "0 1.8rem" }}>
+            <div className="sales-orders-page" style={{ padding: "69px 1.8rem 0 1.8rem" }}>
                 <h1 className="h4 text-dark mb-4 pb-1">
                     New Recurring Invoice
                 </h1>
 
                 <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
 
-                    <div className="two-column-form">
-                        {/* -------- LEFT COLUMN -------- */}
-                        <div className="left-column">
-
-                            <div className="form-row">
-                                <label>Customer Name:</label>
-                                <select
-                                    name="customerName"
-                                    className="form-select form-control-sm"
-                                    value={formData.invoice.customerName}
-                                    onChange={handleChange}
-                                >
-                                    <option value="" disabled>Select Customer</option>
-                                    <option value="Customer A">Customer A</option>
-                                    <option value="Customer B">Customer B</option>
-                                </select>
+                    <div className="row mb-4">
+                        {/* COLUMN 1: Customer Name, Order Date, Repeat Every */}
+                        <div className="col-lg-4">
+                            {/* Customer Name */}
+                            <div className="row align-items-center mb-2">
+                                <label className="col-sm-5 col-form-label fw-normal">Customer Name:</label>
+                                <div className="col-sm-6">
+                                    <select
+                                        name="customerName"
+                                        className="form-select form-select-sm border"
+                                        value={formData.invoice.customerName}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="" disabled>Select Customer</option>
+                                        <option value="Customer A">Customer A</option>
+                                        <option value="Customer B">Customer B</option>
+                                    </select>
+                                </div>
                             </div>
 
-                            <div className="form-row">
-                                <label>Order Number:</label>
-                                <input
-                                    type="date"
-                                    className="form-control form-control-sm"
-                                    name="invoiceDate"
-                                    value={formData.invoice.invoiceDate}
-                                    onChange={handleChange}
-                                />
+                            {/* Order Date (was labeled "Order Number" but is date input) */}
+                            <div className="row align-items-center mb-2">
+                                <label className="col-sm-5 col-form-label fw-normal">Order Number:</label>
+                                <div className="col-sm-5">
+                                    <input
+                                        type="number"
+                                        className="form-control form-control-sm border"
+                                        name="orderNumber"
+                                        value={formData.invoice.orderNumber}
+                                        onChange={handleChange}
+                                    />
+                                </div>
                             </div>
 
-                            <div className="form-row">
-                                <label>Repeat Every:</label>
-                                <select
-                                    name="repeatEvery"
-                                    className="form-select form-control-sm"
-                                    value={formData.invoice.customerName}
-                                    onChange={handleChange}
-                                >
-                                    <option value="" disabled>Select</option>
-                                    <option value="Week">Week</option>
-                                    <option value="Week">2 Weeks</option>
-                                    <option value="Month">Month</option>
-                                    <option value="2 Months">2 Months</option>
-                                    <option value="3 Months">3 Months</option>
-                                    <option value="6 Months">6 Months</option>
-                                    <option value="Year">Year</option>
-                                    <option value="2 Years">2 Years</option>
-                                    <option value="3 Years">3 Years</option>
-                                </select>
+                            {/* Repeat Every */}
+                            <div className="row align-items-center mb-2">
+                                <label className="col-sm-5 col-form-label fw-normal">Repeat Every:</label>
+                                <div className="col-sm-5">
+                                    <select
+                                        name="repeatEvery"
+                                        className="form-select form-select-sm border"
+                                        value={formData.invoice.repeatEvery || formData.invoice.customerName} // Fixed value binding
+                                        onChange={handleChange}
+                                    >
+                                        <option value="" disabled>Select</option>
+                                        <option value="Week">Week</option>
+                                        <option value="2 Weeks">2 Weeks</option>
+                                        <option value="Month">Month</option>
+                                        <option value="2 Months">2 Months</option>
+                                        <option value="3 Months">3 Months</option>
+                                        <option value="6 Months">6 Months</option>
+                                        <option value="Year">Year</option>
+                                        <option value="2 Years">2 Years</option>
+                                        <option value="3 Years">3 Years</option>
+                                    </select>
+                                </div>
                             </div>
-
-                            <div className="form-row">
-                                <label className="form-label">Subject:</label>
-                                <textarea
-                                    className="form-control form-control-sm"
-                                    style={{ resize: "none", height: "50px" }}
-                                    name="customerNotes"
-                                    value={formData.invoice.customerNotes}
-                                    onChange={handleChange}
-                                />
-                            </div>
-
                         </div>
 
-                        {/* -------- RIGHT COLUMN -------- */}
-                        <div className="right-column">
-
-                            <div className="form-row" style={{ position: "relative" }}>
-                                <label>Profile Name:</label>
-                                <input
-                                    type="text"
-                                    name="invoiceNo"
-                                    className="form-control form-control-sm border"
-                                    value={formData.invoice.invoiceNo}
-                                    onChange={handleChange}
-                                    style={{ paddingRight: "35px" }}
-                                />
-
-                                {/* <div
-                                    style={{
-                                        position: "absolute",
-                                        right: "12px",
-                                        top: "65%",
-                                        transform: "translateY(-85%)",
-                                        cursor: "pointer",
-                                    }}
-                                    onClick={() => setShowSettings(true)}
-                                >
-                                    <Settings size={16} style={{ color: "#555" }} />
-                                </div> */}
-                            </div>
-
-                            <div className="form-row">
-                                <label className="col-sm-2 col-form-label">Terms:</label>
-                                <div className="col-sm-2">
-                                    <input type="date" className="form-control form-control-sm" name="quoteDate" value={formData.invoice.startOn} onChange={handleChange} />
-                                </div>
-
-                                <label className="col-sm-2 col-form-label">Expiry Date:</label>
-                                <div className="col-sm-2">
-                                    <input type="date" className="form-control form-control-sm" name="expiryDate" value={formData.invoice.endOn} onChange={handleChange} />
+                        {/* COLUMN 2: Subject (textarea), Profile Name */}
+                        <div className="col-lg-4">
+                            {/* Subject (textarea - takes more vertical space) */}
+                            <div className="row align-items-start mb-2">
+                                <label className="col-sm-4 col-form-label fw-normal">Subject:</label>
+                                <div className="col-sm-8">
+                                    <textarea
+                                        className="form-control form-control-sm border"
+                                        style={{ resize: "none", height: "50px" }}
+                                        name="customerNotes"
+                                        value={formData.invoice.customerNotes}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                             </div>
 
-                            <div className="form-row">
-                                <label>Salesperson:</label>
-                                <select
-                                    name="salesperson"
-                                    className="form-control form-control-sm"
-                                    value={formData.invoice.salesperson}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Select Salesperson</option>
-                                    <option value="John">John</option>
-                                    <option value="Maria">Maria</option>
-                                </select>
+                            {/* Profile Name */}
+                            <div className="row align-items-center mb-2">
+                                <label className="col-sm-4 col-form-label fw-normal">Profile Name:</label>
+                                <div className="col-sm-8">
+                                    <input
+                                        type="text"
+                                        name="invoiceNo"
+                                        className="form-control form-control-sm border"
+                                        value={formData.invoice.invoiceNo}
+                                        onChange={handleChange}
+                                    />
+                                </div>
                             </div>
 
+                            {/* Terms / Start Date / Expiry Date (together as requested) */}
+                            <div className="row align-items-center mb-2">
+                                <label className="col-sm-4 col-form-label fw-normal">Terms:</label>
+                                <div className="col-sm-8">
+                                    <div className="row">
+                                        <div className="col-sm-6">
+                                            <input
+                                                type="date"
+                                                className="form-control form-control-sm border mb-1"
+                                                name="quoteDate"
+                                                value={formData.invoice.startOn}
+                                                onChange={handleChange}
+                                                placeholder="Start On"
+                                            />
+                                        </div>
+                                        <div className="col-sm-6">
+                                            <input
+                                                type="date"
+                                                className="form-control form-control-sm border"
+                                                name="expiryDate"
+                                                value={formData.invoice.endOn}
+                                                onChange={handleChange}
+                                                placeholder="End On"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                            <div className="form-row">
-                                <label>Payment Terms:</label>
-                                <select
-                                    name="paymentTerms"
-                                    className="form-select form-control-sm"
-                                    value={formData.invoice.paymentTerms}
-                                    onChange={handleChange}
-                                >
-                                    <option value="" disabled>Select</option>
-                                    <option value="Advance">Advance</option>
-                                    <option value="Net 15">Net 15</option>
-                                    <option value="Net 30">Net 30</option>
-                                    <option value="Net 45">Net 45</option>
-                                </select>
+                        {/* COLUMN 3: Terms/Start/Expiry, Salesperson, Payment Terms */}
+                        <div className="col-lg-4">
+
+
+                            {/* Salesperson */}
+                            <div className="row align-items-center mb-2">
+                                <label className="col-sm-4 col-form-label fw-normal">Salesperson:</label>
+                                <div className="col-sm-6">
+                                    <select
+                                        name="salesperson"
+                                        className="form-select form-select-sm border"
+                                        value={formData.invoice.salesperson}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select Salesperson</option>
+                                        <option value="John">John</option>
+                                        <option value="Maria">Maria</option>
+                                    </select>
+                                </div>
                             </div>
 
+                            {/* Payment Terms */}
+                            <div className="row align-items-center mb-2">
+                                <label className="col-sm-4 col-form-label fw-normal">Payment Terms:</label>
+                                <div className="col-sm-5">
+                                    <select
+                                        name="paymentTerms"
+                                        className="form-select form-select-sm border"
+                                        value={formData.invoice.paymentTerms}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="" disabled>Select</option>
+                                        <option value="Advance">Advance</option>
+                                        <option value="Net 15">Net 15</option>
+                                        <option value="Net 30">Net 30</option>
+                                        <option value="Net 45">Net 45</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
 
                     {/* ITEM TABLE */}
                     <h5

@@ -113,13 +113,13 @@ const BulkUpdate = () => {
         //   return true or false;
         // });
 
-        const filtered: TableRow[] = []; 
+        const filtered: TableRow[] = [];
 
         setBulkUpdate(filtered);
         localStorage.setItem("bulk-update", JSON.stringify(filtered));
         setSelectedRows(new Set());
         setAllSelected(false);
-        setHasFiltered(true);         
+        setHasFiltered(true);
         setShowModal(false);
     };
 
@@ -153,112 +153,118 @@ const BulkUpdate = () => {
     return (
         <>
             <Header />
-            <Navbar tabs={dashboardTabs} />
-            <Navbar tabs={accountantTabs} />
 
-            <div className="container-fluid mt-3">
-                {/* Filter summary block (top green area like screenshot) */}
-                {hasFiltered && (
-                    <div
-                        className="p-3 mb-3"
-                        style={{ backgroundColor: "#f4fff4", borderRadius: 4 }}
-                    >
-                        <div className="small text-muted mb-1">Filtered based on</div>
-                        <ul className="mb-1 small">
-                            <li>
-                                Account Name: <strong>{form.account || "—"}</strong>
-                            </li>
-                            <li>
-                                Contact: <strong>{form.contact || "—"}</strong>
-                            </li>
-                            <li>
-                                Start Date: <strong>{form.dateFrom || "—"}</strong>
-                            </li>
-                            <li>
-                                End Date: <strong>{form.dateTo || "—"}</strong>
-                            </li>
-                            <li>
-                                Total Amount Range:{" "}
+            <div style={{ padding: "56px 0px 0px" }}>
+
+
+
+                <Navbar tabs={dashboardTabs} />
+                <Navbar tabs={accountantTabs} />
+
+                <div className="container-fluid mt-3">
+                    {/* Filter summary block (top green area like screenshot) */}
+                    {hasFiltered && (
+                        <div
+                            className="p-3 mb-3"
+                            style={{ backgroundColor: "#f4fff4", borderRadius: 4 }}
+                        >
+                            <div className="small text-muted mb-1">Filtered based on</div>
+                            <ul className="mb-1 small">
+                                <li>
+                                    Account Name: <strong>{form.account || "—"}</strong>
+                                </li>
+                                <li>
+                                    Contact: <strong>{form.contact || "—"}</strong>
+                                </li>
+                                <li>
+                                    Start Date: <strong>{form.dateFrom || "—"}</strong>
+                                </li>
+                                <li>
+                                    End Date: <strong>{form.dateTo || "—"}</strong>
+                                </li>
+                                <li>
+                                    Total Amount Range:{" "}
+                                    <strong>
+                                        {form.amountFrom || "0"} - {form.amountTo || "0"}
+                                    </strong>
+                                </li>
+                            </ul>
+                            <button
+                                type="button"
+                                className="btn btn-link p-0 small"
+                                onClick={() => setShowModal(true)}
+                            >
+                                Change Filter Criteria »
+                            </button>
+                        </div>
+                    )}
+
+
+                    {/* Selection summary only when rows exist & selected */}
+                    {bulkUpdate.length > 0 && selectedRows.size > 0 && (
+                        <div className="alert alert-info d-flex justify-content-between align-items-center mb-3">
+                            <div>
                                 <strong>
-                                    {form.amountFrom || "0"} - {form.amountTo || "0"}
+                                    {selectedRows.size} row
+                                    {selectedRows.size > 1 ? "s" : ""} selected
                                 </strong>
-                            </li>
-                        </ul>
-                        <button
-                            type="button"
-                            className="btn btn-link p-0 small"
-                            onClick={() => setShowModal(true)}
-                        >
-                            Change Filter Criteria »
-                        </button>
-                    </div>
-                )}
-
-
-                {/* Selection summary only when rows exist & selected */}
-                {bulkUpdate.length > 0 && selectedRows.size > 0 && (
-                    <div className="alert alert-info d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <strong>
-                                {selectedRows.size} row
-                                {selectedRows.size > 1 ? "s" : ""} selected
-                            </strong>
-                            <small className="text-muted ms-2">
-                                ({bulkUpdate.length} total)
-                            </small>
+                                <small className="text-muted ms-2">
+                                    ({bulkUpdate.length} total)
+                                </small>
+                            </div>
+                            <button
+                                className="btn btn-primary btn-sm"
+                                onClick={() => {
+                                    console.log("Bulk updating:", getSelectedData());
+                                    alert(`Bulk updating ${selectedRows.size} rows!`);
+                                }}
+                            >
+                                Bulk Update ({selectedRows.size})
+                            </button>
                         </div>
-                        <button
-                            className="btn btn-primary btn-sm"
-                            onClick={() => {
-                                console.log("Bulk updating:", getSelectedData());
-                                alert(`Bulk updating ${selectedRows.size} rows!`);
-                            }}
-                        >
-                            Bulk Update ({selectedRows.size})
-                        </button>
-                    </div>
-                )}
+                    )}
 
-                {/* Select-all only when there is data */}
-                {bulkUpdate.length > 0 && (
-                    <div className="mb-3">
-                        <div className="form-check">
-                            <input
-                                className="form-check-input"
-                                type="checkbox"
-                                id="select-all"
-                                checked={allSelected}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                    handleSelectAll(e.target.checked)
-                                }
-                            />
-                            <label className="form-check-label" htmlFor="select-all">
-                                Select all {bulkUpdate.length} transactions
-                            </label>
+                    {/* Select-all only when there is data */}
+                    {bulkUpdate.length > 0 && (
+                        <div className="mb-3">
+                            <div className="form-check">
+                                <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    id="select-all"
+                                    checked={allSelected}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                        handleSelectAll(e.target.checked)
+                                    }
+                                />
+                                <label className="form-check-label" htmlFor="select-all">
+                                    Select all {bulkUpdate.length} transactions
+                                </label>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {/* When no filtered transactions, show message instead of rows */}
-                {hasFiltered && bulkUpdate.length === 0 ? (
-                    <div className="text-center text-muted mt-4">
-                        No transactions (Invoices, Credit Notes, Purchase Orders, Expenses,
-                        Bills, Vendor Credits) available. Please change the filter criteria
-                        and try again.
-                    </div>
-                ) : (
-                    <DynamicTable
-                        columns={columns}
-                        data={tableData}
-                        actions={false}
-                        rowsPerPage={10}
-                        onAdd={() => setShowModal(true)}
-                        onView={(row: any) =>
-                            navigate(`/sales/view-customer/${row.customerId}`)
-                        }
-                    />
-                )}
+                    {/* When no filtered transactions, show message instead of rows */}
+                    {hasFiltered && bulkUpdate.length === 0 ? (
+                        <div className="text-center text-muted mt-4">
+                            No transactions (Invoices, Credit Notes, Purchase Orders, Expenses,
+                            Bills, Vendor Credits) available. Please change the filter criteria
+                            and try again.
+                        </div>
+                    ) : (
+                        <DynamicTable
+                            columns={columns}
+                            data={tableData}
+                            actions={false}
+                            rowsPerPage={10}
+                            onAdd={() => setShowModal(true)}
+                            onView={(row: any) =>
+                                navigate(`/sales/view-customer/${row.customerId}`)
+                            }
+                        />
+                    )}
 
+                </div>
             </div>
 
             {/* Filter modal */}

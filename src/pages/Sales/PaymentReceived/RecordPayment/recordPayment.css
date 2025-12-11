@@ -29,6 +29,7 @@
 .payment-table thead tr th:first-child {
   border-top-left-radius: 12px;
 }
+
 .payment-table thead tr th:last-child {
   border-top-right-radius: 12px;
 }
@@ -43,6 +44,7 @@
   border-top-left-radius: 5px;
   border-bottom-left-radius: 12px;
 }
+
 .payment-table tbody tr td:last-child {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 12px;
@@ -70,4 +72,23 @@
 .payment-table tbody tr td {
   vertical-align: middle;
   padding: 6px 10px !important;
+}
+
+
+/* Radio buttons inline */
+.radio-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.radio-row .form-check {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.radio-row .form-check-input {
+  margin-top: 0;
+  margin-right: 0.5rem;
 }

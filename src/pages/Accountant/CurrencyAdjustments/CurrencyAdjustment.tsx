@@ -66,18 +66,24 @@ const CurrencyAdjustments = () => {
     return (
         <>
             <Header />
-            <Navbar tabs={dashboardTabs} />
-            <Navbar tabs={accountantTabs} />
 
-            <div className="mt-3">
-                <DynamicTable
-                    columns={columns}
-                    data={currencyAdjustments}
-                    actions={true}
-                    rowsPerPage={10}
-                    onAdd={() => setShowModal(true)}  // open popup instead of navigate
-                    onView={(row) => navigate(`/sales/view-customer/${row.customerId}`)}
-                />
+            <div style={{ padding: "56px 0px 0px" }}>
+
+
+
+                <Navbar tabs={dashboardTabs} />
+                <Navbar tabs={accountantTabs} />
+
+                <div className="mt-3">
+                    <DynamicTable
+                        columns={columns}
+                        data={currencyAdjustments}
+                        actions={true}
+                        rowsPerPage={10}
+                        onAdd={() => setShowModal(true)}  // open popup instead of navigate
+                        onView={(row) => navigate(`/sales/view-customer/${row.customerId}`)}
+                    />
+                </div>
             </div>
 
             {showModal && (

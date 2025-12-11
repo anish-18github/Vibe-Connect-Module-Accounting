@@ -678,7 +678,7 @@ const CalculateBudget: React.FC = () => {
     return (
         <>
             <Header />
-            <div style={{ padding: "0 1.8rem" }}>
+            <div style={{ padding: "69px 1.8rem 0 1.8rem"}}>
                 <h1 className="h4 text-dark mb-2">Calculate Budget</h1>
                 <p className="text-muted mb-3" style={{ fontSize: "0.9rem" }}>
                     Budget: {state.name || "-"} | Fiscal Year: {state.fiscalYear || "-"} | Period: {state.period || "-"}

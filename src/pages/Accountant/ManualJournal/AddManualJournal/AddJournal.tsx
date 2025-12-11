@@ -113,104 +113,118 @@ export default function AddJournal() {
         <>
             <Header />
 
-            <div style={{ padding: "0 1.8rem" }}>
+            <div style={{ padding: "69px 1.8rem 0 1.8rem" }}>
                 <h1 className="h4 text-dark mb-4 pb-1">Manual Journal</h1>
 
                 <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
 
-                    {/* Date - Current date with picker */}
-                    <div className="row align-items-center mb-3">
-                        <label className="col-sm-2 col-form-label">Date:</label>
-                        <div className="col-sm-6">
-                            <input
-                                type="date"
-                                name="date"
-                                className="form-control form-control-sm border"
-                                value={formData.date}
-                                onChange={handleChange}
-                            />
+                    {/* TWO COLUMN LAYOUT FOR FORM FIELDS */}
+                    <div className="row mb-4">
+                        {/* COLUMN 1: Date + Journal */}
+                        <div className="col-lg-4">
+                            {/* Date */}
+                            <div className="row align-items-center mb-3">
+                                <label className="col-sm-3 col-form-label">Date:</label>
+                                <div className="col-sm-5">
+                                    <input
+                                        type="date"
+                                        name="date"
+                                        className="form-control form-control-sm border"
+                                        value={formData.date}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Journal */}
+                            <div className="row align-items-center mb-3">
+                                <label className="col-sm-3 col-form-label">Journal:</label>
+                                <div className="col-sm-7">
+                                    <input
+                                        type="text"
+                                        name="journal"
+                                        value={formData.journal}
+                                        onChange={handleChange}
+                                        className="form-control form-control-sm border"
+                                        placeholder="Enter journal name"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* COLUMN 2: Reference + Notes */}
+                        <div className="col-lg-4">
+                            {/* Reference */}
+                            <div className="row align-items-center mb-3">
+                                <label className="col-sm-3 col-form-label">Reference:</label>
+                                <div className="col-sm-8">
+                                    <input
+                                        type="text"
+                                        name="reference"
+                                        value={formData.reference}
+                                        onChange={handleChange}
+                                        className="form-control form-control-sm border"
+                                        placeholder="Enter reference"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Notes */}
+                            <div className="row align-items-center mb-3">
+                                <label className="col-sm-3 col-form-label">Notes:</label>
+                                <div className="col-sm-8">
+                                    <input
+                                        type="text"
+                                        name="notes"
+                                        value={formData.notes}
+                                        onChange={handleChange}
+                                        className="form-control form-control-sm border"
+                                        placeholder="Enter notes"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* COLUMN 3: Journal Type + Currency */}
+                        <div className="col-lg-4">
+                            {/* Cash Based Journal Checkbox */}
+                            <div className="row align-items-center mb-3">
+                                <label className="col-sm-4 col-form-label pt-1">Journal Type:</label>
+                                <div className="col-sm-8">
+                                    <label className="form-check-label d-flex align-items-center">
+                                        <input
+                                            type="checkbox"
+                                            className="form-check-input me-2"
+                                            checked={formData.isCashBased}
+                                            onChange={handleCheckboxChange}
+                                        />
+                                        Cash Based Journal
+                                    </label>
+                                </div>
+                            </div>
+
+                            {/* Currency */}
+                            <div className="row align-items-center mb-3">
+                                <label className="col-sm-4 col-form-label">Currency:</label>
+                                <div className="col-sm-6">
+                                    <select
+                                        name="currency"
+                                        value={formData.currency}
+                                        onChange={handleChange}
+                                        className="form-select form-control-sm border"
+                                    >
+                                        <option value="" disabled>-- Select Currency --</option>
+                                        {currencies.map((c, i) => (
+                                            <option key={i} value={c}>{c}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Journal */}
-                    <div className="row align-items-center mb-3">
-                        <label className="col-sm-2 col-form-label">Journal:</label>
-                        <div className="col-sm-6">
-                            <input
-                                type="text"
-                                name="journal"
-                                value={formData.journal}
-                                onChange={handleChange}
-                                className="form-control form-control-sm border"
-                                placeholder="Enter journal name"
-                            />
-                        </div>
-                    </div>
 
-                    {/* Reference */}
-                    <div className="row align-items-center mb-3">
-                        <label className="col-sm-2 col-form-label">Reference:</label>
-                        <div className="col-sm-6">
-                            <input
-                                type="text"
-                                name="reference"
-                                value={formData.reference}
-                                onChange={handleChange}
-                                className="form-control form-control-sm border"
-                                placeholder="Enter reference"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Notes */}
-                    <div className="row align-items-center mb-3">
-                        <label className="col-sm-2 col-form-label">Notes:</label>
-                        <div className="col-sm-6">
-                            <input
-                                type="text"
-                                name="notes"
-                                value={formData.notes}
-                                onChange={handleChange}
-                                className="form-control form-control-sm border"
-                                placeholder="Enter notes"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Cash Based Journal Checkbox */}
-                    <div className="row align-items-center mb-4">
-                        <div className="col-sm-6">
-                            <label className="form-check-label d-flex align-items-center">
-                                <input
-                                    type="checkbox"
-                                    className="form-check-input me-2"
-                                    checked={formData.isCashBased}
-                                    onChange={handleCheckboxChange}
-                                />
-                                Cash Based Journal
-                            </label>
-                        </div>
-                    </div>
-
-                    {/* Currency */}
-                    <div className="row align-items-center mb-4">
-                        <label className="col-sm-2 col-form-label">Currency:</label>
-                        <div className="col-sm-6">
-                            <select
-                                name="currency"
-                                value={formData.currency}
-                                onChange={handleChange}
-                                className="form-select form-control-sm border"
-                            >
-                                <option value="" disabled>-- Select Currency --</option>
-                                {currencies.map((c, i) => (
-                                    <option key={i} value={c}>{c}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* ✅ JOURNAL ENTRIES TABLE - 2 DEFAULT ROWS */}
+                    {/* ✅ JOURNAL ENTRIES TABLE - 2 DEFAULT ROWS (unchanged) */}
                     <div className="mb-4">
                         <h5 className="mb-3">Journal Entries</h5>
                         <div className="row">
@@ -228,7 +242,6 @@ export default function AddJournal() {
                                     <tbody>
                                         {journalRows.map((row, index) => (
                                             <tr key={index} className="position-relative">
-                                                {/* 1️⃣ SELECT: Account */}
                                                 <td>
                                                     <select
                                                         name="account"
@@ -243,8 +256,6 @@ export default function AddJournal() {
                                                         ))}
                                                     </select>
                                                 </td>
-
-                                                {/* 2️⃣ TEXT INPUT: Description */}
                                                 <td>
                                                     <input
                                                         type="text"
@@ -254,8 +265,6 @@ export default function AddJournal() {
                                                         onChange={(e) => handleRowChange(index, e)}
                                                     />
                                                 </td>
-
-                                                {/* 3️⃣ SELECT: Contact */}
                                                 <td>
                                                     <select
                                                         name="contact"
@@ -270,8 +279,6 @@ export default function AddJournal() {
                                                         ))}
                                                     </select>
                                                 </td>
-
-                                                {/* 4️⃣ TEXT INPUT: Debit (NO PLACEHOLDER) */}
                                                 <td>
                                                     <input
                                                         type="text"
@@ -281,8 +288,6 @@ export default function AddJournal() {
                                                         onChange={(e) => handleRowChange(index, e)}
                                                     />
                                                 </td>
-
-                                                {/* 5️⃣ TEXT INPUT: Credit (NO PLACEHOLDER) */}
                                                 <td>
                                                     <input
                                                         type="text"
@@ -292,7 +297,6 @@ export default function AddJournal() {
                                                         onChange={(e) => handleRowChange(index, e)}
                                                     />
                                                 </td>
-
                                                 <td className="text-center">
                                                     <button
                                                         className="border-0 bg-body text-danger"
@@ -307,9 +311,6 @@ export default function AddJournal() {
                                     </tbody>
                                 </table>
 
-
-
-
                                 <button
                                     type="button"
                                     className="btn btn-sm fw-normal mt-2"
@@ -322,9 +323,8 @@ export default function AddJournal() {
                                     <PlusCircle size={18} style={{ color: "#878787" }} /> Add Entry
                                 </button>
 
-                                {/* Row: left = Upload, right = Summary */}
+                                {/* Row: left = Upload, right = Summary (unchanged) */}
                                 <div className="row mt-4">
-                                    {/* LEFT: Upload (50%) */}
                                     <div className="col-md-6 mb-3">
                                         <div className="row mb-0">
                                             <label className="col-sm-3 col-form-label d-flex align-items-center">
@@ -342,7 +342,6 @@ export default function AddJournal() {
                                                 >
                                                     <FeatherUpload size={32} className="text-muted mb-2" />
                                                     <span className="text-secondary small">Click to Upload Documents</span>
-
                                                     <input
                                                         id="fileUploadInput"
                                                         type="file"
@@ -360,8 +359,6 @@ export default function AddJournal() {
                                             </div>
                                         </div>
                                     </div>
-
-                                    {/* RIGHT: Summary (50%) */}
                                     <div className="col-md-6 mb-3 d-flex justify-content-end">
                                         <div
                                             className="total-box p-3 w-100"
@@ -376,13 +373,11 @@ export default function AddJournal() {
                                                 <span>{debitTotal.toFixed(2)}</span>
                                                 <span>{creditTotal.toFixed(2)}</span>
                                             </div>
-
                                             <div className="d-flex justify-content-between mb-2">
                                                 <strong>Total (₹)</strong>
                                                 <strong>{debitTotal.toFixed(2)}</strong>
                                                 <strong>{creditTotal.toFixed(2)}</strong>
                                             </div>
-
                                             <div className="d-flex justify-content-between mt-2">
                                                 <span style={{ color: "#d9534f" }}>Difference</span>
                                                 <span style={{ color: "#d9534f" }}>{difference.toFixed(2)}</span>
@@ -390,12 +385,11 @@ export default function AddJournal() {
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
 
-                    {/* Submit Buttons */}
+                    {/* Submit Buttons (unchanged) */}
                     <div className="d-flex justify-content-center mt-4 pt-4 border-top">
                         <button type="button" className="btn border me-3 px-4" onClick={() => navigate(-1)}>
                             Cancel
@@ -405,6 +399,7 @@ export default function AddJournal() {
                         </button>
                     </div>
                 </form>
+
             </div>
         </>
     );

@@ -67,19 +67,25 @@ const ChartsOfAccounts = () => {
         <>
             <Header />
 
-            <Navbar tabs={dashboardTabs} />
-            <Navbar tabs={accountantTabs} />
+            <div style={{ padding: "56px 0px 0px" }}>
 
-            <div className="mt-3">
-                <DynamicTable
-                    columns={columns}
-                    data={chartOfAccounts}
-                    actions={true}
-                    rowsPerPage={10}
-                    onAdd={() => setShowModal(true)}
-                    onView={(row) => navigate(`/sales/view-customer/${row.customerId}`)}
-                />
+
+
+                <Navbar tabs={dashboardTabs} />
+                <Navbar tabs={accountantTabs} />
+
+                <div className="mt-3">
+                    <DynamicTable
+                        columns={columns}
+                        data={chartOfAccounts}
+                        actions={true}
+                        rowsPerPage={10}
+                        onAdd={() => setShowModal(true)}
+                        onView={(row) => navigate(`/sales/view-customer/${row.customerId}`)}
+                    />
+                </div>
             </div>
+
 
             {showModal && (
                 <div className="modal-backdrop-custom">

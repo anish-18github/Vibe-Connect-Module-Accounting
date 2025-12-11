@@ -32,18 +32,24 @@ const Budgets = () => {
 
             <Header />
 
-            <Navbar tabs={dashboardTabs} />
-            <Navbar tabs={accountantTabs} />
+            <div style={{ padding: "56px 0px 0px" }}>
 
-            <div className=" mt-3">
-                <DynamicTable
-                    columns={columns}
-                    data={budgets}
-                    actions={true}
-                    rowsPerPage={10}
-                    onAdd={() => navigate("/accountant/add-budgets")} //May be change it latter. "/add-customer"
-                    onView={(row) => navigate(`/purchases/view-vendor/${row.customerId}`)} />
+
+
+                <Navbar tabs={dashboardTabs} />
+                <Navbar tabs={accountantTabs} />
+
+                <div className=" mt-3">
+                    <DynamicTable
+                        columns={columns}
+                        data={budgets}
+                        actions={true}
+                        rowsPerPage={10}
+                        onAdd={() => navigate("/accountant/add-budgets")} //May be change it latter. "/add-customer"
+                        onView={(row) => navigate(`/purchases/view-vendor/${row.customerId}`)} />
+                </div>
             </div>
+
 
         </>
     )

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../../components/Header/Header";
@@ -145,7 +146,7 @@ export default function AddQuotes() {
     };
 
     // Quote fields
-    const handleQuoteChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleQuoteChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
@@ -242,157 +243,220 @@ export default function AddQuotes() {
         <>
             <Header />
 
-            <div style={{ padding: "0 1.8rem" }}>
-                <h1 className="h4 text-dark mb-4 pb-1">New Quote</h1>
+            <div className="sales-orders-page">
+                <form onSubmit={handleSubmit} className="sales-order-form">
+                    {/* TOP DETAILS CARD - 6 fields in 3 columns (2 each) */}
+                    <div className="so-details-card mx-5 mb-4">
+                        <h1 className="sales-order-title mb-4">New Quote</h1>
 
-                <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
-                    {/* Customer Name */}
-                    <div className="row align-items-center mb-2">
-                        <label className="col-sm-2 col-form-label fw-normal">Customer Name:</label>
-                        <div className="col-sm-6">
-                            <input type="text" name="customerName" className="form-control form-control-sm border" value={formData.quote.customerName} onChange={handleQuoteChange} />
-                        </div>
-                    </div>
+                        <div className="row g-3 three-column-form">
+                            {/* COLUMN 1 */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Customer:
+                                    </label>
+                                    <select
+                                        name="customerName"
+                                        className="form-select so-control"
+                                        value={formData.quote.customerName}
+                                        onChange={handleQuoteChange}
+                                    >
+                                        <option value="">Select Customer</option>
+                                        <option value="Customer A">Customer A</option>
+                                        <option value="Customer B">Customer B</option>
+                                        {/* Add your actual customer options here */}
+                                    </select>
+                                </div>
 
-                    {/* Quote Number */}
-                    <div className="row align-items-center mb-2">
-                        <label className="col-sm-2 col-form-label fw-normal">Quote:</label>
-                        <div className="col-sm-6" style={{ position: "relative" }}>
-                            <input type="text" className="form-control form-control-sm border" name="quote" value={formData.quote.quote} onChange={handleQuoteChange} style={{ paddingRight: "35px" }} />
-                            <div
-                                style={{
-                                    position: "absolute",
-                                    right: "15px",
-                                    top: "50%",
-                                    transform: "translateY(-55%)",
-                                    cursor: "pointer",
-                                    paddingRight: "5px",
-                                }}
-                                onClick={() => setShowSettings(true)}
-                            >
-                                <Settings size={16} style={{ color: "#555" }} />
+
+                                <div className="so-form-group mb-4 position-relative">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Quote #:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="quote"
+                                        className="form-control so-control"
+                                        value={formData.quote.quote}
+                                        onChange={handleQuoteChange}
+                                        placeholder="Auto-generated"
+                                        style={{ paddingRight: "35px" }}
+                                    />
+                                    <span
+                                        className="so-settings-icon"
+                                        onClick={() => setShowSettings(true)}
+                                    >
+                                        <Settings size={16} />
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* COLUMN 2 */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Sales Person:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="salesPerson"
+                                        className="form-control so-control"
+                                        value={formData.quote.salesPerson}
+                                        onChange={handleQuoteChange}
+                                        placeholder="Enter sales person"
+                                    />
+                                </div>
+
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Project:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="projectName"
+                                        className="form-control so-control"
+                                        value={formData.quote.projectName}
+                                        onChange={handleQuoteChange}
+                                        placeholder="Enter project name"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* COLUMN 3 */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Quote Date:
+                                    </label>
+                                    <input
+                                        type="date"
+                                        name="quoteDate"
+                                        className="form-control so-control"
+                                        value={formData.quote.quoteDate}
+                                        onChange={handleQuoteChange}
+                                    />
+                                </div>
+
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Expiry Date:
+                                    </label>
+                                    <input
+                                        type="date"
+                                        name="expiryDate"
+                                        className="form-control so-control"
+                                        value={formData.quote.expiryDate}
+                                        onChange={handleQuoteChange}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Dates */}
-                    <div className="row align-items-center mb-2">
-                        <label className="col-sm-2 col-form-label">Quote Date:</label>
-                        <div className="col-sm-2">
-                            <input type="date" className="form-control form-control-sm border" name="quoteDate" value={formData.quote.quoteDate} onChange={handleQuoteChange} />
-                        </div>
+                    {/* OUTSIDE CARD - Same as Sales Order */}
+                    <div className="mx-5">
+                        {/* Item Table */}
+                        <ItemTable
+                            rows={formData.itemTable}
+                            onRowChange={handleRowChange}
+                            onAddRow={handleAddRow}
+                            onRemoveRow={handleRemoveRow}
+                        />
 
-                        <label className="col-sm-2 col-form-label">Expiry Date:</label>
-                        <div className="col-sm-2">
-                            <input type="date" className="form-control form-control-sm border" name="expiryDate" value={formData.quote.expiryDate} onChange={handleQuoteChange} />
-                        </div>
-                    </div>
+                        {/* Notes + Summary */}
+                        <div className="notes-summary-row">
+                            <div className="notes-column">
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Customer Notes:
+                                    </label>
+                                    <textarea
+                                        className="form-control so-control textarea"
+                                        name="customerNotes"
+                                        value={formData.quote.customerNotes}
+                                        onChange={handleQuoteChange}
+                                        placeholder="Add note for customer..."
+                                    />
+                                </div>
 
-                    {/* Sales Person */}
-                    <div className="row align-items-center mb-2">
-                        <label className="col-sm-2 col-form-label">Sales Person:</label>
-                        <div className="col-sm-6">
-                            <input type="text" className="form-control form-control-sm border" name="salesPerson" value={formData.quote.salesPerson} onChange={handleQuoteChange} />
-                        </div>
-                    </div>
-
-                    {/* Project Name */}
-                    <div className="row align-items-center mb-2">
-                        <label className="col-sm-2 col-form-label">Project Name:</label>
-                        <div className="col-sm-6">
-                            <input type="text" className="form-control form-control-sm border" name="projectName" value={formData.quote.projectName} onChange={handleQuoteChange} />
-                        </div>
-                    </div>
-
-                    {/* Item Table header */}
-                    <h5
-                        className="mt-4 fw-normal"
-                        style={{
-                            width: "100%",
-                            backgroundColor: "#EEEEEE",
-                            padding: "6px",
-                            borderRadius: "5px",
-                            border: "1px solid #D9D9D9",
-                            color: "#5E5E5E",
-                        }}
-                    >
-                        Item Table
-                    </h5>
-
-                    <ItemTable rows={formData.itemTable} onRowChange={handleRowChange} onAddRow={handleAddRow} onRemoveRow={handleRemoveRow} />
-
-                    {/* Notes + Summary layout */}
-                    <div className="notes-summary-row" style={{ display: "flex", gap: 20, marginTop: 18 }}>
-                        {/* Left: notes */}
-                        <div style={{ width: "50%" }}>
-                            <div className="mb-3">
-                                <label className="form-label">Customer Notes:</label>
-                                <textarea className="form-control form-control-sm border" style={{ resize: "none", height: "90px" }} name="customerNotes" value={formData.quote.customerNotes} onChange={handleQuoteChange} />
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Terms & Conditions:
+                                    </label>
+                                    <textarea
+                                        className="form-control so-control textarea"
+                                        name="termsAndConditions"
+                                        value={formData.quote.termsAndConditions}
+                                        onChange={handleQuoteChange}
+                                        placeholder="Enter terms and conditions..."
+                                    />
+                                </div>
                             </div>
 
-                            <div className="mb-3">
-                                <label className="form-label">Terms & Conditions:</label>
-                                <textarea className="form-control form-control-sm border" style={{ resize: "none", height: "90px" }} name="termsAndConditions" value={formData.quote.termsAndConditions} onChange={handleQuoteChange} />
-                            </div>
-                        </div>
-
-                        {/* Right: summary */}
-                        <div style={{ width: "50%" }}>
-                            <SummaryBox totals={totals} taxInfo={taxInfo} onTaxChange={handleTaxChange} tcsOptions={tcsOptions} onAddTcs={handleAddTcs} />
-                        </div>
-                    </div>
-
-                    {/* Documents */}
-                    <div className="row mb-4 mt-4">
-                        <label className="col-sm-1 col-form-label d-flex align-items-center">
-                            Documents:
-                        </label>
-                        <div className="col-sm-11">
-                            <div
-                                onClick={() => document.getElementById("fileUploadInput")?.click()}
-                                className="d-flex flex-column align-items-center justify-content-center w-100 p-4 bg-light cursor-pointer"
-                                style={{
-                                    minHeight: "100px",
-                                    border: "2px dotted #D9D9D9",
-                                    borderRadius: "8px",
-                                }}
-                            >
-                                <FeatherUpload size={32} className="text-muted mb-2" />
-                                <span className="text-secondary small">Click to Upload Documents</span>
-
-                                <input
-                                    id="fileUploadInput"
-                                    type="file"
-                                    multiple
-                                    className="d-none"
-                                    onChange={(e) => {
-                                        const files = e.target.files;
-                                        if (files?.length) {
-                                            console.log("Files uploaded:", files);
-                                            alert(`${files.length} file(s) selected!`);
-                                        }
-                                    }}
+                            <div className="summary-column">
+                                <SummaryBox
+                                    totals={totals}
+                                    taxInfo={taxInfo}
+                                    onTaxChange={handleTaxChange}
+                                    tcsOptions={tcsOptions}
+                                    onAddTcs={handleAddTcs}
                                 />
                             </div>
                         </div>
-                    </div>
 
-                    {/* Submit Buttons */}
-                    <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                        <button
-                            type="button"
-                            className="btn border me-3 px-4"
-                            onClick={() => navigate(-1)}
-                        >
-                            Cancel
-                        </button>
+                        {/* Documents */}
+                        <div className="row mb-4 mt-4 align-items-start">
+                            <label className="so-label text-sm text-muted-foreground fw-bold">
+                                Documents:
+                            </label>
+                            <div className="col-sm-11">
+                                <div
+                                    className="doc-upload-box"
+                                    onClick={() => document.getElementById("fileUploadInput")?.click()}
+                                >
+                                    <FeatherUpload size={32} className="text-muted mb-2" />
+                                    <span className="text-secondary small">
+                                        Click to Upload Documents
+                                    </span>
+                                    <input
+                                        id="fileUploadInput"
+                                        type="file"
+                                        multiple
+                                        className="d-none"
+                                        onChange={(e) => {
+                                            const files = e.target.files;
+                                            if (files?.length) {
+                                                console.log("Files uploaded:", files);
+                                                alert(`${files.length} file(s) selected!`);
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
 
-                        <button type="submit" className="btn px-4" style={{ background: "#7991BB", color: "#FFF" }}>
-                            Save
-                        </button>
+                        {/* Buttons */}
+                        <div className="form-actions">
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary me-3 px-4"
+                                onClick={() => navigate(-1)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="btn px-4"
+                                style={{ background: "#7991BB", color: "#FFF" }}
+                            >
+                                Save
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
+
 
             {/* Settings modal */}
             {showSettings && (

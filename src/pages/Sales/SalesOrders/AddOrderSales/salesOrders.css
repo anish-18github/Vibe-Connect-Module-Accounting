@@ -1,101 +1,100 @@
-/* -------------------- Summary Box -------------------- */
-.summary-box {
-    border-radius: 10px;
-    padding: 16px;
-    background: #ffffff;
-    margin-top: 16px;
-}
-
 /* -------------------- Item Table -------------------- */
 .item-table {
-    border: 1px solid #878787;
-    border-radius: 10px;
-    overflow: hidden;
+  border: 1px solid #878787;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .item-table thead th {
-    background: #f3f3f3;
-    border-bottom: 1px solid #878787;
-    padding: 10px;
-    font-weight: 600;
+  background: #f3f3f3;
+  border-bottom: 1px solid #878787;
+  padding: 10px;
 }
 
 .item-table tbody tr {
-    border-bottom: 1px solid #878787;
+  border-bottom: 1px solid #878787;
 }
 
 .item-table tbody td {
-    padding: 10px;
+  padding: 10px;
 }
+
 
 /* -------------------- Inputs -------------------- */
 .input-field {
-    border-radius: 6px;
-    padding: 8px 10px;
-    outline: none;
+  border-radius: 6px;
+  padding: 6px 8px;
+  /* reduced from 8px 10px */
+  /* a bit smaller */
+  outline: none;
 }
 
 .input-field:focus {
-    border-color: #5a5a5a;
+  border-color: #5a5a5a;
 }
+
 
 /* -------------------- Buttons -------------------- */
 .btn-outline {
-    border: 1px solid #878787;
-    padding: 8px 16px;
-    background: transparent;
-    border-radius: 6px;
-    cursor: pointer;
+  border: 1px solid #878787;
+  padding: 8px 16px;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 .btn-outline:hover {
-    background: #eeeeee;
+  background: #eeeeee;
 }
+
 
 /* -------------------- Divider -------------------- */
 .divider {
-    width: 100%;
-    height: 1px;
-    background: #878787;
-    margin: 12px 0;
+  width: 100%;
+  height: 1px;
+  background: #878787;
+  margin: 12px 0;
 }
+
 
 /* -------------------- Form Layout -------------------- */
 .two-column-form {
-    display: flex;
-    gap: 2rem;
-    margin-bottom: 2rem;
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
 
 .left-column,
 .right-column {
-    width: 50%;
+  width: 50%;
 }
 
 .left-column label,
 .right-column label {
-    font-weight: 500;
-    margin-bottom: 4px;
-    display: block;
+  font-weight: 500;
+  margin-bottom: 4px;
+  display: block;
 }
 
 .form-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 12px;
 }
 
 .form-row label {
-    width: 160px;
-    font-size: 14px;
-    font-weight: 400;
-    color: #5E5E5E;
-} 
+  width: 16px;
+  font-size: 13px;
+  /* reduced from 14px */
+  font-weight: 400;
+  color: #5E5E5E;
+}
 
 .custom-border {
-    border-color: #D9D9D9;
+  border-color: #D9D9D9;
 }
+
 
 /* -------------------- IMPORTANT: Override Bootstrap -------------------- */
 .sales-orders-page .form-control,
@@ -103,18 +102,291 @@
 .sales-orders-page input,
 .sales-orders-page select,
 .sales-orders-page textarea {
-    border: 1px solid #D9D9D9 !important;     /* test color */
-    box-shadow: none !important;
+  border: 1px solid #D9D9D9 !important;
+  box-shadow: none !important;
+  font-size: 12px;
+  border-radius: 10px !important;
+
 }
+
+.sales-orders-page {
+  overflow-x: hidden !important;
+}
+
+/* base select look */
+.sales-orders-page .form-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #ffffff;
+  /* background-image: none; */
+  padding-right: 2.2rem;
+  /* room for custom arrow */
+  cursor: pointer;
+}
+
+/* hover / focus feedback */
+.sales-orders-page .form-select:hover {
+  border-color: #9ca3af;
+  background-color: #f9fafb;
+}
+
+.sales-orders-page .form-select:focus {
+  border-color: #7991bb;
+  box-shadow: 0 0 0 2px rgba(121, 145, 187, 0.25);
+  background-color: #ffffff;
+}
+
+/* disabled state */
+.sales-orders-page .form-select:disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
 
 /* -------------------- Responsive -------------------- */
 @media (max-width: 768px) {
-    .two-column-form {
-        flex-direction: column;
-    }
+  .two-column-form {
+    flex-direction: column;
+  }
 
-    .left-column,
-    .right-column {
-        width: 100%;
-    }
+  .left-column,
+  .right-column {
+    width: 100%;
+  }
+}
+
+.sales-orders-page {
+  padding: 80px 1.8rem 24px 1.8rem;
+  background: #f5f7fb;
+  /* height: 100vh !important; */
+}
+
+.sales-order-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 24px 24px 32px;
+  border: 1px solid #e2e2e2;
+}
+
+.sales-order-title {
+  font-size: 19px;
+  /* slightly reduced from 20px */
+  font-weight: 600;
+  color: #1f2933;
+  margin-bottom: 20px;
+  /* margin-left: 2rem; */
+}
+
+.sales-order-form {
+  color: #5e5e5e;
+}
+
+
+/* common field layout */
+.so-form-group {
+  margin-bottom: 12px;
+  /* slightly tighter */
+}
+
+.so-label {
+  display: block;
+  font-size: 12px;
+  /* reduced from 13px */
+  margin-bottom: 3px;
+  /* slightly reduced */
+  color: #4b5563;
+}
+
+/* main input/select style */
+.so-control {
+  font-size: 11px;
+  height: 36px !important;
+  /* was 30/32 – a bit taller */
+  padding: 6px 10px;
+  /* slightly more breathing room */
+  border-radius: 10px !important;
+  /* pill‑shaped corners */
+  border: 1px solid #d9d9d9;
+  background-color: #ffffff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease,
+    background-color 0.15s ease;
+}
+
+/* if some selects have extra padding utilities from classes like p-6 */
+.so-control.p-6 {
+  padding: 4px 8px !important;
+}
+
+.so-control:focus {
+  box-shadow: 0 0 0 2px rgba(121, 145, 187, 0.25);
+  border-color: #7991bb;
+}
+
+.so-control.textarea {
+  height: 90px !important;
+  /* reduced from 90px */
+  resize: none;
+}
+
+.so-details-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e2e2;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+
+/* settings icon in sales order no */
+.so-settings-icon {
+  position: absolute;
+  right: 12px;
+  top: 40%;
+  transform: translateY(10%);
+  cursor: pointer;
+  color: #555;
+}
+
+
+/* item table header */
+.item-table-title {
+  margin-top: 18px;
+  font-size: 14px;
+  /* slightly smaller */
+  font-weight: 500;
+  background-color: #eeeeee;
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: 1px solid #d9d9d9;
+  color: #5e5e5e;
+}
+
+/* make SummaryBox wrapper neutral */
+.summary-box {
+  border-radius: 10px !important;
+  padding: 0 !important;
+  /* let inner .total-box control padding */
+  background: transparent !important;
+  /* no extra background block */
+}
+
+/* row container */
+.notes-summary-row {
+  display: flex !important;
+  align-items: flex-start !important;
+  /* top aligned */
+  gap: 16px !important;
+  /* space between columns */
+  margin-top: 18px !important;
+}
+
+/* each column takes 50% */
+.notes-column,
+.summary-column {
+  flex: 1 1 0 !important;
+  /* equal width columns */
+  min-width: 0 !important;
+  /* prevent overflow from long content */
+}
+
+
+/* documents upload box */
+.doc-upload-box {
+  min-height: 110px;
+  /* slightly smaller */
+  border: 2px dotted #a0a0a0;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* actions row */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  /* slightly reduced */
+  padding-top: 14px;
+  border-top: 1px solid #e5e7eb;
+}
+
+
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+/* main modal card */
+.settings-modal {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 640px;
+  /* control width */
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+  overflow: hidden;
+}
+
+/* header row */
+.settings-modal .custom-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.settings-modal .custom-header h4 {
+  font-size: 16px;
+  margin: 0;
+}
+
+/* body spacing */
+.settings-modal .modal-body {
+  padding: 16px 20px 20px;
+}
+
+/* top description paragraph */
+.settings-modal .modal-body p {
+  margin-bottom: 16px;
+}
+
+/* radio rows */
+.settings-modal .form-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* inner block under 'auto' option */
+.settings-modal .auto-settings {
+  margin-left: 30px;
+  margin-top: 10px;
+}
+
+/* prefix / next number row */
+.settings-modal .auto-settings-row {
+  display: flex;
+  gap: 16px;
+}
+
+/* footer buttons */
+.settings-modal .footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
 }

@@ -1,8 +1,15 @@
+/* ---------------- Total box (summary) ---------------- */
 .total-box {
-  background: #F8F8F8;
+  background: #f8f8f8;
   border: 1px solid #e1e1e1;
   border-radius: 6px;
   min-height: 220px;
+  box-shadow: none;
+}
+
+/* ---------------- Table / row helpers ---------------- */
+.table {
+  width: 100% !important;
 }
 
 .table tbody tr {
@@ -10,27 +17,15 @@
   overflow: hidden;
 }
 
-.remove-btn-floating {
-  position: absolute;
-  right: -25px;
-  /* Move outside table cell */
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
+/* floating remove button (if you still use it anywhere) */
 .remove-btn-floating {
   position: absolute;
   right: -12px;
   top: 50%;
   transform: translateY(-50%);
-  background: white;
+  background: #ffffff;
   border: 1px solid #dc3545;
   color: #dc3545;
-  /* border-radius: 50%; */
   width: 24px;
   height: 24px;
   padding: 0;
@@ -42,88 +37,278 @@
 
 .remove-btn-floating:hover {
   background: #dc3545;
-  color: white;
+  color: #ffffff;
 }
 
-/* === ROUND TABLE CORNERS === */
-.table-rounded {
-  border-collapse: separate !important;
-  border-spacing: 0 !important;
-  border-radius: 12px;
+/* ---------------- Old rounded table (kept if used elsewhere) ---------------- */
+/* ---------- outer card ---------- */
+.item-card {
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  /* light gray container */
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
   overflow: hidden;
+  margin-top: 8px;
 }
 
-/* Force separate borders for radius to work */
-.table-rounded {
-  border-collapse: separate !important;
-  /* border-spacing: 0 3px !important; */
-  /* space between rows */
-  /* background: transparent !important; */
+/* header strip "Item Table" */
+.item-card-header {
+  padding: 10px 16px;
+  background: #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-/* Remove Bootstrap default hard borders */
-.table-rounded th,
-.table-rounded td {
-  border: 1.8px solid #D9D9D9 !important;
+.item-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
 }
 
-/* === ROUNDING FOR THEAD === */
-.table-rounded thead tr th {
-  /* background: #F8F8F8 !important; */
-  border-bottom: none !important;
+/* inner body with white background */
+.item-card-body {
+  padding: 12px 18px 14px;
+  background: #ffffff;
 }
 
-/* Top-left corner */
-.table-rounded thead tr th:first-child {
-  border-top-left-radius: 12px;
+/* ---------- table look ---------- */
+.item-table-inner {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
-/* Top-right corner */
-.table-rounded thead tr th:last-child {
-  border-top-right-radius: 12px;
+/* header row like screenshot */
+.item-table-inner thead th {
+  font-size: 12px;
+  font-weight: 500;
+  color: #4b5563;
+  background: #f9fafb;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
 }
 
-/* === ROUNDING FOR EACH ROW === */
-.table-rounded tbody tr {
-  background: white;
+/* body cells */
+.item-table-inner tbody td {
+  padding: 10px 10px;
+  border-bottom: 1px solid #f1f5f9;
 }
 
-.table-rounded tbody tr td:first-child {
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 12px;
+/* last row no heavy bottom border */
+.item-table-inner tbody tr:last-child td {
+  border-bottom: none;
 }
 
-.table-rounded tbody tr td:last-child {
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 12px;
+/* no vertical hard borders */
+.item-table-inner th,
+.item-table-inner td {
+  border-left: none;
+  border-right: none;
 }
 
-/* Remove spacing collapse at top */
-.table-rounded thead tr {
-  background: white !important;
+/* ---------- inputs in table ---------- */
+.item-input {
+  width: 100%;
+  font-size: 12px;
+  border-radius: 999px;
+  /* pill inputs like screenshot */
+  border: 1px solid #e5e7eb;
+  padding: 6px 10px;
+  outline: none;
+  background-color: #ffffff;
 }
 
-/* modal backdrop */
-.tcs-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+.item-input:focus {
+  border-color: #7991bb;
+  box-shadow: 0 0 0 1px rgba(121, 145, 187, 0.18);
+}
+
+/* numeric inputs */
+.item-input-number {
+  text-align: left;
+}
+
+/* discount cell with % */
+.item-discount-cell {
   display: flex;
   align-items: center;
+  gap: 4px;
+}
+
+.item-discount-unit {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* ---------- action button ---------- */
+.item-remove-btn {
+  border: none;
+  background: transparent;
+  color: #dc2626;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  z-index: 1200;
 }
 
-/* modal card */
-.tcs-modal {
-  background: #fff;
-  padding: 16px;
-  border-radius: 8px;
-  width: 340px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+.item-remove-btn:hover {
+  color: #b91c1c;
 }
 
-/* notes-summary layout */
+/* ---------- Add New Row link/button ---------- */
+.item-add-row-btn {
+  margin-top: 10px;
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  font-size: 13px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.item-add-row-btn:hover {
+  text-decoration: underline;
+  background: transparent;
+}
+
+
+/* ---------------- Item Table card (new design like screenshot) ---------------- */
+
+/* ---------- outer card ---------- */
+.item-card {
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  /* light gray container */
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+/* header strip "Item Table" */
+.item-card-header {
+  padding: 10px 16px;
+  background: #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.item-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* inner body with white background */
+.item-card-body {
+  /* remove horizontal padding so table touches card edges */
+  padding: 0px 0 14px;
+  background: #ffffff;
+}
+
+/* ---------- table look ---------- */
+.item-table-inner {
+  width: 100%;
+  /* stretch to card edges */
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* header row like screenshot */
+.item-table-inner thead th {
+  font-size: 12px;
+  font-weight: 500;
+  color: #4b5563;
+  background: #f9fafb;
+  padding: 10px 20px;
+  /* spacing from left/right card edges */
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+/* body cells – NO row borders */
+.item-table-inner tbody td {
+  padding: 12px 20px;
+  /* match header horizontal padding */
+  border-bottom: none;
+  /* remove row borders */
+}
+
+/* no vertical hard borders at all */
+.item-table-inner th,
+.item-table-inner td {
+  border-left: none;
+  border-right: none;
+}
+
+/* ---------- inputs in table ---------- */
+.item-input {
+  width: 100%;
+  font-size: 12px;
+  border-radius: 999px;
+  /* rounded fields only */
+  border: 1px solid #e5e7eb;
+  padding: 6px 10px;
+  outline: none;
+  background-color: #ffffff;
+}
+
+.item-input:focus {
+  border-color: #7991bb;
+  box-shadow: 0 0 0 1px rgba(121, 145, 187, 0.18);
+}
+
+/* numeric inputs */
+.item-input-number {
+  text-align: left;
+}
+
+/* discount cell with % */
+.item-discount-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.item-discount-unit {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* ---------- action button ---------- */
+.item-remove-btn {
+  border: none;
+  background: transparent;
+  color: #dc2626;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-remove-btn:hover {
+  color: #b91c1c;
+}
+
+/* ---------- Add New Row link/button ---------- */
+.item-add-row-btn {
+  margin-top: 10px;
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  font-size: 13px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.item-add-row-btn:hover {
+  text-decoration: underline;
+  background: transparent;
+}
+
+/* ---------------- Notes / summary layout (unchanged) ---------------- */
 .notes-summary-row {
   display: flex;
   gap: 20px;
@@ -143,44 +328,52 @@
   width: 320px;
 }
 
-/* make table full width */
-.table {
-  width: 100% !important;
+/* ---------------- TCS modal ---------------- */
+.tcs-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
 }
 
-/* remove input spinners where you used .no-spinner */
-.no-spinner::-webkit-outer-spin-button,
-.no-spinner::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.tcs-modal {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  width: 340px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
 }
 
-.no-spinner {
-  -moz-appearance: textfield;
-}
-
-/* subtle total-box look */
-.total-box {
-  box-shadow: none;
-}
-
-/* Remove input borders inside table */
-.table-rounded input.form-control,
-.table-rounded input.no-spinner,
-.table-rounded input {
+.item-add-row-btn {
   border: none !important;
-  box-shadow: none !important;
+  /* no border */
   background: transparent !important;
+  /* transparent by default */
+  color: #5576bb !important;
+  /* blue text */
+  padding: 7px 7px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  box-shadow: none !important;
+  margin-left: 1.8rem;
+  font-size: 12px !important;
 }
 
-/* Keep disabled input also borderless */
-.table-rounded input[disabled] {
-  border: none !important;
-  background: transparent !important;
+.item-add-row-btn:hover {
+  background-color: #f3f4f6 !important;
+  /* light grey on hover */
+  color: #2563eb !important;
+  padding: 7px 7px !important;
+  text-decoration: none;
+  border-radius: 9px !important;
+  /* keep text blue */
 }
 
-/* On focus always borderless */
-.table-rounded input:focus {
-  box-shadow: none !important;
+.item-add-row-btn:focus {
   outline: none !important;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2) !important;
 }

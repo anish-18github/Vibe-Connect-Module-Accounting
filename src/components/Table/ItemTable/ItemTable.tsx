@@ -1,6 +1,6 @@
 // import { X } from "react-feather";
 
-import { PlusCircle, X } from "react-feather";
+import { Plus, X } from "react-feather";
 
 import React, { useState } from "react";
 import './itemTable.css'
@@ -32,117 +32,114 @@ function ItemTable({
     rows,
     onRowChange,
     onAddRow,
-    onRemoveRow
+    onRemoveRow,
 }: ItemTableProps) {
     return (
-        <>
-            <div className="row">
-                <div className=" col-md-12">
-                    <table className="table table-bordered table-sm align-middle table-rounded">
-                        <thead className="bg-light">
-                            <tr>
-                                <th className="fw-normal" style={{ width: "30" }}>Item Details</th>
-                                <th className="fw-normal" style={{ width: "10" }}>Quantity</th>
-                                <th className="fw-normal" style={{ width: "10" }}>Rate</th>
-                                <th className="fw-normal" style={{ width: "12" }}>Discount</th>
-                                <th className="fw-normal" style={{ width: "12" }}>Amount</th>
-                                <th className="fw-normal" style={{ width: "12" }}>Action</th>
-                            </tr>
-                        </thead>
+        <div className="item-card">
+            <div className="item-card-header">
+                <span className="item-card-title">Item Table</span>
+            </div>
 
-                        <tbody>
-                            {rows.map((row, index) => (
-                                <tr key={index} className="position-relative">
-
-                                    <td>
-                                        <input
-                                            type="text"
-                                            name="itemDetails"
-                                            className="form-control form-control-sm border-0"
-                                            placeholder="Type or click to select an item."
-                                            value={row.itemDetails}
-                                            onChange={(e) => onRowChange(index, e)}
-                                        />
-                                    </td>
-
-                                    <td>
-                                        <input
-                                            type="number"
-                                            name="quantity"
-                                            className="form-control form-control-sm no-spinner border-0"
-                                            placeholder="00.00"
-                                            value={row.quantity}
-                                            onChange={(e) => onRowChange(index, e)}
-                                        />
-                                    </td>
-
-                                    <td>
-                                        <input
-                                            type="number"
-                                            name="rate"
-                                            className="form-control form-control-sm no-spinner border-0"
-                                            placeholder="00.00"
-                                            value={row.rate}
-                                            onChange={(e) => onRowChange(index, e)}
-                                        />
-                                    </td>
-
-                                    <td className="d-flex align-items-center">
-                                        <input
-                                            type="number"
-                                            name="discount"
-                                            className="form-control form-control-sm no-spinner border-0"
-                                            placeholder="00"
-                                            value={row.discount}
-                                            onChange={(e) => onRowChange(index, e)}
-                                        />
-                                        <span className="ms-1">%</span>
-                                    </td>
-
-                                    <td>
-                                        <input
-                                            type="text"
-                                            className="form-control form-control-sm border-0"
-                                            prefix="₹"
-                                            value={row.amount}
-                                            disabled
-                                        />
-                                    </td>
-
-                                    <td className="text-center">
-                                        <button
-                                            className="border-0 bg-body text-danger"
-                                            type="button"
-                                            onClick={() => onRemoveRow(index)}
-                                        >
-                                            <X size={14} />
-                                        </button>
-                                    </td>
-
+            <div className="item-card-body">
+                <div className="row">
+                    <div className="col-md-12">
+                        <table className="table table-sm align-middle item-table-inner">
+                            <thead>
+                                <tr>
+                                    <th className="fw-medium text-dark ">Item Details</th>
+                                    <th className="fw-medium text-dark">Quantity</th>
+                                    <th className="fw-medium text-dark">Rate</th>
+                                    <th className="fw-medium text-dark">Discount</th>
+                                    <th className="fw-medium text-dark">Amount</th>
+                                    <th className="fw-medium text-center text-dark">Action</th>
                                 </tr>
-                            ))}
-                        </tbody>
+                            </thead>
 
-                    </table>
+                            <tbody>
+                                {rows.map((row, index) => (
+                                    <tr key={index}>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                name="itemDetails"
+                                                className="form-control form-control-sm border-0"
+                                                placeholder="Type item details..."
+                                                value={row.itemDetails}
+                                                onChange={(e) => onRowChange(index, e)}
+                                            />
+                                        </td>
 
-                    <button
-                        type="button"
-                        className="btn btn-sm fw-normal"
-                        onClick={onAddRow}
-                        style={{
-                            color: "#5E5E5E",
-                            border: "1px solid #D9D9D9"
-                        }}
-                    >
-                        <PlusCircle size={18} style={{
-                            color: "#878787",
-                        }} /> Add New Row
-                    </button>
+                                        <td>
+                                            <input
+                                                type="number"
+                                                name="quantity"
+                                                className="form-control form-control-sm no-spinner border-0"
+                                                placeholder="00.00"
+                                                value={row.quantity}
+                                                onChange={(e) => onRowChange(index, e)}
+                                            />
+                                        </td>
+
+                                        <td>
+                                            <input
+                                                type="number"
+                                                name="rate"
+                                                className="form-control form-control-sm no-spinner border-0"
+                                                placeholder="00.00"
+                                                value={row.rate}
+                                                onChange={(e) => onRowChange(index, e)}
+                                            />
+                                        </td>
+
+                                        <td className="d-flex align-items-center">
+                                            <input
+                                                type="number"
+                                                name="discount"
+                                                className="form-control form-control-sm no-spinner border-0"
+                                                placeholder="00"
+                                                value={row.discount}
+                                                onChange={(e) => onRowChange(index, e)}
+                                            />
+                                            <span className="ms-1">%</span>
+                                        </td>
+
+                                        <td>
+                                            <input
+                                                type="text"
+                                                className="form-control form-control-sm border-0"
+                                                value={row.amount}
+                                                disabled
+                                            />
+                                        </td>
+
+                                        <td className="text-center">
+                                            <button
+                                                className="border-0 bg-body text-danger"
+                                                type="button"
+                                                onClick={() => onRemoveRow(index)}
+                                            >
+                                                <X size={14} />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+
+                        <button
+                            type="button"
+                            className="btn btn-sm fw-bold item-add-row-btn"
+                            onClick={onAddRow}
+                        >
+                            <Plus size={16} className="me-1" /> Add New Row
+                        </button>
+                    </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
+
 
 export default ItemTable;
 

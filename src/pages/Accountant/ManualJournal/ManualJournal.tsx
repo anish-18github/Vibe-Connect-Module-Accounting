@@ -119,19 +119,26 @@ const ManualJournal = () => {
     return (
         <>
             <Header />
-            <Navbar tabs={dashboardTabs} />
-            <Navbar tabs={accountantTabs} />
 
-            <div className="mt-3">
-                <DynamicTable
-                    columns={columns}
-                    data={rows}
-                    actions={true}
-                    rowsPerPage={10}
-                    onAdd={() => navigate("/accountant/add-manualJournal")}
-                    onView={(row) => navigate(`/accountant/view-journal/${row.customerId}`)}
-                />
+            <div style={{ padding: "56px 0px 0px" }}>
+
+
+
+                <Navbar tabs={dashboardTabs} />
+                <Navbar tabs={accountantTabs} />
+
+                <div className="mt-3">
+                    <DynamicTable
+                        columns={columns}
+                        data={rows}
+                        actions={true}
+                        rowsPerPage={10}
+                        onAdd={() => navigate("/accountant/add-manualJournal")}
+                        onView={(row) => navigate(`/accountant/view-journal/${row.customerId}`)}
+                    />
+                </div>
             </div>
+
         </>
     );
 };

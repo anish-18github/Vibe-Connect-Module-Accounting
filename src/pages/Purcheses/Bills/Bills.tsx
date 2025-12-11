@@ -1,27 +1,25 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../components/Header/Header";
 import Navbar from "../../../components/Navbar/NavBar";
 import DynamicTable from "../../../components/Table/DynamicTable";
 import { dashboardTabs } from "../../Dashboard/dashboard";
 import { parchasesTabs } from "../Vendors/Vendors";
-import { useState, useEffect } from "react";
-
 
 const columns = [
-    { key: "profileName", label: "Profile Name" },
-    { key: "expenseAccount", label: "Expense Account" },
+    { key: "date", label: "Date" },
+    { key: "bill", label: "Bill#" },
+    { key: "referenceNumber", label: "Reference Number" },
     { key: "vendorName", label: "Vendor Name" },
-    { key: "frequency", label: "Frequency" },
-    { key: "lastExpenseDate", label: "Last Expense Date" },
-    { key: "nextExpenseDate", label: "Next Expense Date" },
     { key: "status", label: "Status" },
+    { key: "dueDate", label: "Due Date" },
     { key: "amount", label: "Amount" },
+    { key: "balanceDue", label: "Balance Due" },
 ];
 
-const RecurringExpenses = () => {
-
+const Bills = () => {
     const navigate = useNavigate();
-    const [recurringExpenses, setRecurringExpenses] = useState<any[]>([]);
+    const [bills, setBills] = useState<any[]>([]);
 
 
 
@@ -29,33 +27,31 @@ const RecurringExpenses = () => {
     // INFUTURE HERE'S GET API CALL
     // Load from localStorage
     useEffect(() => {
-        const stored = JSON.parse(localStorage.getItem("recurringExpenses") || "[]");
-        setRecurringExpenses(stored);
+        const stored = JSON.parse(localStorage.getItem("bills") || "[]");
+        setBills(stored);
     }, []);
-
     return (
         <>
             <Header />
 
             <div style={{ padding: "56px 0px 0px" }}>
 
-
-
                 <Navbar tabs={dashboardTabs} />
                 <Navbar tabs={parchasesTabs} />
 
-                <div className=" mt-3">
+                <div className=" mt-3" >
                     <DynamicTable
                         columns={columns}
-                        data={recurringExpenses}
+                        data={bills}
                         actions={true}
                         rowsPerPage={10}
-                        onAdd={() => navigate("/purchases/add-recurringExpenses")} //May be change it latter. "/add-customer"
+                        onAdd={() => navigate("/purchases/add-bill")} //May be change it latter. "/add-customer"
                         onView={(row) => navigate(`/purchases/view-vendor`)} />
                 </div>
+
             </div>
         </>
     )
 }
 
-export default RecurringExpenses;
+export default Bills;

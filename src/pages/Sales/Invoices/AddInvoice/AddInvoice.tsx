@@ -245,225 +245,217 @@ export default function AddInvoice() {
         <>
             <Header />
 
-            <div className="sales-orders-page" style={{ padding: "0 1.8rem" }}>
-                <h1 className="h4 text-dark mb-4 pb-1">Invoice</h1>
+            <div className="sales-orders-page">
+                <form onSubmit={handleSubmit} className="sales-order-form">
+                    <div className="so-details-card mx-5 mb-4">
+                        <h1 className="sales-order-title mb-4">Invoice</h1>
 
-                <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
-                    <div className="two-column-form">
-                        <div className="left-column">
+                        <div className="row g-3 three-column-form">
+                            {/* COLUMN 1: Customer + Invoice Date */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Customer:
+                                    </label>
+                                    <select
+                                        name="customerName"
+                                        className="form-select so-control"
+                                        value={formData.invoice.customerName}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select Customer</option>
+                                        <option value="Customer A">Customer A</option>
+                                        <option value="Customer B">Customer B</option>
+                                    </select>
+                                </div>
 
-                            <div className="form-row">
-                                <label>Customer Name:</label>
-                                <select
-                                    className="form-select form-control-sm"
-                                    name="customerName"
-                                    value={formData.invoice.customerName}
-                                    onChange={handleChange}
-                                >
-                                    <option value="" disabled>Select Customer</option>
-                                    <option value="Customer A">Customer A</option>
-                                    <option value="Customer B">Customer B</option>
-                                </select>
-                            </div>
-
-                            <div className="form-row">
-                                <label>Invoice Date:</label>
-                                <input
-                                    type="date"
-                                    name="invoiceDate"
-                                    className="form-control form-control-sm"
-                                    value={formData.invoice.invoiceDate}
-                                    onChange={handleChange}
-                                />
-                            </div>
-
-                            <div className="form-row">
-                                <label>Payment Terms:</label>
-                                <select
-                                    name="paymentTerms"
-                                    className="form-select form-control-sm"
-                                    value={formData.invoice.paymentTerms}
-                                    onChange={handleChange}
-                                >
-                                    <option value="" disabled>Select</option>
-                                    <option value="Advance">Advance</option>
-                                    <option value="Net 15">Net 15</option>
-                                    <option value="Net 30">Net 30</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="right-column">
-                            <div className="form-row" style={{ position: "relative" }}>
-                                <label>Invoice No:</label>
-                                <input
-                                    type="text"
-                                    name="invoiceNo"
-                                    className="form-control form-control-sm"
-                                    value={formData.invoice.invoiceNo}
-                                    onChange={handleChange}
-                                    style={{ paddingRight: "35px" }}
-                                />
-                                <div
-                                    onClick={() => setShowSettings(true)}
-                                    style={{
-                                        position: "absolute",
-                                        right: "12px",
-                                        top: "65%",
-                                        transform: "translateY(-85%)",
-                                        cursor: "pointer",
-                                    }}
-                                >
-                                    <Settings size={16} />
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Invoice Date:
+                                    </label>
+                                    <input
+                                        type="date"
+                                        name="invoiceDate"
+                                        className="form-control so-control"
+                                        value={formData.invoice.invoiceDate}
+                                        onChange={handleChange}
+                                    />
                                 </div>
                             </div>
 
-                            <div className="form-row">
-                                <label>Due Date:</label>
-                                <input
-                                    type="date"
-                                    name="dueDate"
-                                    className="form-control form-control-sm"
-                                    value={formData.invoice.dueDate}
-                                    onChange={handleChange}
-                                />
+                            {/* COLUMN 2: Payment Terms + Invoice No */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Payment Terms:
+                                    </label>
+                                    <select
+                                        name="paymentTerms"
+                                        className="form-select so-control"
+                                        value={formData.invoice.paymentTerms}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select</option>
+                                        <option value="Advance">Advance</option>
+                                        <option value="Net 15">Net 15</option>
+                                        <option value="Net 30">Net 30</option>
+                                    </select>
+                                </div>
+
+                                <div className="so-form-group mb-4 position-relative">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Invoice No:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="invoiceNo"
+                                        className="form-control so-control"
+                                        value={formData.invoice.invoiceNo}
+                                        onChange={handleChange}
+                                        style={{ paddingRight: "35px" }}
+                                        placeholder="Auto-generated"
+                                    />
+                                    <span
+                                        className="so-settings-icon"
+                                        onClick={() => setShowSettings(true)}
+                                    >
+                                        <Settings size={16} />
+                                    </span>
+                                </div>
                             </div>
 
-                            <div className="form-row">
-                                <label>Salesperson:</label>
-                                <select
-                                    name="salesperson"
-                                    className="form-select form-control-sm"
-                                    value={formData.invoice.salesperson}
-                                    onChange={handleChange}
+                            {/* COLUMN 3: Due Date + Salesperson */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Due Date:
+                                    </label>
+                                    <input
+                                        type="date"
+                                        name="dueDate"
+                                        className="form-control so-control"
+                                        value={formData.invoice.dueDate}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Salesperson:
+                                    </label>
+                                    <select
+                                        name="salesperson"
+                                        className="form-select so-control"
+                                        value={formData.invoice.salesperson}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select Salesperson</option>
+                                        <option value="John">John</option>
+                                        <option value="Maria">Maria</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Rest of the layout, outside the top card */}
+                    <div className="mx-5">
+                        <ItemTable
+                            rows={formData.itemTable}
+                            onRowChange={handleRowChange}
+                            onAddRow={handleAddRow}
+                            onRemoveRow={handleRemoveRow}
+                        />
+
+                        <div className="notes-summary-row">
+                            <div className="notes-column">
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Customer Notes:
+                                    </label>
+                                    <textarea
+                                        name="customerNotes"
+                                        className="form-control so-control textarea"
+                                        value={formData.invoice.customerNotes}
+                                        onChange={handleChange}
+                                        placeholder="Add note for customer..."
+                                    />
+                                </div>
+
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Terms & Conditions:
+                                    </label>
+                                    <textarea
+                                        name="termsAndConditions"
+                                        className="form-control so-control textarea"
+                                        value={formData.invoice.termsAndConditions}
+                                        onChange={handleChange}
+                                        placeholder="Enter terms and conditions..."
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="summary-column">
+                                <SummaryBox
+                                    totals={totals}
+                                    taxInfo={taxInfo}
+                                    onTaxChange={handleTaxChange}
+                                    tcsOptions={tcsOptions}
+                                    onAddTcs={handleAddTcs}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="row mt-4 mb-4 align-items-start">
+                            <label className="so-label text-sm text-muted-foreground fw-bold">
+                                Documents:
+                            </label>
+                            <div className="col-sm-11">
+                                <div
+                                    className="doc-upload-box"
+                                    onClick={() => document.getElementById("fileUploadInput")?.click()}
                                 >
-                                    <option value="" disabled>Select Salesperson</option>
-                                    <option value="John">John</option>
-                                    <option value="Maria">Maria</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Item Table */}
-                    <h5
-                        className="mt-4 fw-normal"
-                        style={{
-                            width: "100%",
-                            backgroundColor: "#EEEEEE",
-                            padding: "6px",
-                            borderRadius: "5px",
-                            border: "1px solid #D9D9D9",
-                            color: "#5E5E5E",
-                        }}
-                    >
-                        Item Table
-                    </h5>
-
-                    <ItemTable
-                        rows={formData.itemTable}
-                        onRowChange={handleRowChange}
-                        onAddRow={handleAddRow}
-                        onRemoveRow={handleRemoveRow}
-                    />
-
-                    {/* Notes + Summary */}
-                    <div
-                        className="notes-summary-row"
-                        style={{ display: "flex", gap: 5, marginTop: 18 }}
-                    >
-                        <div style={{ width: "50%" }}>
-                            <div className="mb-3">
-                                <label className="form-label">Customer Notes:</label>
-                                <textarea
-                                    name="customerNotes"
-                                    className="form-control form-control-sm"
-                                    style={{ resize: "none", height: "90px" }}
-                                    value={formData.invoice.customerNotes}
-                                    onChange={handleChange}
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="form-label">Terms & Conditions:</label>
-                                <textarea
-                                    name="termsAndConditions"
-                                    className="form-control form-control-sm"
-                                    style={{ resize: "none", height: "90px" }}
-                                    value={formData.invoice.termsAndConditions}
-                                    onChange={handleChange}
-                                />
+                                    <FeatherUpload size={28} className="text-muted mb-2" />
+                                    <span className="text-secondary small">
+                                        Click to Upload Documents
+                                    </span>
+                                    <input
+                                        id="fileUploadInput"
+                                        type="file"
+                                        multiple
+                                        className="d-none"
+                                        onChange={(e) => {
+                                            const files = e.target.files;
+                                            if (files?.length) {
+                                                alert(`${files.length} file(s) selected!`);
+                                            }
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
 
-                        <div style={{ width: "50%" }}>
-                            <SummaryBox
-                                totals={totals}
-                                taxInfo={taxInfo}
-                                onTaxChange={handleTaxChange}
-                                tcsOptions={tcsOptions}
-                                onAddTcs={handleAddTcs}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Documents */}
-                    <div className="row mt-4 mb-4">
-                        <label className="col-sm-1 col-form-label">Documents:</label>
-                        <div className="col-sm-11">
-                            <div
-                                onClick={() =>
-                                    document.getElementById("fileUploadInput")?.click()
-                                }
-                                className="d-flex flex-column align-items-center justify-content-center w-100 p-4 bg-light"
-                                style={{
-                                    minHeight: "120px",
-                                    border: "2px dotted #a0a0a0",
-                                    borderRadius: "8px",
-                                    cursor: "pointer",
-                                }}
+                        <div className="form-actions">
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary me-3 px-4"
+                                onClick={() => navigate(-1)}
                             >
-                                <FeatherUpload size={28} className="text-muted mb-2" />
-                                <span className="text-secondary small">
-                                    Click to Upload Documents
-                                </span>
-
-                                <input
-                                    id="fileUploadInput"
-                                    type="file"
-                                    multiple
-                                    className="d-none"
-                                    onChange={(e) => {
-                                        const files = e.target.files;
-                                        if (files?.length) {
-                                            alert(`${files.length} file(s) selected!`);
-                                        }
-                                    }}
-                                />
-                            </div>
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="btn px-4"
+                                style={{ background: "#7991BB", color: "#FFF" }}
+                            >
+                                Save
+                            </button>
                         </div>
-                    </div>
-
-                    {/* Buttons */}
-                    <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                        <button
-                            type="button"
-                            className="btn border me-3 px-4"
-                            onClick={() => navigate(-1)}
-                        >
-                            Cancel
-                        </button>
-
-                        <button
-                            type="submit"
-                            className="btn px-4"
-                            style={{ background: "#7991BB", color: "#FFF" }}
-                        >
-                            Save
-                        </button>
                     </div>
                 </form>
             </div>
+
 
             {/* ---------------- Settings Modal ---------------- */}
             {showSettings && (
