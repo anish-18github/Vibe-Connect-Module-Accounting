@@ -181,212 +181,247 @@ const CalculateBudget: React.FC = () => {
 
     // const activeContent = tabs.find((t) => t.key === activeKey)?.content;
 
-
     const incomeExpenseContent = (
         <>
-            <div className="table-responsive">
-                <table className="table table-bordered table-sm align-middle">
-                    <thead className="table-light">
-                        <tr>
-                            <th style={{ minWidth: 220 }}>Account</th>
-                            {months.map((m) => (
-                                <th key={m} className="text-center">
-                                    {m}
-                                </th>
-                            ))}
-                            <th className="text-center">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <div className="item-card mb-4">
+                <div className="item-card-header">
+                    <span className="item-card-title">Income & Expense Accounts</span>
+                </div>
 
-                        {/* Income section */}
-                        {incomeRows.length > 0 && (
-                            <>
-                                {/* Income header row with +/- icon */}
-                                <tr className="table-light">
-                                    <td
-                                        colSpan={months.length + 2}
-                                        className="fw-semibold"
-                                        style={{ cursor: "pointer" }}
-                                        onClick={() => setShowIncomeRows((prev) => !prev)}
+                <div className="item-card-body">
+                    <div className="table-responsive">
+                        <table className="table table-sm align-middle item-table-inner">
+                            <thead>
+                                <tr>
+                                    <th
+                                        className="fw-medium text-dark"
+                                        style={{ minWidth: 220 }}
                                     >
-                                        <span
-                                            style={{
-                                                display: "inline-flex",
-                                                alignItems: "center",
-                                                marginRight: 8,
-                                                width: 16,
-                                                height: 16,
-                                                borderRadius: 2,
-                                                border: "1px solid #4a7cc2",
-                                                fontSize: 11,
-                                                justifyContent: "center",
-                                            }}
-                                        >
-                                            {showIncomeRows ? "−" : "+"}
-                                        </span>
-                                        Income
-                                    </td>
-                                </tr>
-
-                                {/* Income child rows */}
-                                {showIncomeRows &&
-                                    incomeRows.map((acc) => (
-                                        <tr key={`income-${acc}`}>
-                                            <td style={{ paddingLeft: 28 }}>{acc}</td>
-                                            {months.map((m) => (
-                                                <td key={m}>
-                                                    <input
-                                                        type="number"
-                                                        className="form-control form-control-sm text-end"
-                                                        value={values[acc]?.[m] ?? 0}
-                                                        onChange={(e) => handleCellChange(acc, m, e.target.value)}
-                                                    />
-                                                </td>
-                                            ))}
-                                            <td className="text-end fw-semibold">
-                                                {getRowTotal(acc)}
-                                            </td>
-                                        </tr>
-                                    ))}
-
-                                {/* Income total row directly under income dropdown */}
-                                <tr className="table-light">
-                                    <td className="fw-semibold">Total Income</td>
-                                    {months.map((m) => (
-                                        <td key={m} className="text-end">
-                                            {incomeRows.reduce(
-                                                (sum, acc) => sum + (values[acc]?.[m] || 0),
-                                                0
-                                            )}
-                                        </td>
-                                    ))}
-                                    <td className="text-end fw-semibold">{getIncomeTotal()}</td>
-                                </tr>
-                            </>
-                        )}
-
-
-                        {/* Expense section */}
-                        {expenseRows.length > 0 && (
-                            <>
-                                {/* Expense header row with +/- icon */}
-                                <tr className="table-light">
-                                    <td
-                                        colSpan={months.length + 2}
-                                        className="fw-semibold"
-                                        style={{ cursor: "pointer" }}
-                                        onClick={() => setShowExpenseRows((prev) => !prev)}
-                                    >
-                                        <span
-                                            style={{
-                                                display: "inline-flex",
-                                                alignItems: "center",
-                                                marginRight: 8,
-                                                width: 16,
-                                                height: 16,
-                                                borderRadius: 2,
-                                                border: "1px solid #4a7cc2",
-                                                fontSize: 11,
-                                                justifyContent: "center",
-                                            }}
-                                        >
-                                            {showExpenseRows ? "−" : "+"}
-                                        </span>
-                                        Expense
-                                    </td>
-                                </tr>
-
-                                {/* Expense child rows */}
-                                {showExpenseRows &&
-                                    expenseRows.map((acc) => (
-                                        <tr key={`expense-${acc}`}>
-                                            <td style={{ paddingLeft: 28 }}>{acc}</td>
-                                            {months.map((m) => (
-                                                <td key={m}>
-                                                    <input
-                                                        type="number"
-                                                        className="form-control form-control-sm text-end"
-                                                        value={values[acc]?.[m] ?? 0}
-                                                        onChange={(e) => handleCellChange(acc, m, e.target.value)}
-                                                    />
-                                                </td>
-                                            ))}
-                                            <td className="text-end fw-semibold">
-                                                {getRowTotal(acc)}
-                                            </td>
-                                        </tr>
-                                    ))}
-
-                                {/* Expense total row directly under expense dropdown */}
-                                <tr className="table-light">
-                                    <td className="fw-semibold">Total Expense</td>
-                                    {months.map((m) => (
-                                        <td key={m} className="text-end">
-                                            {expenseRows.reduce(
-                                                (sum, acc) => sum + (values[acc]?.[m] || 0),
-                                                0
-                                            )}
-                                        </td>
-                                    ))}
-                                    <td className="text-end fw-semibold">{getExpenseTotal()}</td>
-                                </tr>
-                            </>
-                        )}
-
-                    </tbody>
-
-                    <tfoot>
-                        <tr className="table-light">
-                            <th>Profit / Loss</th>
-                            {months.map((m) => {
-                                const incomeMonthTotal = incomeRows.reduce(
-                                    (sum, acc) => sum + (values[acc]?.[m] || 0),
-                                    0
-                                );
-                                const expenseMonthTotal = expenseRows.reduce(
-                                    (sum, acc) => sum + (values[acc]?.[m] || 0),
-                                    0
-                                );
-                                const diff = incomeMonthTotal - expenseMonthTotal;
-
-                                const color =
-                                    diff > 0 ? "#4a7cc2" : diff < 0 ? "#d9534f" : "inherit"; // blue for profit, red for loss
-
-                                return (
-                                    <th key={m} className="text-end" style={{ color }}>
-                                        {diff}
+                                        Account
                                     </th>
-                                );
-                            })}
-                            <th
-                                className="text-end"
-                                style={{
-                                    color:
-                                        getProfitOrLoss() > 0
-                                            ? "#4a7cc2"
-                                            : getProfitOrLoss() < 0
-                                                ? "#d9534f"
-                                                : "inherit",
-                                }}
-                            >
-                                {getProfitOrLoss()}
-                            </th>
-                        </tr>
-                    </tfoot>
+                                    {months.map((m) => (
+                                        <th
+                                            key={m}
+                                            className="fw-medium text-dark text-end"
+                                            style={{ width: 110 }}
+                                        >
+                                            {m}
+                                        </th>
+                                    ))}
+                                    <th
+                                        className="fw-medium text-dark text-end"
+                                        style={{ width: 110 }}
+                                    >
+                                        Total
+                                    </th>
+                                </tr>
+                            </thead>
 
+                            <tbody>
+                                {/* Income section */}
+                                {incomeRows.length > 0 && (
+                                    <>
+                                        {/* Income header row with +/- icon */}
+                                        <tr className="table-light">
+                                            <td
+                                                colSpan={months.length + 2}
+                                                className="fw-semibold text-dark"
+                                                style={{ cursor: "pointer" }}
+                                                onClick={() => setShowIncomeRows((prev) => !prev)}
+                                            >
+                                                <span
+                                                    style={{
+                                                        display: "inline-flex",
+                                                        alignItems: "center",
+                                                        marginRight: 8,
+                                                        width: 16,
+                                                        height: 16,
+                                                        borderRadius: 2,
+                                                        border: "1px solid #4a7cc2",
+                                                        fontSize: 11,
+                                                        justifyContent: "center",
+                                                    }}
+                                                >
+                                                    {showIncomeRows ? "−" : "+"}
+                                                </span>
+                                                Income
+                                            </td>
+                                        </tr>
 
-                </table>
+                                        {/* Income child rows */}
+                                        {showIncomeRows &&
+                                            incomeRows.map((acc) => (
+                                                <tr key={`income-${acc}`}>
+                                                    <td style={{ paddingLeft: 28 }}>{acc}</td>
+                                                    {months.map((m) => (
+                                                        <td key={m} className="text-end align-middle">
+                                                            <input
+                                                                type="number"
+                                                                className="form-control form-control-sm border-0 text-end no-spinner p-0"
+                                                                value={values[acc]?.[m] ?? 0}
+                                                                onChange={(e) =>
+                                                                    handleCellChange(acc, m, e.target.value)
+                                                                }
+                                                            />
+                                                        </td>
+                                                    ))}
+                                                    <td className="text-end fw-semibold align-middle">
+                                                        {getRowTotal(acc)}
+                                                    </td>
+                                                </tr>
+                                            ))}
+
+                                        {/* Income total row */}
+                                        <tr className="table-light">
+                                            <td className="fw-semibold text-dark">Total Income</td>
+                                            {months.map((m) => (
+                                                <td key={m} className="text-end align-middle">
+                                                    {incomeRows.reduce(
+                                                        (sum, acc) => sum + (values[acc]?.[m] || 0),
+                                                        0
+                                                    )}
+                                                </td>
+                                            ))}
+                                            <td className="text-end fw-semibold align-middle">
+                                                {getIncomeTotal()}
+                                            </td>
+                                        </tr>
+                                    </>
+                                )}
+
+                                {/* Expense section */}
+                                {expenseRows.length > 0 && (
+                                    <>
+                                        {/* Expense header row with +/- icon */}
+                                        <tr className="table-light">
+                                            <td
+                                                colSpan={months.length + 2}
+                                                className="fw-semibold text-dark"
+                                                style={{ cursor: "pointer" }}
+                                                onClick={() => setShowExpenseRows((prev) => !prev)}
+                                            >
+                                                <span
+                                                    style={{
+                                                        display: "inline-flex",
+                                                        alignItems: "center",
+                                                        marginRight: 8,
+                                                        width: 16,
+                                                        height: 16,
+                                                        borderRadius: 2,
+                                                        border: "1px solid #4a7cc2",
+                                                        fontSize: 11,
+                                                        justifyContent: "center",
+                                                    }}
+                                                >
+                                                    {showExpenseRows ? "−" : "+"}
+                                                </span>
+                                                Expense
+                                            </td>
+                                        </tr>
+
+                                        {/* Expense child rows */}
+                                        {showExpenseRows &&
+                                            expenseRows.map((acc) => (
+                                                <tr key={`expense-${acc}`}>
+                                                    <td style={{ paddingLeft: 28 }}>{acc}</td>
+                                                    {months.map((m) => (
+                                                        <td key={m} className="text-end align-middle">
+                                                            <input
+                                                                type="number"
+                                                                className="form-control form-control-sm border-0 text-end no-spinner p-0"
+                                                                value={values[acc]?.[m] ?? 0}
+                                                                onChange={(e) =>
+                                                                    handleCellChange(acc, m, e.target.value)
+                                                                }
+                                                            />
+                                                        </td>
+                                                    ))}
+                                                    <td className="text-end fw-semibold align-middle">
+                                                        {getRowTotal(acc)}
+                                                    </td>
+                                                </tr>
+                                            ))}
+
+                                        {/* Expense total row */}
+                                        <tr className="table-light">
+                                            <td className="fw-semibold text-dark">Total Expense</td>
+                                            {months.map((m) => (
+                                                <td key={m} className="text-end align-middle">
+                                                    {expenseRows.reduce(
+                                                        (sum, acc) => sum + (values[acc]?.[m] || 0),
+                                                        0
+                                                    )}
+                                                </td>
+                                            ))}
+                                            <td className="text-end fw-semibold align-middle">
+                                                {getExpenseTotal()}
+                                            </td>
+                                        </tr>
+                                    </>
+                                )}
+                            </tbody>
+
+                            <tfoot>
+                                <tr className="table-light">
+                                    <th className="fw-medium text-dark">Profit / Loss</th>
+                                    {months.map((m) => {
+                                        const incomeMonthTotal = incomeRows.reduce(
+                                            (sum, acc) => sum + (values[acc]?.[m] || 0),
+                                            0
+                                        );
+                                        const expenseMonthTotal = expenseRows.reduce(
+                                            (sum, acc) => sum + (values[acc]?.[m] || 0),
+                                            0
+                                        );
+                                        const diff = incomeMonthTotal - expenseMonthTotal;
+                                        const color =
+                                            diff > 0 ? "#4a7cc2" : diff < 0 ? "#d9534f" : "inherit";
+
+                                        return (
+                                            <th
+                                                key={m}
+                                                className="text-end fw-medium align-middle"
+                                                style={{ color }}
+                                            >
+                                                {diff}
+                                            </th>
+                                        );
+                                    })}
+                                    <th
+                                        className="text-end fw-medium align-middle"
+                                        style={{
+                                            color:
+                                                getProfitOrLoss() > 0
+                                                    ? "#4a7cc2"
+                                                    : getProfitOrLoss() < 0
+                                                        ? "#d9534f"
+                                                        : "inherit",
+                                        }}
+                                    >
+                                        {getProfitOrLoss()}
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <div className="mt-3 d-flex justify-content-end gap-2">
-                <button className="btn btn-primary btn-sm">Save</button>
-                <button className="btn btn-outline-secondary btn-sm">
+            <div className="mx-5 form-actions">
+                <button className="btn btn-outline-secondary me-3 px-4 btn-sm">
                     Cancel
+                </button>
+                <button
+                    className="btn px-4 btn-sm"
+                    style={{ background: "#7991BB", color: "#FFF" }}
+                >
+                    Save
                 </button>
             </div>
         </>
+
     );
+
 
 
     const aleContent = (
@@ -657,7 +692,7 @@ const CalculateBudget: React.FC = () => {
         </>
     );
 
-    
+
 
 
     const tabs = [
@@ -678,7 +713,7 @@ const CalculateBudget: React.FC = () => {
     return (
         <>
             <Header />
-            <div style={{ padding: "69px 1.8rem 0 1.8rem"}}>
+            <div style={{ padding: "69px 1.8rem 0 1.8rem" }}>
                 <h1 className="h4 text-dark mb-2">Calculate Budget</h1>
                 <p className="text-muted mb-3" style={{ fontSize: "0.9rem" }}>
                     Budget: {state.name || "-"} | Fiscal Year: {state.fiscalYear || "-"} | Period: {state.period || "-"}

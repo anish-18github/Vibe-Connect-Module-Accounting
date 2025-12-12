@@ -389,40 +389,37 @@ export default function AddBudget() {
     return (
         <>
             <Header />
+            <div className="sales-orders-page">
+                <form onSubmit={handleSubmit} className="sales-order-form">
+                    {/* MAIN CARD: 3-column + Income/Expense sections */}
+                    <div className="so-details-card mx-5 mb-4">
+                        <h1 className="sales-order-title mb-4">New Budget</h1>
 
-            <div style={{ padding: "69px 1.8rem 0 1.8rem" }}>
-                <h1 className="h4 text-dark mb-4 pb-1">New Budget</h1>
-
-                <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
-
-                    {/* FIRST SECTION: 3 columns - Name | Fiscal Year | Budget Period */}
-                    <div className="row mb-4">
-                        {/* Column 1: Name */}
-                        <div className="col-lg-4">
-                            <div className="row align-items-center mb-3">
-                                <label className="col-sm-3 col-form-label">
-                                    Name:<span className="text-danger"> *</span>
-                                </label>
-                                <div className="col-sm-7">
+                        {/* SECTION 1: 3 columns - 1 field each */}
+                        <div className="row g-3 three-column-form">
+                            {/* COLUMN 1: Name */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Name:<span className="text-danger">*</span>
+                                    </label>
                                     <input
                                         type="text"
                                         name="name"
-                                        className="form-control form-control-sm border"
+                                        className="form-control so-control"
                                         value={form.name}
                                         onChange={handleChange}
                                     />
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Column 2: Fiscal Year */}
-                        <div className="col-lg-4">
-                            <div className="row align-items-center mb-3">
-                                <label className="col-sm-3 col-form-label">Fiscal Year:</label>
-                                <div className="col-sm-7">
+                            {/* COLUMN 2: Fiscal Year */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">Fiscal Year:</label>
                                     <select
                                         name="fiscalYear"
-                                        className="form-select form-control-sm border"
+                                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                                         value={form.fiscalYear}
                                         onChange={handleChange}
                                         style={{ color: form.fiscalYear ? "#000000" : "#9b9b9b" }}
@@ -434,16 +431,14 @@ export default function AddBudget() {
                                     </select>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Column 3: Budget Period */}
-                        <div className="col-lg-4">
-                            <div className="row align-items-center mb-3">
-                                <label className="col-sm-4 col-form-label">Budget Period:</label>
-                                <div className="col-sm-7">
+                            {/* COLUMN 3: Budget Period */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">Budget Period:</label>
                                     <select
                                         name="period"
-                                        className="form-select form-control-sm border"
+                                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                                         value={form.period}
                                         onChange={handleChange}
                                         style={{ color: form.period ? "#000000" : "#9b9b9b" }}
@@ -457,27 +452,21 @@ export default function AddBudget() {
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-
-                    {/* Section title */}
-                    <div className="row mb-2">
-                        <div className="col-sm-8 offset-sm-0" style={{ color: "#757575" }}>
-                            <h4>Income And Expense Accounts</h4>
+                        {/* THIN LINE DIVIDER */}
+                        <div className="section-divider my-4 mx-n5">
+                            <h5 className="section-title mb-0 text-muted-foreground">Income And Expense Accounts</h5>
                         </div>
-                    </div>
 
-                    {/* SECOND SECTION: Income Account (left), Expense Account (right) – unchanged */}
-                    <div className="row mb-3">
-                        {/* LEFT: Income Account */}
-                        <div className="col-lg-6">
-                            <div className="row align-items-center">
-                                <label className="col-sm-3 col-form-label">Income Account:</label>
-                                <div className="col-sm-8">
+                        {/* SECTION 2: Income/Expense - FIXED 2 columns INSIDE card */}
+                        <div className="row g-4">
+                            <div className="col-lg-6">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">Income Account:</label>
                                     <input
                                         type="text"
                                         name="incomeAccount"
-                                        className="form-control form-control-sm border"
+                                        className="form-control so-control"
                                         value={form.incomeAccount}
                                         readOnly
                                         onClick={() => {
@@ -487,17 +476,14 @@ export default function AddBudget() {
                                     />
                                 </div>
                             </div>
-                        </div>
 
-                        {/* RIGHT: Expense Account */}
-                        <div className="col-lg-6">
-                            <div className="row align-items-center">
-                                <label className="col-sm-3 col-form-label">Expense Accounts:</label>
-                                <div className="col-sm-8">
+                            <div className="col-lg-6">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">Expense Accounts:</label>
                                     <input
                                         type="text"
                                         name="expenseAccount"
-                                        className="form-control form-control-sm border"
+                                        className="form-control so-control"
                                         value={form.expenseAccount}
                                         readOnly
                                         onClick={() => {
@@ -510,130 +496,129 @@ export default function AddBudget() {
                         </div>
                     </div>
 
-
-                    {/* + Include Asset, Liability, Equity (dropdown button) - 2 columns */}
-                    <div className="align-items-center mb-3">
-                        <div className="col-lg-6">
-                            {/* Left empty space for alignment */}
-                        </div>
-                        <div className="col-lg-6">
-                            <button
-                                type="button"
-                                className="btn btn-link p-0 d-flex align-items-center"
-                                onClick={() => setShowAle((prev) => !prev)}
-                                style={{ textDecoration: "none", color: "#5E5E5E" }}
-                            >
-                                <span
-                                    className="d-inline-flex align-items-center justify-content-center me-2"
-                                    style={{
-                                        width: 16,
-                                        height: 16,
-                                        borderRadius: 2,
-                                        border: "1px solid #4a7cc2",
-                                        fontSize: 12,
-                                        lineHeight: 1,
-                                    }}
+                    {/* OUTSIDE CARD: Expandable ALE Toggle + 3-column fields */}
+                    <div className="mx-5 mb-4">
+                        {/* ALE Toggle Button */}
+                        <div className="row mb-4">
+                            <div className="col-12">
+                                <button
+                                    type="button"
+                                    className="btn btn-link p-0 d-flex align-items-center so-expand-toggle w-100 text-start"
+                                    onClick={() => setShowAle((prev) => !prev)}
+                                    style={{ textDecoration: "none", color: "#5E5E5E" }}
                                 >
-                                    {showAle ? "−" : "+"}
-                                </span>
-                                Include Asset, Liability, and Equity Account in Budget
-                            </button>
+                                    <span
+                                        className="d-inline-flex align-items-center justify-content-center me-2"
+                                        style={{
+                                            width: 16,
+                                            height: 16,
+                                            borderRadius: 2,
+                                            border: "1px solid #4a7cc2",
+                                            fontSize: 12,
+                                            lineHeight: 1,
+                                        }}
+                                    >
+                                        {showAle ? "−" : "+"}
+                                    </span>
+                                    Include Asset, Liability, and Equity Account in Budget
+                                </button>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Extra fields appear when plus is clicked (unchanged structure) */}
-                    {showAle && (
-                        <>
-                            <div className="row">
-                                {/* LEFT COLUMN: Asset + Liability */}
-                                <div className="col-lg-6">
-                                    <div className="row align-items-center mb-3">
-                                        <label className="col-sm-3 col-form-label">Asset Accounts:</label>
-                                        <div className="col-sm-8">
-                                            <input
-                                                type="text"
-                                                name="assetAccount"
-                                                className="form-control form-control-sm border"
-                                                value={form.assetAccount}
-                                                readOnly
-                                                onClick={() => {
-                                                    setSelectedAssetOptions(
-                                                        form.assetAccount
-                                                            ? form.assetAccount.split(",").map(s => s.trim()).filter(Boolean)
-                                                            : []
-                                                    );
-                                                    setShowAssetModal(true);
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="row align-items-center mb-3">
-                                        <label className="col-sm-3 col-form-label">Liability Accounts:</label>
-                                        <div className="col-sm-8">
-                                            <input
-                                                type="text"
-                                                name="liabilityAccount"
-                                                className="form-control form-control-sm border"
-                                                value={form.liabilityAccount}
-                                                readOnly
-                                                onClick={() => {
-                                                    setSelectedLiabilityOptions(
-                                                        form.liabilityAccount
-                                                            ? form.liabilityAccount.split(",").map(s => s.trim()).filter(Boolean)
-                                                            : []
-                                                    );
-                                                    setShowLiabilityModal(true);
-                                                }}
-                                            />
-                                        </div>
+                        {/* ALE Fields - 3 columns, 1 field each - Conditional */}
+                        {showAle && (
+                            <div className="row g-3 three-column-form">
+                                {/* Asset */}
+                                <div className="col-lg-4">
+                                    <div className="so-form-group mb-4">
+                                        <label className="so-label text-sm text-muted-foreground fw-bold">Asset Accounts:</label>
+                                        <input
+                                            type="text"
+                                            name="assetAccount"
+                                            className="form-control so-control"
+                                            value={form.assetAccount}
+                                            readOnly
+                                            onClick={() => {
+                                                setSelectedAssetOptions(
+                                                    form.assetAccount
+                                                        ? form.assetAccount.split(",").map(s => s.trim()).filter(Boolean)
+                                                        : []
+                                                );
+                                                setShowAssetModal(true);
+                                            }}
+                                        />
                                     </div>
                                 </div>
 
-                                {/* RIGHT COLUMN: Equity */}
-                                <div className="col-lg-6">
-                                    <div className="row align-items-center mb-3">
-                                        <label className="col-sm-3 col-form-label">Equity Accounts:</label>
-                                        <div className="col-sm-8">
-                                            <input
-                                                type="text"
-                                                name="equityAccount"
-                                                className="form-control form-control-sm border"
-                                                value={form.equityAccount}
-                                                readOnly
-                                                onClick={() => {
-                                                    setSelectedEquityOptions(
-                                                        form.equityAccount
-                                                            ? form.equityAccount.split(",").map(s => s.trim()).filter(Boolean)
-                                                            : []
-                                                    );
-                                                    setShowEquityModal(true);
-                                                }}
-                                            />
-                                        </div>
+                                {/* Liability */}
+                                <div className="col-lg-4">
+                                    <div className="so-form-group mb-4">
+                                        <label className="so-label text-sm text-muted-foreground fw-bold">Liability Accounts:</label>
+                                        <input
+                                            type="text"
+                                            name="liabilityAccount"
+                                            className="form-control so-control"
+                                            value={form.liabilityAccount}
+                                            readOnly
+                                            onClick={() => {
+                                                setSelectedLiabilityOptions(
+                                                    form.liabilityAccount
+                                                        ? form.liabilityAccount.split(",").map(s => s.trim()).filter(Boolean)
+                                                        : []
+                                                );
+                                                setShowLiabilityModal(true);
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Equity */}
+                                <div className="col-lg-4">
+                                    <div className="so-form-group mb-4">
+                                        <label className="so-label text-sm text-muted-foreground fw-bold">Equity Accounts:</label>
+                                        <input
+                                            type="text"
+                                            name="equityAccount"
+                                            className="form-control so-control"
+                                            value={form.equityAccount}
+                                            readOnly
+                                            onClick={() => {
+                                                setSelectedEquityOptions(
+                                                    form.equityAccount
+                                                        ? form.equityAccount.split(",").map(s => s.trim()).filter(Boolean)
+                                                        : []
+                                                );
+                                                setShowEquityModal(true);
+                                            }}
+                                        />
                                     </div>
                                 </div>
                             </div>
-
-                        </>
-                    )}
+                        )}
+                    </div>
 
                     {/* Buttons */}
-                    <div className="d-flex justify-content-center mt-4 pt-4 border-top">
+                    <div className="mx-5 form-actions">
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary me-3 px-4"
+                            onClick={() => navigate(-1)}
+                        >
+                            Cancel
+                        </button>
                         <button
                             type="submit"
-                            className="btn px-4 me-3"
+                            className="btn px-4"
                             style={{ background: "#7991BB", color: "#FFF" }}
                         >
                             Create Budget
                         </button>
-                        <button type="button" className="btn border px-4">
-                            Cancel
-                        </button>
                     </div>
                 </form>
-
             </div>
+
+
+
 
             {/* INCOME MODAL - Only Income categories */}
             {showIncomeModal && (

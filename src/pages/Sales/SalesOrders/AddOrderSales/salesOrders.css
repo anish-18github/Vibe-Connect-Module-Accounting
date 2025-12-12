@@ -226,7 +226,6 @@
 
 .so-control.textarea {
   height: 90px !important;
-  /* reduced from 90px */
   resize: none;
 }
 

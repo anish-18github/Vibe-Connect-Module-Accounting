@@ -262,58 +262,55 @@ export default function AddRecurringInvoices() {
         <>
             <Header />
 
-            <div className="sales-orders-page" style={{ padding: "69px 1.8rem 0 1.8rem" }}>
-                <h1 className="h4 text-dark mb-4 pb-1">
-                    New Recurring Invoice
-                </h1>
+            <div className="sales-orders-page">
+                <form onSubmit={handleSubmit} className="sales-order-form">
+                    {/* TOP DETAILS CARD */}
+                    <div className="so-details-card mx-5 mb-4">
+                        <h1 className="sales-order-title mb-4">New Recurring Invoice</h1>
 
-                <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
-
-                    <div className="row mb-4">
-                        {/* COLUMN 1: Customer Name, Order Date, Repeat Every */}
-                        <div className="col-lg-4">
-                            {/* Customer Name */}
-                            <div className="row align-items-center mb-2">
-                                <label className="col-sm-5 col-form-label fw-normal">Customer Name:</label>
-                                <div className="col-sm-6">
+                        <div className="row g-3 three-column-form">
+                            {/* COLUMN 1: 3 fields */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Customer:
+                                    </label>
                                     <select
                                         name="customerName"
-                                        className="form-select form-select-sm border"
+                                        className="form-select so-control"
                                         value={formData.invoice.customerName}
                                         onChange={handleChange}
                                     >
-                                        <option value="" disabled>Select Customer</option>
+                                        <option value="">Select Customer</option>
                                         <option value="Customer A">Customer A</option>
                                         <option value="Customer B">Customer B</option>
                                     </select>
                                 </div>
-                            </div>
 
-                            {/* Order Date (was labeled "Order Number" but is date input) */}
-                            <div className="row align-items-center mb-2">
-                                <label className="col-sm-5 col-form-label fw-normal">Order Number:</label>
-                                <div className="col-sm-5">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Order Number:
+                                    </label>
                                     <input
                                         type="number"
-                                        className="form-control form-control-sm border"
                                         name="orderNumber"
+                                        className="form-control so-control"
                                         value={formData.invoice.orderNumber}
                                         onChange={handleChange}
                                     />
                                 </div>
-                            </div>
 
-                            {/* Repeat Every */}
-                            <div className="row align-items-center mb-2">
-                                <label className="col-sm-5 col-form-label fw-normal">Repeat Every:</label>
-                                <div className="col-sm-5">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Repeat Every:
+                                    </label>
                                     <select
                                         name="repeatEvery"
-                                        className="form-select form-select-sm border"
-                                        value={formData.invoice.repeatEvery || formData.invoice.customerName} // Fixed value binding
+                                        className="form-select so-control"
+                                        value={formData.invoice.repeatEvery}
                                         onChange={handleChange}
                                     >
-                                        <option value="" disabled>Select</option>
+                                        <option value="">Select</option>
                                         <option value="Week">Week</option>
                                         <option value="2 Weeks">2 Weeks</option>
                                         <option value="Month">Month</option>
@@ -326,58 +323,44 @@ export default function AddRecurringInvoices() {
                                     </select>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* COLUMN 2: Subject (textarea), Profile Name */}
-                        <div className="col-lg-4">
-                            {/* Subject (textarea - takes more vertical space) */}
-                            <div className="row align-items-start mb-2">
-                                <label className="col-sm-4 col-form-label fw-normal">Subject:</label>
-                                <div className="col-sm-8">
-                                    <textarea
-                                        className="form-control form-control-sm border"
-                                        style={{ resize: "none", height: "50px" }}
-                                        name="customerNotes"
-                                        value={formData.invoice.customerNotes}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                            </div>
+                            {/* COLUMN 2: 3 fields (Subject textarea + Profile Name + Start/End dates) */}
+                            <div className="col-lg-4">
 
-                            {/* Profile Name */}
-                            <div className="row align-items-center mb-2">
-                                <label className="col-sm-4 col-form-label fw-normal">Profile Name:</label>
-                                <div className="col-sm-8">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Profile Name:
+                                    </label>
                                     <input
                                         type="text"
                                         name="invoiceNo"
-                                        className="form-control form-control-sm border"
+                                        className="form-control so-control"
                                         value={formData.invoice.invoiceNo}
                                         onChange={handleChange}
+                                        placeholder="Enter profile name"
                                     />
                                 </div>
-                            </div>
 
-                            {/* Terms / Start Date / Expiry Date (together as requested) */}
-                            <div className="row align-items-center mb-2">
-                                <label className="col-sm-4 col-form-label fw-normal">Terms:</label>
-                                <div className="col-sm-8">
-                                    <div className="row">
-                                        <div className="col-sm-6">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Terms:
+                                    </label>
+                                    <div className="row g-2">
+                                        <div className="col-6">
                                             <input
                                                 type="date"
-                                                className="form-control form-control-sm border mb-1"
-                                                name="quoteDate"
+                                                name="startOn"
+                                                className="form-control so-control"
                                                 value={formData.invoice.startOn}
                                                 onChange={handleChange}
                                                 placeholder="Start On"
                                             />
                                         </div>
-                                        <div className="col-sm-6">
+                                        <div className="col-6">
                                             <input
                                                 type="date"
-                                                className="form-control form-control-sm border"
-                                                name="expiryDate"
+                                                name="endOn"
+                                                className="form-control so-control"
                                                 value={formData.invoice.endOn}
                                                 onChange={handleChange}
                                                 placeholder="End On"
@@ -385,20 +368,35 @@ export default function AddRecurringInvoices() {
                                         </div>
                                     </div>
                                 </div>
+
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Payment Terms:
+                                    </label>
+                                    <select
+                                        name="paymentTerms"
+                                        className="form-select so-control"
+                                        value={formData.invoice.paymentTerms}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select</option>
+                                        <option value="Advance">Advance</option>
+                                        <option value="Net 15">Net 15</option>
+                                        <option value="Net 30">Net 30</option>
+                                        <option value="Net 45">Net 45</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
 
-                        {/* COLUMN 3: Terms/Start/Expiry, Salesperson, Payment Terms */}
-                        <div className="col-lg-4">
-
-
-                            {/* Salesperson */}
-                            <div className="row align-items-center mb-2">
-                                <label className="col-sm-4 col-form-label fw-normal">Salesperson:</label>
-                                <div className="col-sm-6">
+                            {/* COLUMN 3: 2 fields */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Salesperson:
+                                    </label>
                                     <select
                                         name="salesperson"
-                                        className="form-select form-select-sm border"
+                                        className="form-select so-control"
                                         value={formData.invoice.salesperson}
                                         onChange={handleChange}
                                     >
@@ -407,147 +405,123 @@ export default function AddRecurringInvoices() {
                                         <option value="Maria">Maria</option>
                                     </select>
                                 </div>
-                            </div>
 
-                            {/* Payment Terms */}
-                            <div className="row align-items-center mb-2">
-                                <label className="col-sm-4 col-form-label fw-normal">Payment Terms:</label>
-                                <div className="col-sm-5">
-                                    <select
-                                        name="paymentTerms"
-                                        className="form-select form-select-sm border"
-                                        value={formData.invoice.paymentTerms}
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Subject:
+                                    </label>
+                                    <textarea
+                                        className="form-control so-control subject-textarea"
+                                        style={{ height: "100px", resize: "none" }}
+                                        name="customerNotes"
+                                        value={formData.invoice.customerNotes}
                                         onChange={handleChange}
-                                    >
-                                        <option value="" disabled>Select</option>
-                                        <option value="Advance">Advance</option>
-                                        <option value="Net 15">Net 15</option>
-                                        <option value="Net 30">Net 30</option>
-                                        <option value="Net 45">Net 45</option>
-                                    </select>
+                                        placeholder="Enter recurring invoice subject..."
+                                    />
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    {/* OUTSIDE CARD - Standard Sales Order layout */}
+                    <div className="mx-5">
+                        <ItemTable
+                            rows={formData.itemTable}
+                            onRowChange={handleRowChange}
+                            onAddRow={handleAddRow}
+                            onRemoveRow={handleRemoveRow}
+                        />
 
-                    {/* ITEM TABLE */}
-                    <h5
-                        className="mt-4 fw-normal"
-                        style={{
-                            width: "100%",
-                            backgroundColor: "#EEEEEE",
-                            padding: "6px",
-                            borderRadius: "5px",
-                            border: "1px solid #D9D9D9",
-                            color: "#5E5E5E",
-                        }}
-                    >
-                        Item Table
-                    </h5>
+                        <div className="notes-summary-row">
+                            <div className="notes-column">
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Customer Notes:
+                                    </label>
+                                    <textarea
+                                        className="form-control so-control textarea"
+                                        name="additionalNotes"
+                                        value={formData.invoice.customerNotes || ""}
+                                        onChange={handleChange}
+                                        placeholder="Add note for customer..."
+                                    />
+                                </div>
 
-                    <ItemTable
-                        rows={formData.itemTable}
-                        onRowChange={handleRowChange}
-                        onAddRow={handleAddRow}
-                        onRemoveRow={handleRemoveRow}
-                    />
-
-                    {/* Notes + Summary */}
-                    <div className="notes-summary-row" style={{ display: "flex", gap: 5, marginTop: 18 }}>
-                        <div style={{ width: "50%" }}>
-                            <div className="mb-3">
-                                <label className="form-label">Customer Notes:</label>
-                                <textarea
-                                    className="form-control form-control-sm border"
-                                    style={{ resize: "none", height: "90px" }}
-                                    name="customerNotes"
-                                    value={formData.invoice.customerNotes}
-                                    onChange={handleChange}
-                                />
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Terms & Conditions:
+                                    </label>
+                                    <textarea
+                                        className="form-control so-control textarea"
+                                        name="termsAndConditions"
+                                        value={formData.invoice.termsAndConditions}
+                                        onChange={handleChange}
+                                        placeholder="Enter terms and conditions..."
+                                    />
+                                </div>
                             </div>
 
-                            <div className="mb-3">
-                                <label className="form-label">Terms & Conditions:</label>
-                                <textarea
-                                    className="form-control form-control-sm"
-                                    style={{ resize: "none", height: "90px" }}
-                                    name="termsAndConditions"
-                                    value={formData.invoice.termsAndConditions}
-                                    onChange={handleChange}
+                            <div className="summary-column">
+                                <SummaryBox
+                                    totals={totals}
+                                    taxInfo={taxInfo}
+                                    onTaxChange={handleTaxChange}
+                                    tcsOptions={tcsOptions}
+                                    onAddTcs={handleAddTcs}
                                 />
                             </div>
                         </div>
 
-                        <div style={{ width: "50%" }}>
-                            <SummaryBox
-                                totals={totals}
-                                taxInfo={taxInfo}
-                                onTaxChange={handleTaxChange}
-                                tcsOptions={tcsOptions}
-                                onAddTcs={handleAddTcs}
-                            />
+                        <div className="row mb-4 mt-4 align-items-start">
+                            <label className="so-label text-sm text-muted-foreground fw-bold">
+                                Documents:
+                            </label>
+                            <div className="col-sm-11">
+                                <div
+                                    className="doc-upload-box"
+                                    onClick={() => document.getElementById("fileUploadInput")?.click()}
+                                >
+                                    <FeatherUpload size={32} className="text-muted mb-2" />
+                                    <span className="text-secondary small">
+                                        Click to Upload Documents
+                                    </span>
+                                    <input
+                                        id="fileUploadInput"
+                                        type="file"
+                                        multiple
+                                        className="d-none"
+                                        onChange={(e) => {
+                                            const files = e.target.files;
+                                            if (files?.length) {
+                                                console.log("Files uploaded:", files);
+                                                alert(`${files.length} file(s) selected!`);
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Documents */}
-                    <div className="row mb-4 mt-4">
-                        <label className="col-sm-1 col-form-label">Documents:</label>
-                        <div className="col-sm-11">
-                            <div
-                                onClick={() =>
-                                    document.getElementById("fileUploadInput")?.click()
-                                }
-                                className="d-flex flex-column align-items-center justify-content-center w-100 p-4 bg-light"
-                                style={{
-                                    minHeight: "120px",
-                                    border: "2px dotted #a0a0a0",
-                                    borderRadius: "8px",
-                                    cursor: "pointer",
-                                }}
+                        <div className="form-actions">
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary me-3 px-4"
+                                onClick={() => navigate(-1)}
                             >
-                                <FeatherUpload size={32} className="text-muted mb-2" />
-                                <span className="text-secondary small">
-                                    Click to Upload Documents
-                                </span>
-
-                                <input
-                                    id="fileUploadInput"
-                                    type="file"
-                                    multiple
-                                    className="d-none"
-                                    onChange={(e) => {
-                                        const files = e.target.files;
-                                        if (files?.length) {
-                                            console.log("Files uploaded:", files);
-                                            alert(`${files.length} file(s) selected!`);
-                                        }
-                                    }}
-                                />
-                            </div>
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="btn px-4"
+                                style={{ background: "#7991BB", color: "#FFF" }}
+                            >
+                                Save
+                            </button>
                         </div>
-                    </div>
-
-                    {/* Buttons */}
-                    <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                        <button
-                            type="button"
-                            className="btn border me-3 px-4"
-                            onClick={() => navigate(-1)}
-                        >
-                            Cancel
-                        </button>
-
-                        <button
-                            type="submit"
-                            className="btn px-4"
-                            style={{ background: "#7991BB", color: "#FFF" }}
-                        >
-                            Save
-                        </button>
                     </div>
                 </form>
             </div>
+
 
         </>
     );

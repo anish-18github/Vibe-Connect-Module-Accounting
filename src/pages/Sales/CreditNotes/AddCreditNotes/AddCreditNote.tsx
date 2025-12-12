@@ -234,143 +234,128 @@ export default function AddCreditNote() {
         <>
             <Header />
 
-            <div className="sales-orders-page" style={{ padding: "69px 1.8rem 0 1.8rem" }}>
-                <h1 className="h4 text-dark mb-4 pb-1">New Credit Note</h1>
+            <div className="sales-orders-page">
+                <form onSubmit={handleSubmit} className="sales-order-form">
+                    {/* TOP DETAILS CARD */}
+                    <div className="so-details-card mx-5 mb-4">
+                        <h1 className="sales-order-title mb-4">New Credit Note</h1>
 
-                <form onSubmit={handleSubmit} style={{ color: "#5E5E5E" }}>
-
-                    {/* ---------------- TWO COLUMN FORM ---------------- */}
-                    <div className="row mb-4">
-                        {/* COLUMN 1: 3 fields (Customer, Reference, Subject) */}
-                        <div className="col-lg-4">
-                            {/* Customer Name */}
-                            <div className="row align-items-center mb-2">
-                                <label className="col-sm-3 col-form-label">Customer:</label>
-                                <div className="col-sm-6">
+                        <div className="row g-3 three-column-form">
+                            {/* COLUMN 1: 3 fields */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Customer:
+                                    </label>
                                     <select
                                         name="customerName"
-                                        className="form-select form-select-sm border"
+                                        className="form-select so-control"
                                         value={formData.credit.customerName}
                                         onChange={handleChange}
                                     >
-                                        <option value="" disabled>
-                                            Select Customer
-                                        </option>
+                                        <option value="">Select Customer</option>
                                         <option value="Customer A">Customer A</option>
                                         <option value="Customer B">Customer B</option>
                                     </select>
                                 </div>
-                            </div>
 
-                            {/* Reference */}
-                            <div className="row align-items-center mb-2">
-                                <label className="col-sm-3 col-form-label">Reference:</label>
-                                <div className="col-sm-8">
+                                <div className="so-form-group mb-4 position-relative">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Credit Note No:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="creditNoteNo"
+                                        className="form-control so-control"
+                                        value={formData.credit.creditNoteNo}
+                                        onChange={handleChange}
+                                        style={{ paddingRight: "35px" }}
+                                        placeholder="Auto-generated"
+                                    />
+                                    <span
+                                        className="so-settings-icon"
+                                        onClick={() => setShowSettings(true)}
+                                    >
+                                        <Settings size={16} />
+                                    </span>
+                                </div>
+
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Reference:
+                                    </label>
                                     <input
                                         type="text"
                                         name="referenceNo"
-                                        className="form-control form-control-sm border"
+                                        className="form-control so-control"
                                         value={formData.credit.referenceNo}
                                         onChange={handleChange}
+                                        placeholder="Enter reference number"
                                     />
                                 </div>
                             </div>
 
-                            {/* Subject */}
-                            <div className="row align-items-start mb-2">
-                                <label className="col-sm-3 col-form-label">Subject:</label>
-                                <div className="col-sm-8">
-                                    <textarea
-                                        className="form-control form-control-sm border"
-                                        style={{ resize: "none", height: "50px" }}
-                                        name="customerNotes"
-                                        value={formData.credit.subject}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* COLUMN 2: 2 fields (Payment Terms, Credit Note No) */}
-                        <div className="col-lg-4">
-                            {/* Payment Terms */}
-                            <div className="row align-items-center mb-2">
-                                <label className="col-sm-4 col-form-label">Payment Terms:</label>
-                                <div className="col-sm-5">
+                            {/* COLUMN 2: 2 fields */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Payment Terms:
+                                    </label>
                                     <select
-                                        name="paymentTerms"
-                                        className="form-select form-select-sm border"
+                                        name="paymentTerm"
+                                        className="form-select so-control"
                                         value={formData.credit.paymentTerm}
                                         onChange={handleChange}
                                     >
-                                        <option value="" disabled>
-                                            Select
-                                        </option>
+                                        <option value="">Select</option>
                                         <option value="Advance">Advance</option>
                                         <option value="Net 15">Net 15</option>
                                         <option value="Net 30">Net 30</option>
                                         <option value="Net 45">Net 45</option>
                                     </select>
                                 </div>
-                            </div>
 
-                            {/* Credit Note No */}
-                            <div className="row align-items-center mb-2" style={{ position: "relative" }}>
-                                <label className="col-sm-4 col-form-label">Credit Note:</label>
-                                <div className="col-sm-7">
-                                    <input
-                                        type="text"
-                                        name="creditNoteNo"
-                                        className="form-control form-control-sm border"
-                                        value={formData.credit.creditNoteNo}
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Subject:
+                                    </label>
+                                    <textarea
+                                        className="form-control so-control subject-textarea"
+                                        style={{ height: "60px", resize: "none" }}
+                                        name="subject"
+                                        value={formData.credit.subject}
                                         onChange={handleChange}
-                                        style={{ paddingRight: "35px" }}
+                                        placeholder="Enter credit note subject..."
                                     />
-                                    <div
-                                        style={{
-                                            position: "absolute",
-                                            right: "55px",
-                                            top: "50%",
-                                            transform: "translateY(-55%)",
-                                            cursor: "pointer",
-                                        }}
-                                        onClick={() => setShowSettings(true)}
-                                    >
-                                        <Settings size={16} style={{ color: "#555" }} />
-                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* COLUMN 3: 2 fields (Credit Date, Salesperson) */}
-                        <div className="col-lg-4">
-                            {/* Credit Note Date */}
-                            <div className="row align-items-center mb-2">
-                                <label className="col-sm-5 col-form-label">Credit Note Date:</label>
-                                <div className="col-sm-7">
+                            {/* COLUMN 3: 2 fields */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Credit Note Date:
+                                    </label>
                                     <input
                                         type="date"
-                                        className="form-control form-control-sm border"
                                         name="creditDate"
+                                        className="form-control so-control"
                                         value={formData.credit.creditDate}
                                         onChange={handleChange}
                                     />
                                 </div>
-                            </div>
 
-                            {/* Salesperson */}
-                            <div className="row align-items-center mb-2">
-                                <label className="col-sm-5 col-form-label">Salesperson:</label>
-                                <div className="col-sm-6">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Salesperson:
+                                    </label>
                                     <select
                                         name="salesperson"
-                                        className="form-select form-select-sm border"
+                                        className="form-select so-control"
                                         value={formData.credit.salesperson}
                                         onChange={handleChange}
                                     >
-                                        <option value="" disabled>
-                                            Select Salesperson
-                                        </option>
+                                        <option value="">Select Salesperson</option>
                                         <option value="John">John</option>
                                         <option value="Maria">Maria</option>
                                     </select>
@@ -379,128 +364,105 @@ export default function AddCreditNote() {
                         </div>
                     </div>
 
+                    {/* OUTSIDE CARD - Standard Sales Order layout */}
+                    <div className="mx-5">
+                        <ItemTable
+                            rows={formData.itemTable}
+                            onRowChange={handleRowChange}
+                            onAddRow={handleAddRow}
+                            onRemoveRow={handleRemoveRow}
+                        />
 
-                    {/* ---------------- ITEM TABLE ---------------- */}
-                    <h5 className="mt-4 fw-normal table-title"
-                        style={{
-                            width: "100%",
-                            backgroundColor: "#EEEEEE",
-                            padding: "6px",
-                            borderRadius: "5px",
-                            border: "1px solid #D9D9D9",
-                            color: "#5E5E5E",
-                        }}
-                    >
-                        Item Table
-                    </h5>
+                        <div className="notes-summary-row">
+                            <div className="notes-column">
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Customer Notes:
+                                    </label>
+                                    <textarea
+                                        className="form-control so-control textarea"
+                                        name="notes"
+                                        value={formData.credit.notes}
+                                        onChange={handleChange}
+                                        placeholder="Add note for customer..."
+                                    />
+                                </div>
 
-                    <ItemTable
-                        rows={formData.itemTable}
-                        onRowChange={handleRowChange}
-                        onAddRow={handleAddRow}
-                        onRemoveRow={handleRemoveRow}
-                    />
-
-                    {/* ---------------- NOTES + SUMMARY ---------------- */}
-                    <div className="notes-summary-row">
-
-                        <div style={{ width: "50%" }}>
-                            <div className="mb-3">
-                                <label className="form-label">Customer Notes:</label>
-                                <textarea
-                                    className="form-control form-control-sm"
-                                    style={{ resize: "none", height: "90px" }}
-                                    name="notes"
-                                    value={formData.credit.notes}
-                                    onChange={handleChange}
-                                />
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Terms & Conditions:
+                                    </label>
+                                    <textarea
+                                        className="form-control so-control textarea"
+                                        name="terms"
+                                        value={formData.credit.terms}
+                                        onChange={handleChange}
+                                        placeholder="Enter terms and conditions..."
+                                    />
+                                </div>
                             </div>
 
-                            <div className="mb-3">
-                                <label className="form-label">
-                                    Terms & Conditions:
-                                </label>
-                                <textarea
-                                    className="form-control form-control-sm"
-                                    style={{ resize: "none", height: "90px" }}
-
-                                    name="terms"
-                                    value={formData.credit.terms}
-                                    onChange={handleChange}
+                            <div className="summary-column">
+                                <SummaryBox
+                                    totals={totals}
+                                    taxInfo={taxInfo}
+                                    onTaxChange={handleTaxChange}
+                                    tcsOptions={tcsOptions}
+                                    onAddTcs={handleAddTcs}
                                 />
                             </div>
                         </div>
 
-                        <div style={{ width: "50%" }}>
-                            <SummaryBox
-                                totals={totals}
-                                taxInfo={taxInfo}
-                                onTaxChange={handleTaxChange}
-                                tcsOptions={tcsOptions}
-                                onAddTcs={handleAddTcs}
-                            />
+                        <div className="row mb-4 mt-4 align-items-start">
+                            <label className="so-label text-sm text-muted-foreground fw-bold">
+                                Documents:
+                            </label>
+                            <div className="col-sm-11">
+                                <div
+                                    className="doc-upload-box"
+                                    onClick={() => document.getElementById("fileUploadInput")?.click()}
+                                >
+                                    <FeatherUpload size={32} className="text-muted mb-2" />
+                                    <span className="text-secondary small">
+                                        Click to Upload Documents
+                                    </span>
+                                    <input
+                                        id="fileUploadInput"
+                                        type="file"
+                                        multiple
+                                        className="d-none"
+                                        onChange={(e) => {
+                                            const files = e.target.files;
+                                            if (files?.length) {
+                                                console.log("Files uploaded:", files);
+                                                alert(`${files.length} file(s) selected!`);
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* ---------------- DOCUMENT UPLOAD ---------------- */}
-                    {/* Documents */}
-                    <div className="row mb-4 mt-4">
-                        <label className="col-sm-1 col-form-label">Documents:</label>
-                        <div className="col-sm-11">
-                            <div
-                                onClick={() =>
-                                    document.getElementById("fileUploadInput")?.click()
-                                }
-                                className="d-flex flex-column align-items-center justify-content-center w-100 p-4 bg-light"
-                                style={{
-                                    minHeight: "120px",
-                                    border: "2px dotted #a0a0a0",
-                                    borderRadius: "8px",
-                                    cursor: "pointer",
-                                }}
+                        <div className="form-actions">
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary me-3 px-4"
+                                onClick={() => navigate(-1)}
                             >
-                                <FeatherUpload size={32} className="text-muted mb-2" />
-                                <span className="text-secondary small">
-                                    Click to Upload Documents
-                                </span>
-
-                                <input
-                                    id="fileUploadInput"
-                                    type="file"
-                                    multiple
-                                    className="d-none"
-                                    onChange={(e) => {
-                                        const files = e.target.files;
-                                        if (files?.length) {
-                                            console.log("Files uploaded:", files);
-                                            alert(`${files.length} file(s) selected!`);
-                                        }
-                                    }}
-                                />
-                            </div>
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="btn px-4"
+                                style={{ background: "#7991BB", color: "#FFF" }}
+                            >
+                                Save
+                            </button>
                         </div>
-                    </div>
-
-                    {/* ---------------- BUTTONS ---------------- */}
-                    <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                        <button
-                            type="button"
-                            className="btn border me-3 px-4"
-                            onClick={() => navigate(-1)}
-                        >
-                            Cancel
-                        </button>
-
-                        <button
-                            type="submit"
-                            className="btn px-4"
-                            style={{ background: "#7991BB", color: "#FFF" }}
-                        >
-                            Save
-                        </button>
                     </div>
                 </form>
             </div>
+
 
             {/* ---------------- SETTINGS MODAL ---------------- */}
             {showSettings && (

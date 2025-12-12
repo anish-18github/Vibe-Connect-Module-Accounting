@@ -2,7 +2,39 @@ import React, { useState } from "react";
 import Header from "../../../../components/Header/Header";
 import Tabs from "../../../../components/Tab/Tabs";
 import { FeatherUpload } from "../../../Sales/Customers/AddCustomer/Add";
-import { PlusCircle } from "react-feather";
+import { Plus, Trash2 } from "react-feather";
+import { useNavigate } from "react-router-dom";
+
+// 1. Define the form interface
+interface ExpenseFormData {
+    date: string;
+    expenseAccount: string;
+    currency: string;
+    amount: string;
+    paidThrough: string;
+    vendor: string;
+    invoiceNo: string;
+    notes: string;
+    customerName: string;
+}
+
+
+
+// Add this state (component level)
+interface MileageFormData {
+    date: string;
+    mileageType: 'distanceTravelled' | 'odometerReading';
+    employee: string;
+    amountCurrency: string;
+    amount: string;
+    distance: string;
+    distanceUnit: string;
+    paidThrough: string;
+    vendor: string;
+    invoiceNo: string;
+    notes: string;
+    customerName: string;
+}
 
 interface BulkRow {
     date: string;
@@ -17,6 +49,76 @@ interface BulkRow {
 
 const AddExpense: React.FC = () => {
     const [activeTab, setActiveKey] = useState("record-expense");
+
+    const navigate = useNavigate(); // Add this import: import { useNavigate } from 'react-router-dom';
+
+    const [formData, setFormData] = useState({
+        // put all your form fields here
+        date: "",
+        mileageType: "distanceTravelled",
+        employee: "",
+        amountCurrency: "INR",
+        amount: "",
+        distance: "",
+        distanceUnit: "Kilometer(s)",
+        paidThrough: "",
+        vendor: "",
+        invoiceNo: "",
+        notes: "",
+        customerName: "",
+    });
+
+
+    const [expenseData, setExpenseData] = useState<ExpenseFormData>({
+        date: new Date().toISOString().split("T")[0],
+        expenseAccount: "",
+        currency: "INR",
+        amount: "",
+        paidThrough: "",
+        vendor: "",
+        invoiceNo: "",
+        notes: "",
+        customerName: "",
+    });
+
+    const handleExpenseChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setExpenseData(prev => ({ ...prev, [name]: value }));
+    };
+
+
+
+    const [mileageData, setMileageData] = useState<MileageFormData>({
+        date: new Date().toISOString().split("T")[0],
+        mileageType: 'distanceTravelled',
+        employee: '',
+        amountCurrency: 'INR',
+        amount: '',
+        distance: '',
+        distanceUnit: 'Kilometer(s)',
+        paidThrough: '',
+        vendor: '',
+        invoiceNo: '',
+        notes: '',
+        customerName: ''
+    });
+
+    const handleMileageChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setMileageData(prev => ({ ...prev, [name]: value }));
+    };
+
+
+    const handleMileageRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setMileageData(prev => ({ ...prev, mileageType: e.target.value as 'distanceTravelled' | 'odometerReading' }));
+    };
+
+    const handleMileageSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log('Mileage Data:', mileageData);
+        alert('Mileage recorded successfully!');
+    };
+
 
     const [bulkRows, setBulkRows] = useState([
         {
@@ -59,275 +161,323 @@ const AddExpense: React.FC = () => {
         );
     };
 
+    // 3. Add handleChange function
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    ) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log("Expense:", expenseData);
+        alert("Saved!");
+    };
+
+    const handleBulkSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log("Bulk Expenses:", bulkRows);
+        alert(`${bulkRows.length} expenses saved successfully!`);
+    };
+
+    const handleRemoveRow = (index: number) => {
+        setBulkRows(prev => prev.filter((_, i) => i !== index));
+    };
+
+
+
     // Record Expense Tab
     // inside AddExpense.tsx
 
     const renderRecordExpense = () => (
-        <div style={{ padding: "0 1.8rem" }}>
-            {/* <h1 className="h4 text-dark mb-4 pb-1">Record Expense</h1> */}
+        <>
+            <div className="sales-orders-page">
+                <form onSubmit={handleSubmit} className="sales-order-form">
+                    {/* SINGLE BIG CARD - ALL 3 SECTIONS */}
+                    <div className="so-details-card mx-5 mb-5">
+                        <h1 className="sales-order-title mb-4">Record Expense</h1>
 
-            <form
-                // onSubmit={handleSubmit}  // hook up later if needed
-                className="mt-3"
-                style={{ color: "#5E5E5E" }}
-            >
-                {/* SECTION 1: Date / Expense Account / Amount (3 columns) */}
-                <div className="row mb-4">
-                    {/* Column 1: Date */}
-                    <div className="col-lg-4">
-                        <div className="row align-items-center mb-2">
-                            <label className="col-sm-2 col-form-label">
-                                Date:<span className="text-danger">*</span>
-                            </label>
-                            <div className="col-sm-8">
-                                <input
-                                    type="date"
-                                    name="date"
-                                    className="form-control form-control-sm border"
-                                    defaultValue={new Date().toISOString().split("T")[0]}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Column 2: Expense Account */}
-                    <div className="col-lg-4">
-                        <div className="row align-items-center mb-2">
-                            <label className="col-sm-4 col-form-label">
-                                Expense Account:<span className="text-danger">*</span>
-                            </label>
-                            <div className="col-sm-8">
-                                <select name="expenseAccount" className="form-select form-select-sm border">
-                                    <option value="">-- select Expense Account --</option>
-                                    <option>IT and Internet Expenses</option>
-                                    <option>Office Supplies</option>
-                                    <option>Travel Expenses</option>
-                                    <option>Meals & Entertainment</option>
-                                </select>
-                                <button
-                                    type="button"
-                                    className="btn btn-link p-0 mt-1"
-                                    style={{ fontSize: "12px" }}
-                                >
-                                    Itemize
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Column 3: Amount + Currency */}
-                    <div className="col-lg-4">
-                        <div className="row align-items-center mb-2">
-                            <label className="col-sm-3 col-form-label">
-                                Amount:<span className="text-danger">*</span>
-                            </label>
-                            <div className="col-sm-8">
-                                <div className="d-flex">
-                                    <select name="currency" className="form-select form-select-sm" style={{ maxWidth: "90px" }}>
-                                        <option>INR</option>
-                                        <option>USD</option>
-                                    </select>
+                        {/* SECTION 1: Date / Expense Account / Amount */}
+                        <div className="row g-3 three-column-form mb-4">
+                            {/* Col 1: Date */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Date <span className="text-danger">*</span>:
+                                    </label>
                                     <input
-                                        type="number"
-                                        name="amount"
-                                        className="form-control form-control-sm border ms-2"
-                                        placeholder="0.00"
+                                        type="date"
+                                        name="date"
+                                        className="form-control so-control"
+                                        value={expenseData.date}
+                                        onChange={handleExpenseChange}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Col 2: Expense Account */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Expense Account <span className="text-danger">*</span>:
+                                    </label>
+                                    <div className="d-flex flex-column gap-1">
+                                        <select
+                                            name="expenseAccount"
+                                            className="form-select so-control"
+                                            value={expenseData.expenseAccount}
+                                            onChange={handleExpenseChange}
+                                        >
+                                            <option value="">Select Expense Account</option>
+                                            <option>IT and Internet Expenses</option>
+                                            <option>Office Supplies</option>
+                                            <option>Travel Expenses</option>
+                                            <option>Meals & Entertainment</option>
+                                        </select>
+                                        <button type="button" className="btn btn-link p-0 text-sm" style={{ fontSize: "12px" }}>
+                                            Itemize
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Col 3: Amount + Currency */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Amount <span className="text-danger">*</span>:
+                                    </label>
+                                    <div className="d-flex gap-2">
+                                        <select
+                                            name="currency"
+                                            className="form-select so-control"
+                                            style={{ width: "90px" }}
+                                            value={expenseData.currency}
+                                            onChange={handleExpenseChange}
+                                        >
+                                            <option>INR</option>
+                                            <option>USD</option>
+                                        </select>
+                                        <input
+                                            type="number"
+                                            name="amount"
+                                            className="form-control so-control no-spinner"
+                                            value={expenseData.amount}
+                                            onChange={handleExpenseChange}
+                                            placeholder="0.00"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr className="so-divider my-4" />
+
+                        {/* SECTION 2: Paid Through / Vendor / Invoice# + Notes */}
+                        <div className="row g-3 three-column-form mb-4">
+                            {/* Col 1: Paid Through */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Paid Through <span className="text-danger">*</span>:
+                                    </label>
+                                    <select
+                                        name="paidThrough"
+                                        className="form-select so-control"
+                                        value={expenseData.paidThrough}
+                                        onChange={handleExpenseChange}
+                                    >
+                                        <option value="">Select an account</option>
+                                        <option>Cash</option>
+                                        <option>Bank</option>
+                                        <option>Credit Card</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Col 2: Vendor */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Vendor:
+                                    </label>
+                                    <select
+                                        name="vendor"
+                                        className="form-select so-control"
+                                        value={expenseData.vendor}
+                                        onChange={handleExpenseChange}
+                                    >
+                                        <option value="">Select or add a vendor</option>
+                                        <option value="vendor1">Vendor 1</option>
+                                        <option value="vendor2">Vendor 2</option>
+                                        <option value="vendor3">Vendor 3</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Col 3: Invoice# + Notes */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-3">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Invoice #:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="invoiceNo"
+                                        className="form-control so-control"
+                                        value={expenseData.invoiceNo}
+                                        onChange={handleExpenseChange}
+                                    />
+                                </div>
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Notes:
+                                    </label>
+                                    <textarea
+                                        name="notes"
+                                        className="form-control so-control textarea"
+                                        rows={3}
+                                        value={expenseData.notes}
+                                        onChange={handleExpenseChange}
+                                        placeholder="Max. 500 characters"
                                     />
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <hr className="my-4" />
+                        <hr className="so-divider my-4" />
 
-                {/* SECTION 2: Paid Through / Vendor / Invoice# / Notes (3 columns) */}
-                <div className="row mb-4">
-                    {/* Column 1: Paid Through */}
-                    <div className="col-lg-4">
-                        <div className="row align-items-center mb-2">
-                            <label className="col-sm-4 col-form-label">
-                                Paid Through:<span className="text-danger">*</span>
-                            </label>
-                            <div className="col-sm-8">
-                                <select name="paidThrough" className="form-select form-select-sm border">
-                                    <option value="">Select an account</option>
-                                    <option>Cash</option>
-                                    <option>Bank</option>
-                                    <option>Credit Card</option>
-                                </select>
+                        {/* SECTION 3: Customer Name + Receipts (2 columns) */}
+                        <div className="row g-4">
+                            {/* Col 1: Customer Name */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Customer Name:
+                                    </label>
+                                    <select
+                                        name="customerName"
+                                        className="form-select so-control"
+                                        value={expenseData.customerName || ""}
+                                        onChange={handleExpenseChange}
+                                    >
+                                        <option value="">Select or add a customer</option>
+                                        <option value="customer1">Customer 1</option>
+                                        <option value="customer2">Customer 2</option>
+                                        <option value="customer3">Customer 3</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Col 2: Receipts Upload */}
+                            <div className="col-lg-8">
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Receipts:
+                                    </label>
+                                    <div className="doc-upload-box" onClick={() => document.getElementById("fileUploadInput")?.click()}>
+                                        <FeatherUpload size={28} className="text-muted mb-2" />
+                                        <span className="text-secondary small">Click to Upload Documents</span>
+                                        <input
+                                            id="fileUploadInput"
+                                            type="file"
+                                            multiple
+                                            className="d-none"
+                                            onChange={(e) => {
+                                                const files = e.target.files;
+                                                if (files?.length) {
+                                                    console.log("Files uploaded:", files);
+                                                    alert(`${files.length} file(s) selected!`);
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Column 2: Vendor */}
-                    <div className="col-lg-4">
-                        <div className="row align-items-center mb-2">
-                            <label className="col-sm-3 col-form-label">Vendor:</label>
-                            <div className="col-sm-8">
-                                <select name="vendor" className="form-select form-select-sm border">
-                                    <option value="">Select or add a vendor</option>
-                                    <option value="vendor1">Vendor 1</option>
-                                    <option value="vendor2">Vendor 2</option>
-                                    <option value="vendor3">Vendor 3</option>
-                                </select>
-                            </div>
+                    {/* Buttons - OUTSIDE card */}
+                    <div className="mx-5 mb-5">
+                        <div className="form-actions">
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary me-3 px-4"
+                                onClick={() => navigate(-1)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="btn px-4"
+                                style={{ background: "#7991BB", color: "#FFF" }}
+                            >
+                                Save
+                            </button>
                         </div>
                     </div>
-
-                    {/* Column 3: Invoice# + Notes */}
-                    <div className="col-lg-4">
-                        <div className="row align-items-start mb-2">
-                            <label className="col-sm-3 col-form-label">Invoice#:</label>
-                            <div className="col-sm-8">
-                                <input
-                                    type="text"
-                                    name="invoiceNo"
-                                    className="form-control form-control-sm border"
-                                />
-                            </div>
-                        </div>
-                        <div className="row align-items-start">
-                            <label className="col-sm-3 col-form-label">Notes:</label>
-                            <div className="col-sm-8">
-                                <textarea
-                                    name="notes"
-                                    className="form-control form-control-sm border"
-                                    rows={3}
-                                    placeholder="Max. 500 characters"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                <hr className="my-4" />
-
-                {/* Row 5: Customer Name */}
-                <div className="row mb-3 align-items-center">
-                    <label className="col-sm-2 col-form-label">Customer Name:</label>
-                    <div className="col-sm-3">
-                        <select
-                            className="form-select form-select-sm"
-                        // value={selectedCustomer}
-                        // onChange={(e) => setSelectedCustomer(e.target.value)}
-                        >
-                            <option value="">Select or add a customer</option>
-                            <option value="customer1">Customer 1</option>
-                            <option value="customer2">Customer 2</option>
-                            <option value="customer3">Customer 3</option>
-                        </select>
-                    </div>
-                </div>
-
-
-
-                <div className="row mb-4">
-                    <label className="col-sm-2 col-form-label"> Receipts:</label>
-                    <div className="col-sm-6">
-                        <div
-                            onClick={() => document.getElementById("fileUploadInput")?.click()}
-                            className="d-flex flex-column align-items-center justify-content-center w-100 p-4 bg-light cursor-pointer"
-                            style={{
-                                minHeight: "120px",
-                                border: "2px dotted #a0a0a0",
-                                borderRadius: "8px"
-                            }}
-                        >
-                            <FeatherUpload size={32} className="text-muted mb-2" />
-                            <span className="text-secondary small">Click to Upload Documents</span>
-                            <input
-                                id="fileUploadInput"
-                                type="file"
-                                multiple
-                                className="d-none"
-                                onChange={(e) => {
-                                    const files = e.target.files;
-                                    if (files?.length) {
-                                        console.log("Files uploaded:", files);
-                                        alert(`${files.length} file(s) selected!`);
-                                    }
-                                }}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Submit Buttons – reuse New Vendor theme */}
-                <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                    <button
-                        type="button"
-                        className="btn border me-3 px-4"
-                    // onClick={() => navigate(-1)}
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        type="submit"
-                        className="btn px-4"
-                        style={{ background: "#7991BB", color: "#FFFFFF" }}
-                    >
-                        Save
-                    </button>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        </>
     );
 
 
-    // Record Mileage Tab
-    const renderRecordMileage = () => (
-        <div style={{ padding: "0 1.8rem" }}>
-            <h1 className="h4 text-dark mb-4 pb-1">Record Mileage</h1>
 
-            <form className="mt-3" style={{ color: "#5E5E5E" }}>
-                {/* SECTION 1: Date/Employee + Mileage + Distance/Amount (3 columns) */}
-                <div className="row mb-4">
-                    {/* Column 1: Date + Employee */}
-                    <div className="col-lg-4">
-                        {/* Date */}
-                        <div className="row align-items-center mb-2">
-                            <label className="col-sm-4 col-form-label">
-                                Date<span className="text-danger">*</span>
-                            </label>
-                            <div className="col-sm-8">
+
+
+    const renderRecordMileage = () => (
+        <div className="sales-orders-page">
+            <form onSubmit={handleMileageSubmit} className="sales-order-form">
+                {/* SINGLE BIG CARD - ALL SECTIONS */}
+                <div className="so-details-card mx-5 mb-5">
+                    <h1 className="sales-order-title mb-4">Record Mileage</h1>
+
+                    {/* SECTION 1: Date/Radio + Employee/Amount + Distance (3 columns) */}
+                    <div className="row g-3 three-column-form mb-4">
+                        {/* Col 1: Date + Mileage Type Radio */}
+                        <div className="col-lg-4">
+                            <div className="so-form-group mb-4">
+                                <label className="so-label text-sm text-muted-foreground fw-bold">
+                                    Date <span className="text-danger">*</span>:
+                                </label>
                                 <input
                                     type="date"
                                     name="date"
-                                    className="form-control form-control-sm border"
-                                    defaultValue={new Date().toISOString().split("T")[0]}
+                                    className="form-control so-control"
+                                    value={mileageData.date}
+                                    onChange={handleMileageChange}
                                 />
                             </div>
-                        </div>
-
-                        {/* Calculate mileage using */}
-                        <div className="row align-items-center mb-2">
-                            <label className="col-sm-4 col-form-label">
-                                Calculate mileage using<span className="text-danger">*</span>
-                            </label>
-                            <div className="col-sm-8">
-                                <div className="d-flex align-items-center flex-column">
-                                    <div className="form-check me-2 mb-1 w-100">
+                            <div className="so-form-group">
+                                <label className="so-label text-sm text-muted-foreground fw-bold">
+                                    Calculate mileage using <span className="text-danger">*</span>:
+                                </label>
+                                <div className="d-flex flex-column gap-1">
+                                    <div className="form-check">
                                         <input
                                             className="form-check-input"
                                             type="radio"
                                             name="mileageType"
                                             id="distanceTravelled"
-                                            defaultChecked
+                                            checked={mileageData.mileageType === 'distanceTravelled'}
+                                            onChange={handleMileageRadioChange}
+                                            value="distanceTravelled"
                                         />
                                         <label className="form-check-label small" htmlFor="distanceTravelled">
                                             Distance travelled
                                         </label>
                                     </div>
-                                    <div className="form-check w-100">
+                                    <div className="form-check">
                                         <input
                                             className="form-check-input"
                                             type="radio"
                                             name="mileageType"
                                             id="odometerReading"
+                                            checked={mileageData.mileageType === 'odometerReading'}
+                                            onChange={handleMileageRadioChange}
+                                            value="odometerReading"
                                         />
                                         <label className="form-check-label small" htmlFor="odometerReading">
                                             Odometer reading
@@ -337,148 +487,127 @@ const AddExpense: React.FC = () => {
                             </div>
                         </div>
 
-
-                    </div>
-
-                    {/* Column 2: Calculate Mileage + Distance Helper */}
-                    <div className="col-lg-4">
-                        {/* Employee */}
-                        <div className="row align-items-center mb-2">
-                            <label className="col-sm-4 col-form-label">Employee</label>
-                            <div className="col-sm-8">
-                                <select name="employee" className="form-select form-select-sm border">
+                        {/* Col 2: Employee + Amount */}
+                        <div className="col-lg-4">
+                            <div className="so-form-group mb-4">
+                                <label className="so-label text-sm text-muted-foreground fw-bold">Employee:</label>
+                                <select name="employee" className="form-select so-control" value={mileageData.employee} onChange={handleMileageChange}>
                                     <option value="">Select employee</option>
                                     <option value="emp1">Employee 1</option>
                                     <option value="emp2">Employee 2</option>
                                 </select>
                             </div>
-                        </div>
-
-                        {/* Amount */}
-                        <div className="row align-items-center">
-                            <label className="col-sm-4 col-form-label">
-                                Amount<span className="text-danger">*</span>
-                            </label>
-                            <div className="col-sm-8">
-                                <div className="d-flex">
-                                    <select name="amountCurrency" className="form-select form-select-sm" style={{ maxWidth: "90px" }}>
+                            <div className="so-form-group">
+                                <label className="so-label text-sm text-muted-foreground fw-bold">
+                                    Amount <span className="text-danger">*</span>:
+                                </label>
+                                <div className="d-flex gap-2">
+                                    <select name="amountCurrency" className="form-select so-control" style={{ width: "90px" }} value={mileageData.amountCurrency} onChange={handleMileageChange}>
                                         <option>INR</option>
                                         <option>USD</option>
                                     </select>
                                     <input
                                         type="number"
                                         name="amount"
-                                        className="form-control form-control-sm border ms-2"
+                                        className="form-control so-control no-spinner"
+                                        value={mileageData.amount}
+                                        onChange={handleMileageChange}
                                         placeholder="0.00"
                                     />
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Column 3: Distance + Amount */}
-                    <div className="col-lg-4">
-                        {/* Distance */}
-                        <div className="row align-items-center mb-2">
-                            <label className="col-sm-3 col-form-label">
-                                Distance<span className="text-danger">*</span>
-                            </label>
-                            <div className="col-sm-8">
-                                <div className="d-flex">
+                        {/* Col 3: Distance (2 fields as one unit) */}
+                        <div className="col-lg-4">
+                            <div className="so-form-group">
+                                <label className="so-label text-sm text-muted-foreground fw-bold">
+                                    Distance <span className="text-danger">*</span>:
+                                </label>
+                                <div className="d-flex gap-2 mb-2">
                                     <input
                                         type="number"
                                         name="distance"
-                                        className="form-control form-control-sm border"
+                                        className="form-control so-control"
+                                        value={mileageData.distance}
+                                        onChange={handleMileageChange}
                                         placeholder="0.00"
                                         step="0.1"
                                     />
-                                    <select name="distanceUnit" className="form-select form-select-sm ms-2" style={{ maxWidth: "130px" }}>
+                                    <select name="distanceUnit" className="form-select so-control" style={{ width: "130px" }} value={mileageData.distanceUnit} onChange={handleMileageChange}>
                                         <option>Kilometer(s)</option>
                                         <option>Mile(s)</option>
                                     </select>
                                 </div>
-                                <small className="text-muted d-block mt-1">
+                                <small className="text-muted d-block">
                                     Rate per km = ₹12,000.00
-                                    <button type="button" className="btn btn-link p-0 ms-1" style={{ fontSize: "12px" }}>
-                                        Change
-                                    </button>
+                                    <button type="button" className="btn btn-link p-0 ms-1 text-sm">Change</button>
                                 </small>
                             </div>
                         </div>
-
-
                     </div>
-                </div>
 
-                <hr className="my-4" />
+                    <hr className="so-divider my-4" />
 
-                {/* SECTION 2: Paid Through/Vendor + Invoice#/Notes + Customer (3 columns) */}
-                <div className="row mb-4">
-                    {/* Column 1: Paid Through */}
-                    <div className="col-lg-4">
-                        <div className="row align-items-center mb-2">
-                            <label className="col-sm-4 col-form-label">
-                                Paid Through<span className="text-danger">*</span>
-                            </label>
-                            <div className="col-sm-8">
-                                <select name="paidThrough" className="form-select form-select-sm border">
+                    {/* SECTION 2: Paid Through / Vendor / Invoice# + Notes (3 columns) */}
+                    <div className="row g-3 three-column-form mb-4">
+                        {/* Col 1: Paid Through + Customer Name */}
+                        <div className="col-lg-4">
+                            <div className="so-form-group mb-4">
+                                <label className="so-label text-sm text-muted-foreground fw-bold">
+                                    Paid Through <span className="text-danger">*</span>:
+                                </label>
+                                <select name="paidThrough" className="form-select so-control" value={mileageData.paidThrough} onChange={handleMileageChange}>
                                     <option value="">Select an account</option>
                                     <option>Cash</option>
                                     <option>Bank</option>
                                     <option>Credit Card</option>
                                 </select>
                             </div>
-                        </div>
-
-                        {/* Customer Name (standalone below) */}
-                        <div className="row mb-3 align-items-center">
-                            <label className="col-sm-4 col-form-label">Customer Name</label>
-                            <div className="col-sm-5">
-                                <select name="customerName" className="form-select form-select-sm border">
+                            <div className="so-form-group">
+                                <label className="so-label text-sm text-muted-foreground fw-bold">Customer Name:</label>
+                                <select name="customerName" className="form-select so-control" value={mileageData.customerName} onChange={handleMileageChange}>
                                     <option value="">Select customer</option>
                                     <option value="customer1">Customer 1</option>
                                     <option value="customer2">Customer 2</option>
                                 </select>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Column 2: Vendor */}
-                    <div className="col-lg-4">
-                        <div className="row align-items-center mb-2">
-                            <label className="col-sm-3 col-form-label">Vendor:</label>
-                            <div className="col-sm-6">
-                                <select name="vendor" className="form-select form-select-sm border">
+                        {/* Col 2: Vendor */}
+                        <div className="col-lg-4">
+                            <div className="so-form-group mb-4">
+                                <label className="so-label text-sm text-muted-foreground fw-bold">Vendor:</label>
+                                <select name="vendor" className="form-select so-control" value={mileageData.vendor} onChange={handleMileageChange}>
                                     <option value="">Select a vendor</option>
                                     <option value="vendor1">Vendor 1</option>
                                     <option value="vendor2">Vendor 2</option>
                                 </select>
                             </div>
-                        </div>
-                    </div>
 
-                    {/* Column 3: Invoice# + Notes + Customer */}
-                    <div className="col-lg-4">
-                        {/* Invoice# */}
-                        <div className="row align-items-start mb-2">
-                            <label className="col-sm-3 col-form-label">Invoice#:</label>
-                            <div className="col-sm-8">
+                            <div className="so-form-group mb-3">
+                                <label className="so-label text-sm text-muted-foreground fw-bold">Invoice #:</label>
                                 <input
                                     type="text"
                                     name="invoiceNo"
-                                    className="form-control form-control-sm border"
+                                    className="form-control so-control"
+                                    value={mileageData.invoiceNo}
+                                    onChange={handleMileageChange}
                                 />
                             </div>
                         </div>
 
-                        {/* Notes */}
-                        <div className="row align-items-start mb-2">
-                            <label className="col-sm-3 col-form-label">Notes:</label>
-                            <div className="col-sm-8">
+                        {/* Col 3: Invoice# + Notes */}
+                        <div className="col-lg-4">
+
+                            <div className="so-form-group">
+                                <label className="so-label text-sm text-muted-foreground fw-bold">Notes:</label>
                                 <textarea
                                     name="notes"
-                                    className="form-control form-control-sm border"
-                                    rows={2}
+                                    className="form-control so-control subject-textarea"
+                                    rows={3}
+                                    value={mileageData.notes}
+                                    onChange={handleMileageChange}
                                     placeholder="Max. 500 characters"
                                 />
                             </div>
@@ -486,221 +615,384 @@ const AddExpense: React.FC = () => {
                     </div>
                 </div>
 
-
-
-
-                {/* Buttons – same theme as other forms */}
-                <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                    <button
-                        type="button"
-                        className="btn border me-3 px-4"
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        type="submit"
-                        className="btn px-4"
-                        style={{ background: "#7991BB", color: "#FFFFFF" }}
-                    >
-                        Save
-                    </button>
+                {/* Buttons */}
+                <div className="mx-5 mb-5">
+                    <div className="form-actions">
+                        <button type="button" className="btn btn-outline-secondary me-3 px-4" onClick={() => navigate(-1)}>
+                            Cancel
+                        </button>
+                        <button type="submit" className="btn px-4" style={{ background: "#7991BB", color: "#FFF" }}>
+                            Save
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
     );
 
 
+    // const renderBulkAddExpenses = () => (
+    //     <div className="item-card">
+    //         <div className="item-card-header">
+    //             <span className="item-card-title">Bulk Add Expenses</span>
+    //         </div>
+
+    //         <div className="item-card-body">
+    //             <p className="text-muted mb-3 small">
+    //                 Enter multiple expenses in the table below. Required fields are marked with *.
+    //             </p>
+
+    //             <div className="row">
+    //                 <div className="col-md-12">
+    //                     <table className="table table-sm align-middle item-table-inner">
+    //                         <thead>
+    //                             <tr>
+    //                                 <th className="fw-medium text-dark" style={{ width: "11%" }}>
+    //                                     Date<span className="text-danger">*</span>
+    //                                 </th>
+    //                                 <th className="fw-medium text-dark" style={{ width: "18%" }}>
+    //                                     Expense Account<span className="text-danger">*</span>
+    //                                 </th>
+    //                                 <th className="fw-medium text-dark" style={{ width: "10%" }}>
+    //                                     Amount<span className="text-danger">*</span>
+    //                                 </th>
+    //                                 <th className="fw-medium text-dark" style={{ width: "14%" }}>
+    //                                     Paid Through<span className="text-danger">*</span>
+    //                                 </th>
+    //                                 <th className="fw-medium text-dark" style={{ width: "14%" }}>Vendor</th>
+    //                                 <th className="fw-medium text-dark" style={{ width: "14%" }}>Customer</th>
+    //                                 <th className="fw-medium text-dark" style={{ width: "11%" }}>Projects</th>
+    //                                 <th className="fw-medium text-dark text-center" style={{ width: "8%" }}>Billable</th>
+    //                             </tr>
+    //                         </thead>
+    //                         <tbody>
+    //                             {bulkRows.map((row: BulkRow, index: number) => (
+    //                                 <tr key={index}>
+    //                                     <td>
+    //                                         <input
+    //                                             type="date"
+    //                                             className="form-control form-control-sm border-0 item-input"
+    //                                             value={row.date || ""}
+    //                                             onChange={(e) => handleRowChange(index, "date", e.target.value)}
+    //                                         />
+    //                                     </td>
+    //                                     <td>
+    //                                         <select
+    //                                             className="form-select form-control-sm border-0 item-input"
+    //                                             value={row.account || ""}
+    //                                             onChange={(e) => handleRowChange(index, "account", e.target.value)}
+    //                                         >
+    //                                             <option value="">Select account</option>
+    //                                             <option>IT and Internet Expenses</option>
+    //                                             <option>Office Supplies</option>
+    //                                             <option>Travel Expenses</option>
+    //                                         </select>
+    //                                     </td>
+    //                                     <td>
+    //                                         <input
+    //                                             type="number"
+    //                                             className="form-control form-control-sm border-0 item-input text-end"
+    //                                             placeholder="0.00"
+    //                                             value={row.amount || ""}
+    //                                             onChange={(e) => handleRowChange(index, "amount", e.target.value)}
+    //                                         />
+    //                                     </td>
+    //                                     <td>
+    //                                         <select
+    //                                             className="form-select form-control-sm border-0 item-input"
+    //                                             value={row.paidThrough || ""}
+    //                                             onChange={(e) => handleRowChange(index, "paidThrough", e.target.value)}
+    //                                         >
+    //                                             <option value="">Select account</option>
+    //                                             <option>Cash</option>
+    //                                             <option>Bank</option>
+    //                                             <option>Credit Card</option>
+    //                                         </select>
+    //                                     </td>
+    //                                     <td>
+    //                                         <select
+    //                                             className="form-select form-control-sm border-0 item-input"
+    //                                             value={row.vendor || ""}
+    //                                             onChange={(e) => handleRowChange(index, "vendor", e.target.value)}
+    //                                         >
+    //                                             <option value="">Select vendor</option>
+    //                                             <option value="vendor1">Vendor 1</option>
+    //                                             <option value="vendor2">Vendor 2</option>
+    //                                         </select>
+    //                                     </td>
+    //                                     <td>
+    //                                         <select
+    //                                             className="form-select form-control-sm border-0 item-input"
+    //                                             value={row.customer || ""}
+    //                                             onChange={(e) => handleRowChange(index, "customer", e.target.value)}
+    //                                         >
+    //                                             <option value="">Select customer</option>
+    //                                             <option value="customer1">Customer 1</option>
+    //                                             <option value="customer2">Customer 2</option>
+    //                                         </select>
+    //                                     </td>
+    //                                     <td>
+    //                                         <select
+    //                                             className="form-select form-control-sm border-0 item-input"
+    //                                             value={row.project || ""}
+    //                                             onChange={(e) => handleRowChange(index, "project", e.target.value)}
+    //                                         >
+    //                                             <option value="">None</option>
+    //                                             <option value="project1">Project Alpha</option>
+    //                                             <option value="project2">Project Beta</option>
+    //                                         </select>
+    //                                     </td>
+    //                                     <td className="text-center">
+    //                                         <input
+    //                                             type="checkbox"
+    //                                             className="form-check-input m-1"
+    //                                             checked={row.billable || false}
+    //                                             onChange={(e) => handleRowChange(index, "billable", e.target.checked)}
+    //                                         />
+    //                                     </td>
+    //                                 </tr>
+    //                             ))}
+    //                         </tbody>
+    //                     </table>
+
+    //                     <button
+    //                         type="button"
+    //                         className="btn btn-sm fw-bold item-add-row-btn"
+    //                         onClick={onAddRow}
+    //                     >
+    //                         <PlusCircle size={16} className="me-1" /> Add New Row
+    //                     </button>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     </div>
+    // );
 
 
-    // Bulk Add Expenses Tab
+
     const renderBulkAddExpenses = () => (
-        <div style={{ padding: "0 1.8rem" }}>
-            <h1 className="h4 text-dark mb-4 pb-1">Bulk Add Expenses</h1>
+        <div className="sales-orders-page">
+            <form onSubmit={handleBulkSubmit} className="sales-order-form">
+                <div className="so-details-card mx-5 mb-5">
+                    <h1 className="sales-order-title mb-2">Bulk Add Expenses</h1>
 
-            <form className="mt-3" style={{ color: "#5E5E5E" }}>
-                <p className="text-muted mb-3" style={{ fontSize: "14px" }}>
-                    Enter multiple expenses in the table below. Required fields are marked with *.
-                </p>
+                    <p className="text-muted mb-4" style={{ fontSize: "14px" }}>
+                        Enter multiple expenses below. Required fields are marked with <span className="text-danger">*</span>.
+                    </p>
 
-                <div className="table-responsive">
-                    <table className="table table-bordered align-middle">
-                        <thead className="table-light">
-                            <tr>
-                                <th style={{ width: "11%" }}>
-                                    Date<span className="text-danger">*</span>
-                                </th>
-                                <th style={{ width: "18%" }}>
-                                    Expense Account<span className="text-danger">*</span>
-                                </th>
-                                <th style={{ width: "10%" }}>
-                                    Amount<span className="text-danger">*</span>
-                                </th>
-                                <th style={{ width: "14%" }}>
-                                    Paid Through<span className="text-danger">*</span>
-                                </th>
-                                <th style={{ width: "14%" }}>Vendor</th>
-                                <th style={{ width: "14%" }}>Customer Name</th>
-                                <th style={{ width: "11%" }}>Projects</th>
-                                <th style={{ width: "8%" }}>Billable</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {bulkRows.map((row: BulkRow, index: number) => (
-                                <tr key={index}>
-                                    {/* Date */}
-                                    <td>
-                                        <input
-                                            type="date"
-                                            className="form-control form-control-sm border-0"
-                                            value={row.date}
-                                            onChange={(e) =>
-                                                handleRowChange(index, "date", e.target.value)
-                                            }
-                                        />
-                                    </td>
+                    {/* ONE CARD PER EXPENSE ROW */}
+                    {bulkRows.map((row: BulkRow, index: number) => (
+                        <div
+                            key={index}
+                            className="mb-3 border rounded-3 px-4 py-3 position-relative"
+                            style={{ backgroundColor: "#fdf7fbff" }}
+                        >
+                            {/* Header: label + delete button */}
+                            <div className="d-flex justify-content-between align-items-center mb-2">
+                                <span className="fw-semibold small text-muted">
+                                    Expense #{index + 1}
+                                </span>
 
-                                    {/* Expense Account */}
-                                    <td>
-                                        <select
-                                            className="form-select form-select-sm border"
-                                            value={row.account}
-                                            onChange={(e) =>
-                                                handleRowChange(index, "account", e.target.value)
-                                            }
-                                        >
-                                            <option value="">Select account</option>
-                                            <option>IT and Internet Expenses</option>
-                                            <option>Office Supplies</option>
-                                            <option>Travel Expenses</option>
-                                        </select>
-                                    </td>
+                                {bulkRows.length > 1 && (
+                                    <button
+                                        type="button"
+                                        className="btn btn-link text-danger text-decoration-none p-0 d-inline-flex align-items-center"
+                                        onClick={() => handleRemoveRow(index)}
+                                        aria-label="Delete expense row"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                )}
+                            </div>
 
-                                    {/* Amount */}
-                                    <td>
-                                        <input
-                                            type="number"
-                                            className="form-control form-control-sm border-0"
-                                            placeholder="0.00"
-                                            value={row.amount}
-                                            onChange={(e) =>
-                                                handleRowChange(index, "amount", e.target.value)
-                                            }
-                                        />
-                                    </td>
 
-                                    {/* Paid Through */}
-                                    <td>
-                                        <select
-                                            className="form-select form-select-sm"
-                                            value={row.paidThrough}
-                                            onChange={(e) =>
-                                                handleRowChange(index, "paidThrough", e.target.value)
-                                            }
-                                        >
-                                            <option value="">Select account</option>
-                                            <option>Cash</option>
-                                            <option>Bank</option>
-                                            <option>Credit Card</option>
-                                        </select>
-                                    </td>
+                            {/* Row 1: Date / Expense Account / Amount */}
+                            <div className="row g-3 mb-2">
+                                <div className="col-md-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Date<span className="text-danger">*</span>:
+                                    </label>
+                                    <input
+                                        type="date"
+                                        className="form-control so-control"
+                                        value={row.date || ""}
+                                        onChange={(e) => handleRowChange(index, "date", e.target.value)}
+                                    />
+                                </div>
 
-                                    {/* Vendor */}
-                                    <td>
-                                        <select
-                                            className="form-select form-select-sm"
-                                            value={row.vendor}
-                                            onChange={(e) =>
-                                                handleRowChange(index, "vendor", e.target.value)
-                                            }
-                                        >
-                                            <option value="">Select vendor</option>
-                                            <option value="vendor1">Vendor 1</option>
-                                            <option value="vendor2">Vendor 2</option>
-                                        </select>
-                                    </td>
+                                <div className="col-md-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Expense Account<span className="text-danger">*</span>:
+                                    </label>
+                                    <select
+                                        className="form-select so-control"
+                                        value={row.account || ""}
+                                        onChange={(e) => handleRowChange(index, "account", e.target.value)}
+                                    >
+                                        <option value="">Select account</option>
+                                        <option>IT and Internet Expenses</option>
+                                        <option>Office Supplies</option>
+                                        <option>Travel Expenses</option>
+                                    </select>
+                                </div>
 
-                                    {/* Customer Name */}
-                                    <td>
-                                        <select
-                                            className="form-select form-select-sm"
-                                            value={row.customer}
-                                            onChange={(e) =>
-                                                handleRowChange(index, "customer", e.target.value)
-                                            }
-                                        >
-                                            <option value="">Select customer</option>
-                                            <option value="customer1">Customer 1</option>
-                                            <option value="customer2">Customer 2</option>
-                                        </select>
-                                    </td>
+                                <div className="col-md-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Amount<span className="text-danger">*</span>:
+                                    </label>
+                                    <input
+                                        type="number"
+                                        className="form-control so-control text-end"
+                                        placeholder="0.00"
+                                        value={row.amount || ""}
+                                        onChange={(e) => handleRowChange(index, "amount", e.target.value)}
+                                    />
+                                </div>
+                            </div>
 
-                                    {/* Projects */}
-                                    <td>
-                                        <select
-                                            className="form-select form-select-sm"
-                                            value={row.project}
-                                            onChange={(e) =>
-                                                handleRowChange(index, "project", e.target.value)
-                                            }
-                                        >
-                                            <option value="">None</option>
-                                            <option value="project1">Project Alpha</option>
-                                            <option value="project2">Project Beta</option>
-                                        </select>
-                                    </td>
+                            {/* Row 2: Paid Through / Vendor / Customer Name */}
+                            <div className="row g-3 mb-2">
+                                <div className="col-md-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Paid Through<span className="text-danger">*</span>:
+                                    </label>
+                                    <select
+                                        className="form-select so-control"
+                                        value={row.paidThrough || ""}
+                                        onChange={(e) => handleRowChange(index, "paidThrough", e.target.value)}
+                                    >
+                                        <option value="">Select account</option>
+                                        <option>Cash</option>
+                                        <option>Bank</option>
+                                        <option>Credit Card</option>
+                                    </select>
+                                </div>
 
-                                    {/* Billable */}
-                                    <td className="text-center">
+                                <div className="col-md-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Vendor:
+                                    </label>
+                                    <select
+                                        className="form-select so-control"
+                                        value={row.vendor || ""}
+                                        onChange={(e) => handleRowChange(index, "vendor", e.target.value)}
+                                    >
+                                        <option value="">Select vendor</option>
+                                        <option value="vendor1">Vendor 1</option>
+                                        <option value="vendor2">Vendor 2</option>
+                                    </select>
+                                </div>
+
+                                <div className="col-md-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Customer Name:
+                                    </label>
+                                    <select
+                                        className="form-select so-control"
+                                        value={row.customer || ""}
+                                        onChange={(e) => handleRowChange(index, "customer", e.target.value)}
+                                    >
+                                        <option value="">Select customer</option>
+                                        <option value="customer1">Customer 1</option>
+                                        <option value="customer2">Customer 2</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Row 3: Projects + Billable */}
+                            <div className="row g-3 align-items-center">
+                                <div className="col-md-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Projects:
+                                    </label>
+                                    <select
+                                        className="form-select so-control"
+                                        value={row.project || ""}
+                                        onChange={(e) => handleRowChange(index, "project", e.target.value)}
+                                    >
+                                        <option value="">None</option>
+                                        <option value="project1">Project Alpha</option>
+                                        <option value="project2">Project Beta</option>
+                                    </select>
+                                </div>
+
+                                <div className="col-md-4 d-flex align-items-center mt-3 mt-md-4">
+                                    <div className="form-check">
                                         <input
                                             type="checkbox"
                                             className="form-check-input"
-                                            checked={row.billable}
+                                            id={`billable-${index}`}
+                                            checked={row.billable || false}
                                             onChange={(e) =>
                                                 handleRowChange(index, "billable", e.target.checked)
                                             }
                                         />
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                                        <label
+                                            className="form-check-label ms-2 text-sm text-muted-foreground"
+                                            htmlFor={`billable-${index}`}
+                                        >
+                                            Billable
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
 
-                    {/* Add row button – your style */}
-                    <button
-                        type="button"
-                        className="btn btn-sm fw-normal mt-2 d-flex align-items-center"
-                        onClick={onAddRow}
+                    {/* Add new expense row */}
+                    <div
+                        className="rounded-3 py-2 px-4 mt-3 d-flex justify-content-center"
                         style={{
-                            color: "#5E5E5E",
-                            border: "1px solid #D9D9D9",
+                            border: "1px dashed #D0D5DD",
+                            backgroundColor: "#FBFBFD",
+                            cursor: "pointer",
+                        }}
+                        onClick={onAddRow}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.border = "1px dashed #3B82F6"; // blue-500
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.border = "1px dashed #D0D5DD";
                         }}
                     >
-                        <PlusCircle
-                            size={18}
-                            style={{ color: "#878787", marginRight: "4px" }}
-                        />
-                        Add New Row
-                    </button>
+                        <button
+                            type="button"
+                            className="btn btn-link text-decoration-none d-inline-flex align-items-center m-0 p-0 small"
+                            onClick={onAddRow}
+                        >
+                            <Plus size={15} className="me-2" />
+                            <span>Add New Expense Row</span>
+                        </button>
+                    </div>
+
+
+
                 </div>
 
-                {/* Bottom actions */}
-                <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                    <button type="button" className="btn border me-3 px-4">
-                        Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        className="btn px-4"
-                        style={{ background: "#7991BB", color: "#FFFFFF" }}
-                    >
-                        Save Expenses
-                    </button>
+                {/* Bottom buttons – reuse sales order actions */}
+                <div className="mx-5 mb-5">
+                    <div className="form-actions">
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary me-3 px-4"
+                            onClick={() => navigate(-1)}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            className="btn px-4"
+                            style={{ background: "#7991BB", color: "#FFFFFF" }}
+                        >
+                            Save Expenses
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
-
     );
+
+
 
 
     const tabs = [
@@ -718,14 +1010,14 @@ const AddExpense: React.FC = () => {
             key: "bulk-add",
             label: "Bulk Add Expenses",
             content: renderBulkAddExpenses()
-        },
+        }
     ];
+
 
     return (
         <>
             <Header />
-            <div style={{ padding: "56px 0px 0px" }}>
-
+            <div className="sales-orders-page" style={{ paddingTop: "56px" }}>
                 <div className="ps-4">
                     <Tabs
                         tabs={tabs}
@@ -734,12 +1026,12 @@ const AddExpense: React.FC = () => {
                     />
                 </div>
 
-                <div className="mt-3">
+                <div className="">
                     {tabs.find((t) => t.key === activeTab)?.content}
                 </div>
             </div>
-
         </>
+
     );
 };
 

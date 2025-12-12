@@ -113,6 +113,10 @@
     border-radius: 4px;
 }
 
+.so-control.subject-textarea {
+    height: 117px !important;
+    resize: none;
+}
 
 
 @media (max-width: 768px) {

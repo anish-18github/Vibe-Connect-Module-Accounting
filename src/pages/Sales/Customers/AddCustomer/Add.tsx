@@ -812,7 +812,7 @@ const Add = () => {
                                         name="customer.emailAddress"
                                         value={formData.customer.emailAddress}
                                         onChange={handleChange}
-                                        placeholder='Enter Email address'
+                                        placeholder='customer@example.com'
                                         className="form-control so-control"
                                     />
                                 </div>

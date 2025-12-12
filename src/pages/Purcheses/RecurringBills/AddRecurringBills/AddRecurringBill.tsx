@@ -212,98 +212,89 @@ export default function AddRecurringBill() {
     return (
         <>
             <Header />
-
-            <div style={{ padding: "69px 1.8rem 0 1.8rem", color: "#5E5E5E" }}>
-                <h1 className="h4 text-dark mb-4 pb-1">New Recurring Bill</h1>
-
-                <form onSubmit={handleSubmit} className="mt-4">
-                    <div className="row">
-                        {/* COLUMN 1: Vendor Name + Profile Name */}
-                        <div className="col-lg-4">
-                            {/* Vendor Name */}
-                            <div className="row mb-3 align-items-center">
-                                <label className="col-sm-4 col-form-label fw-normal">
-                                    Vendor Name<span className="text-danger">*</span>
-                                </label>
-                                <div className="col-sm-7">
+            <div className="sales-orders-page">
+                <form onSubmit={handleSubmit} className="sales-order-form">
+                    {/* ONLY 3-column fields in their own card */}
+                    <div className="so-details-card mx-5 mb-4">
+                        <h1 className="sales-order-title mb-4">New Recurring Bill</h1>
+                        <div className="row g-3 three-column-form">
+                            {/* COLUMN 1: Vendor Name, Profile Name */}
+                            <div className="col-lg-4">
+                                {/* Vendor Name */}
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Vendor Name<span className="text-danger">*</span>:
+                                    </label>
                                     <select
                                         name="vendorName"
-                                        className="form-select form-select-sm"
+                                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                                         value={formData.recurringBill.vendorName}
                                         onChange={handleChange}
                                     >
-                                        <option value="" disabled>
-                                            Select a Vendor
-                                        </option>
+                                        <option value="" disabled>Select a Vendor</option>
                                         <option value="Vendor A">Vendor A</option>
                                         <option value="Vendor B">Vendor B</option>
                                     </select>
                                 </div>
-                            </div>
 
-                            {/* Profile Name */}
-                            <div className="row mb-3 align-items-center">
-                                <label className="col-sm-4 col-form-label fw-normal">
-                                    Profile Name
-                                </label>
-                                <div className="col-sm-7">
+                                {/* Profile Name */}
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Profile Name:
+                                    </label>
                                     <input
                                         type="text"
                                         name="profileName"
-                                        className="form-control form-control-sm border"
+                                        className="form-control so-control"
                                         value={formData.recurringBill.profileName}
                                         onChange={handleChange}
                                     />
                                 </div>
                             </div>
-                        </div>
 
-                        {/* COLUMN 2: Repeat Every + Start / End */}
-                        <div className="col-lg-4">
-                            {/* Repeat Every */}
-                            <div className="row mb-3 align-items-center">
-                                <label className="col-sm-4 col-form-label fw-normal">
-                                    Repeat Every
-                                </label>
-                                <div className="col-sm-6">
+                            {/* COLUMN 2: Repeat Every, Start/End */}
+                            <div className="col-lg-4">
+                                {/* Repeat Every */}
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Repeat Every:
+                                    </label>
                                     <select
-                                        name="customerName"
-                                        className="form-select form-select-sm border"
-                                        // value={formData}
+                                        name="repeatEvery"
+                                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                                        value={formData.recurringBill.repeatEvery}
                                         onChange={handleChange}
                                     >
-                                        <option value="" disabled selected>Select Customer</option>
-                                        <option value="Customer A">Customer A</option>
-                                        <option value="Customer B">Customer B</option>
+                                        <option value="" disabled>Select frequency</option>
+                                        <option value="Week">Every Week</option>
+                                        <option value="Month">Every Month</option>
+                                        <option value="Year">Every Year</option>
                                     </select>
                                 </div>
-                            </div>
 
-                            {/* Start / End (considered one field) */}
-                            <div className="row mb-3 align-items-center">
-                                <label className="col-sm-4 col-form-label fw-normal">Start / End</label>
-                                <div className="col-sm-8">
-                                    <div className="row">
-                                        {/* Start On */}
-                                        <div className="col-sm-6 mb-2 mb-sm-0">
+                                {/* Start / End */}
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Start / End:
+                                    </label>
+                                    <div className="row g-2">
+                                        <div className="col-6">
                                             <input
                                                 type="date"
                                                 name="startOn"
-                                                className="form-control form-control-sm border"
+                                                className="form-control so-control mb-1"
                                                 value={formData.recurringBill.startOn}
                                                 onChange={handleChange}
                                             />
-                                            <small className="text-muted d-block mt-1" style={{ fontSize: "11px" }}>
+                                            <small className="text-muted d-block" style={{ fontSize: "11px" }}>
                                                 Starts on {formData.recurringBill.startOn || "--/--/----"}
                                             </small>
                                         </div>
-
-                                        {/* Ends On + Never */}
-                                        <div className="col-sm-6">
+                                        <div className="col-6">
                                             <input
                                                 type="date"
                                                 name="endsOn"
-                                                className="form-control form-control-sm border"
+                                                className="form-control so-control"
                                                 disabled={formData.recurringBill.neverExpires}
                                                 value={formData.recurringBill.endsOn}
                                                 onChange={handleChange}
@@ -324,46 +315,38 @@ export default function AddRecurringBill() {
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* COLUMN 3: Accounts Payable + Payment Terms */}
-                        <div className="col-lg-4">
-                            {/* Accounts Payable */}
-                            <div className="row mb-3 align-items-center">
-                                <label className="col-sm-5 col-form-label fw-normal">
-                                    Accounts Payable
-                                </label>
-                                <div className="col-sm-7">
+                            {/* COLUMN 3: Accounts Payable, Payment Terms */}
+                            <div className="col-lg-4">
+                                {/* Accounts Payable */}
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Accounts Payable:
+                                    </label>
                                     <select
                                         name="accountsPayable"
-                                        className="form-select form-select-sm"
+                                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                                         value={formData.recurringBill.accountsPayable}
                                         onChange={handleChange}
                                     >
-                                        <option value="" disabled>
-                                            Select account
-                                        </option>
+                                        <option value="" disabled>Select account</option>
                                         <option value="AP-1">Accounts Payable 1</option>
                                         <option value="AP-2">Accounts Payable 2</option>
                                     </select>
                                 </div>
-                            </div>
 
-                            {/* Payment Terms */}
-                            <div className="row mb-3 align-items-center">
-                                <label className="col-sm-5 col-form-label fw-normal">
-                                    Payment Terms
-                                </label>
-                                <div className="col-sm-7">
+                                {/* Payment Terms */}
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Payment Terms:
+                                    </label>
                                     <select
                                         name="paymentTerms"
-                                        className="form-select form-select-sm"
+                                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                                         value={formData.recurringBill.paymentTerms}
                                         onChange={handleChange}
                                     >
-                                        <option value="" disabled>
-                                            Select
-                                        </option>
+                                        <option value="" disabled>Select</option>
                                         <option value="Due on Receipt">Due on Receipt</option>
                                         <option value="Net 15">Net 15</option>
                                         <option value="Net 30">Net 30</option>
@@ -374,107 +357,111 @@ export default function AddRecurringBill() {
                         </div>
                     </div>
 
+                    {/* Everything else stays OUTSIDE any card, with consistent margins */}
+                    <div className="mx-5">
+                        {/* Item table */}
+                        <ItemTable
+                            rows={formData.itemTable}
+                            onRowChange={handleRowChange}
+                            onAddRow={handleAddRow}
+                            onRemoveRow={handleRemoveRow}
+                        />
 
-                    {/* Item Table Title */}
-                    <h5
-                        className="mt-4 fw-normal"
-                        style={{
-                            width: "100%",
-                            backgroundColor: "#EEEEEE",
-                            padding: "6px",
-                            borderRadius: "5px",
-                            border: "1px solid #D9D9D9",
-                            color: "#5E5E5E",
-                        }}
-                    >
-                        Item Table
-                    </h5>
+                        {/* Notes + Summary */}
+                        <div className="notes-summary-row">
+                            <div className="notes-column">
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Customer Notes:
+                                    </label>
+                                    <textarea
+                                        className="form-control so-control textarea"
+                                        name="customerNotes"
+                                        value={formData.recurringBill.note}
+                                        onChange={handleChange}
+                                        placeholder="Add note for customer..."
+                                    />
+                                </div>
 
-                    <ItemTable
-                        rows={formData.itemTable}
-                        onRowChange={handleRowChange}
-                        onAddRow={handleAddRow}
-                        onRemoveRow={handleRemoveRow}
-                    />
-
-                    {/* Notes + Summary */}
-                    <div className="notes-summary-row" style={{ display: "flex", gap: 5, marginTop: 18 }}>
-                        {/* Left: notes */}
-                        <div style={{ width: "50%" }}>
-                            <div className="mb-3">
-                                <label className="form-label">Customer Notes:</label>
-                                <textarea className="form-control form-control-sm border" style={{ resize: "none", height: "90px" }} name="customerNotes" value={formData.recurringBill.note} onChange={handleChange} />
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Terms & Conditions:
+                                    </label>
+                                    <textarea
+                                        className="form-control so-control textarea"
+                                        name="termsAndConditions"
+                                        value={formData.recurringBill.termsAndConditions}
+                                        onChange={handleChange}
+                                        placeholder="Enter terms and conditions..."
+                                    />
+                                </div>
                             </div>
 
-                            <div className="mb-3">
-                                <label className="form-label">Terms & Conditions:</label>
-                                <textarea className="form-control form-control-sm border" style={{ resize: "none", height: "90px" }} name="termsAndConditions" value={formData.recurringBill.termsAndConditions} onChange={handleChange} />
-                            </div>
-                        </div>
-
-                        {/* Right: summary */}
-                        <div style={{ width: "50%" }}>
-                            <SummaryBox totals={totals} taxInfo={taxInfo} onTaxChange={handleTaxChange} tcsOptions={tcsOptions} onAddTcs={handleAddTcs} />
-                        </div>
-                    </div>
-
-                    {/* Documents */}
-                    <div className="row mb-4 mt-4">
-                        <label className="col-sm-1 col-form-label">Documents:</label>
-                        <div className="col-sm-11">
-                            <div
-                                onClick={() =>
-                                    document.getElementById("fileUploadInput")?.click()
-                                }
-                                className="d-flex flex-column align-items-center justify-content-center w-100 p-4 bg-light"
-                                style={{
-                                    minHeight: "120px",
-                                    border: "2px dotted #a0a0a0",
-                                    borderRadius: "8px",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                <FeatherUpload size={32} className="text-muted mb-2" />
-                                <span className="text-secondary small">
-                                    Click to Upload Documents
-                                </span>
-
-                                <input
-                                    id="fileUploadInput"
-                                    type="file"
-                                    multiple
-                                    className="d-none"
-                                    onChange={(e) => {
-                                        const files = e.target.files;
-                                        if (files?.length) {
-                                            console.log("Files uploaded:", files);
-                                            alert(`${files.length} file(s) selected!`);
-                                        }
-                                    }}
+                            <div className="summary-column">
+                                <SummaryBox
+                                    totals={totals}
+                                    taxInfo={taxInfo}
+                                    onTaxChange={handleTaxChange}
+                                    tcsOptions={tcsOptions}
+                                    onAddTcs={handleAddTcs}
                                 />
                             </div>
                         </div>
+
+                        {/* Documents */}
+                        <div className="row mb-4 mt-4 align-items-start">
+                            <label className="so-label text-sm text-muted-foreground fw-bold">
+                                Documents:
+                            </label>
+                            <div className="col-sm-11">
+                                <div
+                                    onClick={() => document.getElementById("fileUploadInput")?.click()}
+                                    className="doc-upload-box"
+                                >
+                                    <FeatherUpload size={32} className="text-muted mb-2" />
+                                    <span className="text-secondary small">
+                                        Click to Upload Documents
+                                    </span>
+
+                                    <input
+                                        id="fileUploadInput"
+                                        type="file"
+                                        multiple
+                                        className="d-none"
+                                        onChange={(e) => {
+                                            const files = e.target.files;
+                                            if (files?.length) {
+                                                console.log("Files uploaded:", files);
+                                                alert(`${files.length} file(s) selected!`);
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Buttons */}
+                        <div className="form-actions">
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary me-3 px-4"
+                                onClick={() => navigate(-1)}
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="submit"
+                                className="btn px-4"
+                                style={{ background: "#7991BB", color: "#FFF" }}
+                            >
+                                Save
+                            </button>
+                        </div>
                     </div>
-
-                    {/* Buttons */}
-                    <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                        <button
-                            type="button"
-                            className="btn border me-3 px-4"
-                            onClick={() => navigate(-1)}
-                        >
-                            Cancel
-                        </button>
-
-                        <button
-                            type="submit"
-                            className="btn px-4"
-                            style={{ background: "#7991BB", color: "#FFF" }}
-                        >
-                            Save
-                        </button>
-                    </div>                </form>
+                </form>
             </div>
+
         </>
     );
 }

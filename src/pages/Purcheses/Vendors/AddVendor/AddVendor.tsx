@@ -32,7 +32,9 @@ interface FormData {
     };
     otherDetails: {
         pan: string;
+        openingBalance: string;  // ✅ Add this
         currency: string;
+        tds: string;             // ✅ Add this
         paymentTerms: string;
         portalLanguage: string;
     };
@@ -49,6 +51,13 @@ interface FormData {
         fax: string;
     };
     contactPersons: ContactPerson[];
+    bankDetails: {
+        accountHolderName: string;
+        bankName: string;
+        accountNumber: string;
+        confirmAccountNumber: string;
+        ifsc: string;
+    };
     remarks: string;
 }
 
@@ -76,7 +85,9 @@ const AddVendor = () => {
         },
         otherDetails: {
             pan: "",
+            openingBalance: "",
             currency: "",
+            tds: "",
             paymentTerms: "",
             portalLanguage: "",
         },
@@ -103,6 +114,13 @@ const AddVendor = () => {
                 department: "",
             },
         ],
+        bankDetails: {
+            accountHolderName: "",
+            bankName: "",
+            accountNumber: "",
+            confirmAccountNumber: "",
+            ifsc: "",
+        },
         remarks: "",
     });
 
@@ -142,7 +160,6 @@ const AddVendor = () => {
         updated[index] = { ...updated[index], [field]: value };
         setFormData({ ...formData, contactPersons: updated });
     };
-
 
 
 
@@ -252,136 +269,133 @@ const AddVendor = () => {
     // RENDER OTHER DETAILS
 
     const renderOtherDetailsTab = () => (
-        <>
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">PAN:</label>
-                <div className="col-sm-6">
-                    <input
-                        type="text"
-                        name="otherDetails.pan"
-                        className="form-control form-control-sm border"
-                        value={formData.otherDetails.pan}
-                        onChange={handleChange}
-                    />
+        <div className="mx-5">
+            <div className="row g-3 three-column-form">
+                {/* COLUMN 1: 2 fields */}
+                <div className="col-lg-4">
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            PAN:
+                        </label>
+                        <input
+                            type="text"
+                            name="otherDetails.pan"
+                            className="form-control so-control"
+                            value={formData.otherDetails.pan}
+                            onChange={handleChange}
+                            placeholder="Enter PAN number"
+                        />
+                    </div>
+
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            Opening Balance:
+                        </label>
+                        <input
+                            type="number"
+                            name="otherDetails.openingBalance"
+                            className="form-control so-control"
+                            value={formData.otherDetails.openingBalance || ""}
+                            onChange={handleChange}
+                        />
+
+                    </div>
+                </div>
+
+                {/* COLUMN 2: 2 fields */}
+                <div className="col-lg-4">
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            Currency:
+                        </label>
+                        <select
+                            name="otherDetails.currency"
+                            className="form-select so-control"
+                            value={formData.otherDetails.currency}
+                            onChange={handleChange}
+                            style={{ color: formData.otherDetails.currency ? "#000" : "#9b9b9b" }}
+                        >
+                            <option value="">Select Currency</option>
+                            {currencies.map((c, i) => (
+                                <option key={i} value={c}>{c}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            TDS:
+                        </label>
+                        <select
+                            name="otherDetails.tds"
+                            className="form-select so-control"
+                            value={formData.otherDetails.tds}
+                            onChange={handleChange}
+                            style={{ color: formData.otherDetails.tds ? "#000" : "#9b9b9b" }}
+                        >
+                            <option value="">Select TDS</option>
+                            <option value="1%">1%</option>
+                            <option value="2%">2%</option>
+                            <option value="5%">5%</option>
+                            <option value="10%">10%</option>
+                        </select>
+                    </div>
+                </div>
+
+                {/* COLUMN 3: 2 fields */}
+                <div className="col-lg-4">
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            Payment Terms:
+                        </label>
+                        <select
+                            name="otherDetails.paymentTerms"
+                            className="form-select so-control"
+                            value={formData.otherDetails.paymentTerms}
+                            onChange={handleChange}
+                            style={{ color: formData.otherDetails.paymentTerms ? "#000" : "#9b9b9b" }}
+                        >
+                            <option value="">Select Payment Terms</option>
+                            {paymentTerms.map((p, i) => (
+                                <option key={i} value={p}>{p}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            Portal Language:
+                        </label>
+                        <select
+                            name="otherDetails.portalLanguage"
+                            className="form-select so-control"
+                            value={formData.otherDetails.portalLanguage}
+                            onChange={handleChange}
+                            style={{ color: formData.otherDetails.portalLanguage ? "#000" : "#9b9b9b" }}
+                        >
+                            <option value="">Select Language</option>
+                            {languages.map((l, i) => (
+                                <option key={i} value={l}>{l}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            {/* Currency */}
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">Openning Balance:</label>
-                <div className="col-sm-6">
-                    <select
-                        name="otherDetails.currency"
-                        value={formData.otherDetails.currency}
-                        onChange={handleChange}
-                        className="form-select form-select-sm border"
-                        style={{ color: formData.otherDetails.currency ? "#000" : "#9b9b9b" }}
-                    >
-                        <option value="" disabled hidden >
-                            -- Select Country --</option>
-                        {currencies.map((c, i) => (
-                            <option key={i} value={c}>{c}</option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">Currency:</label>
-                <div className="col-sm-6">
-                    <select
-                        name="otherDetails.currency"
-                        value={formData.otherDetails.currency}
-                        onChange={handleChange}
-                        className="form-select form-select-sm"
-                        style={{ color: formData.otherDetails.currency ? "#000" : "#9b9b9b" }}
-                    >
-                        <option value="" disabled hidden >
-                            -- Select Country --</option>
-                        {currencies.map((c, i) => (
-                            <option key={i} value={c}>{c}</option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">TDS:</label>
-                <div className="col-sm-6">
-                    <select
-                        name="otherDetails.currency"
-                        value={formData.otherDetails.currency}
-                        onChange={handleChange}
-                        className="form-select form-select-sm"
-                        style={{ color: formData.otherDetails.currency ? "#000" : "#9b9b9b" }}
-                    >
-                        <option value="" disabled hidden >
-                            -- Select Country --</option>
-                        {currencies.map((c, i) => (
-                            <option key={i} value={c}>{c}</option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-
-            {/* Payment Terms */}
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">Payment Terms:</label>
-                <div className="col-sm-6">
-                    <select
-                        name="otherDetails.paymentTerms"
-                        value={formData.otherDetails.paymentTerms}
-                        onChange={handleChange}
-                        className="form-select form-select-sm"
-                        style={{ color: formData.otherDetails.paymentTerms ? "#000" : "#9b9b9b" }}
-                    >
-
-                        <option value="" disabled hidden >
-                            -- Select Payment term --</option>
-                        {paymentTerms.map((p, i) => (
-                            <option key={i} value={p}>{p}</option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-
-            {/* Portal Language */}
-            <div className="row align-items-center mb-4">
-                <label className="col-sm-2 col-form-label">Portal Language:</label>
-                <div className="col-sm-6">
-                    <select
-                        name="otherDetails.portalLanguage"
-                        value={formData.otherDetails.portalLanguage}
-                        onChange={handleChange}
-                        className="form-select form-select-sm"
-                        style={{ color: formData.otherDetails.portalLanguage ? "#000" : "#9b9b9b" }}
-                    >
-
-                        <option value="" disabled hidden >
-                            -- Select Languages --</option>
-                        {languages.map((l, i) => (
-                            <option key={i} value={l}>{l}</option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-
-            {/* Upload Box */}
-            <div className="row mb-4">
-                <label className="col-sm-2 col-form-label">Documents:</label>
-                <div className="col-sm-6">
+            {/* Documents Upload - Full width */}
+            <div className="row mb-4 mt-4 align-items-start">
+                <label className="so-label text-sm text-muted-foreground fw-bold mb-2">
+                    Documents:
+                </label>
+                <div className="col-12">
                     <div
+                        className="doc-upload-box"
                         onClick={() => document.getElementById("fileUploadInput")?.click()}
-                        className="d-flex flex-column align-items-center justify-content-center w-100 p-4 bg-light cursor-pointer"
-                        style={{
-                            minHeight: "120px",
-                            border: "2px dotted #a0a0a0",
-                            borderRadius: "8px"
-                        }}
                     >
-                        <FeatherUpload size={32} className="text-muted mb-2" />
-                        <span className="text-secondary small">Click to Upload Documents</span>
-
-                        {/* Hidden file input */}
+                        <FeatherUpload size={28} className="text-muted mb-2" />
+                        <span className="text-secondary small">
+                            Click to Upload Documents
+                        </span>
                         <input
                             id="fileUploadInput"
                             type="file"
@@ -398,403 +412,403 @@ const AddVendor = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
+
 
 
     // ---------------------------------------------
     // 10. Render Address TAB
     // ---------------------------------------------
     const renderAddressTab = () => (
-        <>
-            {/* Attention */}
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">Attention:</label>
-                <div className="col-sm-6">
-                    <input
-                        type="text"
-                        name="address.attention"
-                        value={formData.address.attention}
-                        onChange={handleChange}
-                        className="form-control form-control-sm border"
-                        placeholder="Enter attention name"
-                    />
+        <div className="mx-5">
+            <div className="row g-3 three-column-form">
+                {/* COLUMN 1: 3 fields */}
+                <div className="col-lg-4">
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            Attention:
+                        </label>
+                        <input
+                            type="text"
+                            name="address.attention"
+                            className="form-control so-control"
+                            value={formData.address.attention}
+                            onChange={handleChange}
+                            placeholder="Enter attention name"
+                        />
+                    </div>
+
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            Country / Region:
+                        </label>
+                        <select
+                            name="address.country"
+                            className="form-select so-control"
+                            value={formData.address.country}
+                            onChange={handleChange}
+                            style={{ color: formData.address.country ? "#000" : "#9b9b9b" }}
+                        >
+                            <option value="">Select Country</option>
+                            {countries.map((cu, i) => (
+                                <option key={i} value={cu}>{cu}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            Address Line 1:
+                        </label>
+                        <input
+                            type="text"
+                            name="address.address1"
+                            className="form-control so-control"
+                            value={formData.address.address1}
+                            onChange={handleChange}
+                            placeholder="Enter address line 1"
+                        />
+                    </div>
+                </div>
+
+                {/* COLUMN 2: 3 fields */}
+                <div className="col-lg-4">
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            Address Line 2:
+                        </label>
+                        <input
+                            type="text"
+                            name="address.address2"
+                            className="form-control so-control"
+                            value={formData.address.address2}
+                            onChange={handleChange}
+                            placeholder="Enter address line 2"
+                        />
+                    </div>
+
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            City:
+                        </label>
+                        <input
+                            type="text"
+                            name="address.city"
+                            className="form-control so-control"
+                            value={formData.address.city}
+                            onChange={handleChange}
+                            placeholder="Enter city"
+                        />
+                    </div>
+
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            State / Province:
+                        </label>
+                        <select
+                            name="address.state"
+                            className="form-select so-control"
+                            value={formData.address.state}
+                            onChange={handleChange}
+                            style={{ color: formData.address.state ? "#000" : "#9b9b9b" }}
+                        >
+                            <option value="">Select State</option>
+                            {states.map((st, i) => (
+                                <option key={i} value={st}>{st}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
+                {/* COLUMN 3: 3 fields */}
+                <div className="col-lg-4">
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            ZIP / Postal Code:
+                        </label>
+                        <input
+                            type="text"
+                            name="address.zip"
+                            className="form-control so-control"
+                            value={formData.address.zip}
+                            onChange={handleChange}
+                            placeholder="Enter ZIP / Postal Code"
+                        />
+                    </div>
+
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            Fax:
+                        </label>
+                        <input
+                            type="text"
+                            name="address.fax"
+                            className="form-control so-control"
+                            value={formData.address.fax}
+                            onChange={handleChange}
+                            placeholder="Enter fax number"
+                        />
+                    </div>
+
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            Phone:
+                        </label>
+                        <div className="row g-2">
+                            <div className="col-3">
+                                <input
+                                    type="text"
+                                    name="address.countryCode"
+                                    className="form-control so-control"
+                                    placeholder="+91"
+                                    value={formData.address.countryCode}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div className="col-9">
+                                <input
+                                    type="text"
+                                    name="address.phoneNumber"
+                                    className="form-control so-control"
+                                    value={formData.address.phoneNumber}
+                                    onChange={handleChange}
+                                    placeholder="Phone number"
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            {/* Country */}
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">Country / Region:</label>
-                <div className="col-sm-6">
-                    <select
-                        name="address.country"
-                        value={formData.address.country}
-                        onChange={handleChange}
-                        className="form-select form-select-sm"
-                        style={{
-                            color: formData.address.country ? "#000" : "#9b9b9b"
-                        }}
-                    >
-                        <option value="" disabled hidden>
-                            -- Select --
-                        </option>
-
-                        {countries.map((cu, i) => (
-                            <option key={i} value={cu}>
-                                {cu}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-
-
-            {/* Address Line 1 */}
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">Address Line 1:</label>
-                <div className="col-sm-6">
-                    <input
-                        type="text"
-                        name="address.address1"
-                        value={formData.address.address1}
-                        onChange={handleChange}
-                        className="form-control form-control-sm border"
-                        placeholder="Enter address line 1"
-                    />
-                </div>
-            </div>
-
-            {/* Address Line 2 */}
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">Address Line 2:</label>
-                <div className="col-sm-6">
-                    <input
-                        type="text"
-                        name="address.address2"
-                        value={formData.address.address2}
-                        onChange={handleChange}
-                        className="form-control form-control-sm border"
-                        placeholder="Enter address line 2"
-                    />
-                </div>
-            </div>
-
-            {/* City */}
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">City:</label>
-                <div className="col-sm-6">
-                    <input
-                        type="text"
-                        name="address.city"
-                        value={formData.address.city}
-                        onChange={handleChange}
-                        className="form-control form-control-sm border"
-                        placeholder="Enter city"
-                    />
-                </div>
-            </div>
-
-            {/* State */}
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">State / Province:</label>
-                <div className="col-sm-6">
-                    <select
-                        name="address.state"
-                        value={formData.address.state}
-                        onChange={handleChange}
-                        className="form-select form-select-sm"
-                        style={{
-                            color: formData.address.state ? "#000" : "#9b9b9b"
-                        }}
-                    >
-                        <option value="" disabled hidden>
-                            -- Select State --
-                        </option>
-                        {states.map((st, i) => (
-                            <option key={i} value={st}>
-                                {st}
-                            </option>
-                        ))}
-                    </select>
-
-                </div>
-            </div>
-
-            {/* ZIP */}
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">ZIP / Postal Code:</label>
-                <div className="col-sm-6">
-                    <input
-                        type="text"
-                        name="address.zip"
-                        value={formData.address.zip}
-                        onChange={handleChange}
-                        className="form-control form-control-sm border"
-                        placeholder="Enter ZIP / Postal Code"
-                    />
-                </div>
-            </div>
-
-            {/* Fax */}
-            <div className="row align-items-center mb-4">
-                <label className="col-sm-2 col-form-label">Fax:</label>
-                <div className="col-sm-6">
-                    <input
-                        type="text"
-                        name="address.fax"
-                        value={formData.address.fax}
-                        onChange={handleChange}
-                        className="form-control form-control-sm border"
-                        placeholder="Enter fax number"
-                    />
-                </div>
-            </div>
-
-            {/* Phone */}
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">Phone:</label>
-
-                <div className="col-sm-1">
-                    <input
-                        type="text"
-                        name="address.countryCode"
-                        placeholder="+91"
-                        className="form-control form-control-sm border"
-                        value={formData.address.countryCode}
-                        onChange={handleChange}
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                    />
-                </div>
-
-                <div className="col-sm-4">
-                    <input
-                        type="text"
-                        name="address.phoneNumber"
-                        className="form-control form-control-sm border"
-                        value={formData.address.phoneNumber}
-                        onChange={handleChange}
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                    />
-                </div>
-            </div>
-        </>
+        </div>
     );
+
     // ---------------------------------------------
     // 11. Render Contact Persons TAB
     // ---------------------------------------------
     const renderContactPersons = () => (
-        <>
-            <table className="table table-bordered table-sm align-middle table-rounded">
-                <thead className="bg-light">
-                    <tr>
-                        <th style={{ width: "120px", color: "#5E5E5E", fontWeight: "400" }}>Salutation</th>
-                        <th style={{ color: "#5E5E5E", fontWeight: "400" }}>First Name</th>
-                        <th style={{ color: "#5E5E5E", fontWeight: "400" }}>Last Name</th>
-                        <th style={{ color: "#5E5E5E", fontWeight: "400" }}>Email Address</th>
-                        <th style={{ color: "#5E5E5E", fontWeight: "400" }}>Phone No.</th>
-                        <th style={{ color: "#5E5E5E", fontWeight: "400" }}>Designation</th>
-                        <th style={{ color: "#5E5E5E", fontWeight: "400" }}>Department</th>
-                        <th style={{ width: "60px", color: "#5E5E5E", fontWeight: "400" }}>Action</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {formData.contactPersons.map((person, index) => (
-                        <tr key={index}>
-                            <td>
-                                <select
-                                    name={`contacts[${index}].salutation`}
-                                    className="form-select form-select-sm border-0"
-                                    value={person.salutation}
-                                    onChange={(e) => handleContactChange(index, "salutation", e.target.value)}
-                                >
-                                    <option value="" disabled hidden >Select</option>
-                                    <option value="Mr.">Mr.</option>
-                                    <option value="Mrs.">Mrs.</option>
-                                    <option value="Ms.">Ms.</option>
-                                    <option value="Dr.">Dr.</option>
-                                </select>
-                            </td>
-
-                            <td>
-                                <input
-                                    type="text"
-                                    name={`contacts[${index}].firstName`}
-                                    className="form-control form-control-sm border-0"
-                                    value={person.firstName}
-                                    onChange={(e) => handleContactChange(index, "firstName", e.target.value)}
-                                />
-                            </td>
-
-                            <td>
-                                <input
-                                    type="text"
-                                    name={`contacts[${index}].lastName`}
-                                    className="form-control form-control-sm border-0"
-                                    value={person.lastName}
-                                    onChange={(e) => handleContactChange(index, "lastName", e.target.value)}
-                                />
-                            </td>
-
-                            <td>
-                                <input
-                                    type="email"
-                                    name={`contacts[${index}].email`}
-                                    className="form-control form-control-sm border-0"
-                                    value={person.email}
-                                    onChange={(e) => handleContactChange(index, "email", e.target.value)}
-                                />
-                            </td>
-
-                            <td>
-                                <input
-                                    type="text"
-                                    name={`contacts[${index}].phone`}
-                                    className="form-control form-control-sm border-0"
-                                    value={person.phone}
-                                    onChange={(e) => handleContactChange(index, "phone", e.target.value)}
-                                />
-                            </td>
-
-                            <td>
-                                <input
-                                    type="text"
-                                    name={`contacts[${index}].designation`}
-                                    className="form-control form-control-sm border-0"
-                                    value={person.designation}
-                                    onChange={(e) => handleContactChange(index, "designation", e.target.value)}
-                                />
-                            </td>
-
-                            <td>
-                                <input
-                                    type="text"
-                                    name={`contacts[${index}].department`}
-                                    className="form-control form-control-sm border-0"
-                                    value={person.department}
-                                    onChange={(e) => handleContactChange(index, "department", e.target.value)}
-                                />
-                            </td>
-
-                            <td className="text-center">
-                                <button
-                                    type='button'
-                                    className="btn btn-sm border-0"
-                                    onClick={() => removeContactPerson(index)}
-                                    title="Remove"
-                                >
-                                    <X size={16} style={{ color: "red" }} />
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            <button
-                className="btn btn-outline-primary btn-sm mt-2 d-flex align-items-center gap-1"
-                type='button'
-                onClick={addContactPerson}
-                title="Add Contact Person"
-            >
-                <Plus size={16} /> Add Contact Person
-            </button>
-        </>
+        <div className="mx-5">
+            <div className="item-card mb-4">
+                <div className="item-card-header">
+                    <span className="item-card-title">Contact Persons</span>
+                </div>
+                <div className="item-card-body">
+                    <div className="table-responsive">
+                        <table className="table table-sm align-middle item-table-inner">
+                            <thead>
+                                <tr>
+                                    <th style={{ width: "120px" }} className="fw-medium text-dark">Salutation</th>
+                                    <th className="fw-medium text-dark">First Name</th>
+                                    <th className="fw-medium text-dark">Last Name</th>
+                                    <th className="fw-medium text-dark">Email</th>
+                                    <th className="fw-medium text-dark">Phone</th>
+                                    <th className="fw-medium text-dark">Designation</th>
+                                    <th className="fw-medium text-dark">Department</th>
+                                    <th style={{ width: "60px" }} className="fw-medium text-dark">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {formData.contactPersons.map((person, index) => (
+                                    <tr key={index}>
+                                        <td>
+                                            <select
+                                                name={`contacts[${index}].salutation`}
+                                                className="form-select form-select-sm border-0 item-input"
+                                                value={person.salutation}
+                                                onChange={(e) => handleContactChange(index, "salutation", e.target.value)}
+                                            >
+                                                <option value="">Select</option>
+                                                <option value="Mr.">Mr.</option>
+                                                <option value="Mrs.">Mrs.</option>
+                                                <option value="Ms.">Ms.</option>
+                                                <option value="Dr.">Dr.</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                className="form-control form-control-sm border-0 item-input"
+                                                value={person.firstName}
+                                                onChange={(e) => handleContactChange(index, "firstName", e.target.value)}
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                className="form-control form-control-sm border-0 item-input"
+                                                value={person.lastName}
+                                                onChange={(e) => handleContactChange(index, "lastName", e.target.value)}
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="email"
+                                                className="form-control form-control-sm border-0 item-input"
+                                                value={person.email}
+                                                onChange={(e) => handleContactChange(index, "email", e.target.value)}
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                className="form-control form-control-sm border-0 item-input"
+                                                value={person.phone}
+                                                onChange={(e) => handleContactChange(index, "phone", e.target.value)}
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                className="form-control form-control-sm border-0 item-input"
+                                                value={person.designation}
+                                                onChange={(e) => handleContactChange(index, "designation", e.target.value)}
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                className="form-control form-control-sm border-0 item-input"
+                                                value={person.department}
+                                                onChange={(e) => handleContactChange(index, "department", e.target.value)}
+                                            />
+                                        </td>
+                                        <td className="text-center">
+                                            <button
+                                                type="button"
+                                                className="btn btn-sm p-1"
+                                                onClick={() => removeContactPerson(index)}
+                                                title="Remove"
+                                            >
+                                                <X size={16} className="text-danger" />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        <button
+                            type="button"
+                            className="btn btn-sm fw-bold item-add-row-btn"
+                            onClick={addContactPerson}
+                        >
+                            <Plus size={16} className="me-1" /> Add Contact Person
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
+
     // ---------------------------------------------
     // 12. Render Contact Persons TAB
     // ---------------------------------------------
-    const renderRemarks = () => (
-        <>
-            <label className="col-form-label pt-0">
-                Remarks <span className="text-muted">(For Internal Use)</span>
-            </label>
-
-            <textarea
-                name="remarks"
-                rows={4}
-                className="form-control border"
-                contentEditable="true"
-                value={formData.remarks}
-                onChange={handleChange}
-                style={{
-                    resize: "none"
-                }}
-            />
-        </>
-    );
 
     const renderBankDetailsTab = () => (
-        <>
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">Account Holder Name:</label>
-                <div className="col-sm-6">
-                    <input
-                        type="text"
-                        name="address.city"
-                        value={formData.address.city}
-                        onChange={handleChange}
-                        className="form-control form-control-sm border"
-                        placeholder="Enter city"
-                    />
+        <div className="mx-5">
+            <div className="row g-3 three-column-form">
+                {/* COLUMN 1: 2 fields */}
+                <div className="col-lg-4">
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            Account Holder Name:
+                        </label>
+                        <input
+                            type="text"
+                            name="bankDetails.accountHolderName"
+                            className="form-control so-control"
+                            value={formData.bankDetails.accountHolderName || ""}
+                            onChange={handleChange}
+                            placeholder="Enter account holder name"
+                        />
+                    </div>
+
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            Bank Name:
+                        </label>
+                        <input
+                            type="text"
+                            name="bankDetails.bankName"
+                            className="form-control so-control"
+                            value={formData.bankDetails.bankName || ""}
+                            onChange={handleChange}
+                            placeholder="Enter bank name"
+                        />
+                    </div>
+                </div>
+
+                {/* COLUMN 2: 2 fields */}
+                <div className="col-lg-4">
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            Account Number:
+                        </label>
+                        <input
+                            type="text"
+                            name="bankDetails.accountNumber"
+                            className="form-control so-control"
+                            value={formData.bankDetails.accountNumber || ""}
+                            onChange={handleChange}
+                            placeholder="Enter account number"
+                        />
+                    </div>
+
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            Re-Enter Account Number:
+                        </label>
+                        <input
+                            type="text"
+                            name="bankDetails.confirmAccountNumber"
+                            className="form-control so-control"
+                            value={formData.bankDetails.confirmAccountNumber || ""}
+                            onChange={handleChange}
+                            placeholder="Re-enter account number"
+                        />
+                    </div>
+                </div>
+
+                {/* COLUMN 3: 1 field */}
+                <div className="col-lg-4">
+                    <div className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                            IFSC:
+                        </label>
+                        <input
+                            type="text"
+                            name="bankDetails.ifsc"
+                            className="form-control so-control"
+                            value={formData.bankDetails.ifsc || ""}
+                            onChange={handleChange}
+                            placeholder="Enter IFSC code"
+                        />
+                    </div>
                 </div>
             </div>
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">Bank Name:</label>
-                <div className="col-sm-6">
-                    <input
-                        type="text"
-                        name="address.city"
-                        value={formData.address.city}
-                        onChange={handleChange}
-                        className="form-control form-control-sm border"
-                        placeholder="Enter city"
-                    />
-                </div>
+        </div>
+    );
+
+    const renderRemarks = () => (
+        <div className="mx-5">
+            <div className="so-form-group mb-4">
+                <label className="so-label text-sm text-muted-foreground fw-bold">
+                    Remarks <span className="text-muted small">(For Internal Use)</span>
+                </label>
+                <textarea
+                    name="remarks"
+                    className="form-control so-control textarea"
+                    rows={4}
+                    value={formData.remarks || ""}
+                    onChange={handleChange}
+                    placeholder="Enter remarks for internal use..."
+                    style={{ resize: "none" }}
+                />
             </div>
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">Account Number:</label>
-                <div className="col-sm-6">
-                    <input
-                        type="text"
-                        name="address.city"
-                        value={formData.address.city}
-                        onChange={handleChange}
-                        className="form-control form-control-sm border"
-                        placeholder="Enter city"
-                    />
-                </div>
-            </div>
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">Re-Enter Account Number:</label>
-                <div className="col-sm-6">
-                    <input
-                        type="text"
-                        name="address.city"
-                        value={formData.address.city}
-                        onChange={handleChange}
-                        className="form-control form-control-sm border"
-                        placeholder="Enter city"
-                    />
-                </div>
-            </div>
-            <div className="row align-items-center mb-3">
-                <label className="col-sm-2 col-form-label">IFSC:</label>
-                <div className="col-sm-6">
-                    <input
-                        type="text"
-                        name="address.city"
-                        value={formData.address.city}
-                        onChange={handleChange}
-                        className="form-control form-control-sm border"
-                        placeholder="Enter city"
-                    />
-                </div>
-            </div>
-        </>
-    )
+        </div>
+    );
+
+
+
 
 
 
@@ -827,105 +841,104 @@ const AddVendor = () => {
         <>
             <Header />
 
-            <div style={{ padding: "69px 1.8rem 0 1.8rem" }}> {/* Updated for header + breadcrumb */}
-                <h1 className="h4 text-dark mb-4 pb-1">New Vendor</h1>
+            <div className="sales-orders-page">
+                <form onSubmit={handleSubmit} className="sales-order-form">
+                    {/* TOP DETAILS CARD */}
+                    <div className="so-details-card mx-5 mb-4">
+                        <h1 className="sales-order-title mb-4">New Vendor</h1>
 
-                <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
-
-                    <div className="row mb-4">
-                        {/* COLUMN 1: Primary Contact + Company Name */}
-                        <div className="col-lg-4">
-                            {/* Primary Contact */}
-                            <div className="row mb-2 align-items-center">
-                                <label className="col-sm-5 col-form-label">Primary Contact:</label>
-                                <div className="col-sm-4">
+                        <div className="row g-3 three-column-form">
+                            {/* COLUMN 1: 2 fields */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Primary Contact:
+                                    </label>
                                     <select
-                                        name="vendor.salutation"  // Fixed: vendor.*
+                                        name="vendor.salutation"
+                                        className="form-select so-control"
                                         value={formData.vendor.salutation}
                                         onChange={handleChange}
-                                        className="form-select form-select-sm border"
                                         style={{ color: formData.vendor.salutation ? "#000" : "#9b9b9b" }}
                                     >
-                                        <option value="" disabled hidden>Salutation</option>
+                                        <option value="">Select Salutation</option>
                                         {salutations.map((s, i) => (
                                             <option key={i} value={s}>{s}</option>
                                         ))}
                                     </select>
                                 </div>
-                            </div>
 
-                            {/* Company Name */}
-                            <div className="row align-items-center mb-2">
-                                <label className="col-sm-5 col-form-label">Company Name:</label>
-                                <div className="col-sm-7">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Company Name:
+                                    </label>
                                     <input
                                         type="text"
-                                        name="vendor.companyName"  // Fixed: vendor.*
+                                        name="vendor.companyName"
+                                        className="form-control so-control"
                                         value={formData.vendor.companyName}
                                         onChange={handleChange}
-                                        className="form-control form-control-sm border"
+                                        placeholder="Enter company name"
                                     />
                                 </div>
                             </div>
-                        </div>
 
-                        {/* COLUMN 2: Display Name + Email */}
-                        <div className="col-lg-4">
-                            {/* Display Name */}
-                            <div className="row align-items-center mb-2">
-                                <label className="col-sm-4 col-form-label">Display Name:</label>
-                                <div className="col-sm-7">
+                            {/* COLUMN 2: 2 fields */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Display Name:
+                                    </label>
                                     <input
                                         type="text"
-                                        name="vendor.displayName"  // Fixed: vendor.*
+                                        name="vendor.displayName"
+                                        className="form-control so-control"
                                         value={formData.vendor.displayName}
                                         onChange={handleChange}
-                                        className="form-control form-control-sm border"
+                                        placeholder="Enter display name"
                                     />
                                 </div>
-                            </div>
 
-                            {/* Email Address */}
-                            <div className="row align-items-center mb-2">
-                                <label className="col-sm-4 col-form-label">Email Address:</label>
-                                <div className="col-sm-7">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Email Address:
+                                    </label>
                                     <input
                                         type="email"
-                                        name="vendor.emailAddress"  // Fixed: vendor.*
+                                        name="vendor.emailAddress"
+                                        className="form-control so-control"
                                         value={formData.vendor.emailAddress}
                                         onChange={handleChange}
-                                        className="form-control form-control-sm border"
+                                        placeholder="vendor@example.com"
                                     />
                                 </div>
                             </div>
-                        </div>
 
-                        {/* COLUMN 3: Phone (country code + number) */}
-                        <div className="col-lg-4">
-                            <div className="row align-items-center mb-2">
-                                <label className="col-sm-2 col-form-label">Phone:</label>
-                                <div className="col-sm-8">
-                                    <div className="row">
-                                        <div className="col-sm-3">
+                            {/* COLUMN 3: 1 field (Phone with country code) */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Phone:
+                                    </label>
+                                    <div className="row g-2">
+                                        <div className="col-3">
                                             <input
-                                                type="number"
-                                                name="vendor.countryCode"  // Fixed: vendor.*
+                                                type="tel"
+                                                name="vendor.countryCode"
+                                                className="form-control so-control"
                                                 placeholder="+91"
-                                                className="form-control form-control-sm border"
                                                 value={formData.vendor.countryCode}
                                                 onChange={handleChange}
-                                                pattern="[0-9]*"
                                             />
                                         </div>
-                                        <div className="col-sm-8">
+                                        <div className="col-9">
                                             <input
-                                                type="text"
-                                                name="vendor.phoneNumber"  // Fixed: vendor.phoneNumber (not phone)
-                                                className="form-control form-control-sm border"
+                                                type="tel"
+                                                name="vendor.phoneNumber"
+                                                className="form-control so-control"
                                                 value={formData.vendor.phoneNumber}
                                                 onChange={handleChange}
-                                                inputMode="numeric"
-                                                pattern="[0-9]*"
+                                                placeholder="Phone number"
                                             />
                                         </div>
                                     </div>
@@ -934,48 +947,53 @@ const AddVendor = () => {
                         </div>
                     </div>
 
+                    {/* OUTSIDE CARD - TABS + CONTENT */}
+                    <div className="mx-5">
+                        {/* TABS */}
+                        <div className="mt-4 border-bottom nav-tabs-container" ref={tabsContainerRef}>
+                            <ul className="nav nav-tabs border-0">
+                                {tabs.map((tab, index) => (
+                                    <li key={tab} className="nav-item">
+                                        <button
+                                            ref={(el) => { tabRefs.current[index] = el; }}
+                                            type="button"
+                                            className={`nav-link ${activeTab === tab ? 'active' : ''}`}
+                                            onClick={() => setActiveTab(tab)}
+                                        >
+                                            {tab}
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                            <div className="tab-indicator" style={indicatorStyle}></div>
+                        </div>
 
+                        {/* TAB CONTENT */}
+                        <div className="pt-4">{renderTabContent()}</div>
 
-                    {/* ————— TABS ————— (unchanged) */}
-                    <div className="mt-4 border-bottom nav-tabs-container" ref={tabsContainerRef}>
-                        <ul className="nav nav-tabs border-0">
-                            {tabs.map((tab, index) => (
-                                <li key={tab} className="nav-item">
-                                    <button
-                                        ref={(el) => { tabRefs.current[index] = el; }}
-                                        type="button"
-                                        className={`nav-link ${activeTab === tab ? 'active' : ''}`}
-                                        onClick={() => setActiveTab(tab)}
-                                    >
-                                        {tab}
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                        <div className="tab-indicator" style={indicatorStyle}></div>
-                    </div>
-
-                    {/* TAB CONTENT (unchanged) */}
-                    <div className="pt-4">{renderTabContent()}</div>
-
-                    {/* Submit Buttons (unchanged) */}
-                    <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                        <button
-                            type="button"
-                            className="btn border me-3 px-4"
-                            onClick={() => navigate(-1)}
-                        >
-                            Cancel
-                        </button>
-                        <button type="submit" className="btn px-4" style={{ background: "#7991BB", color: "#FFFFFF" }}>
-                            Save
-                        </button>
+                        {/* Buttons */}
+                        <div className="form-actions">
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary me-3 px-4"
+                                onClick={() => navigate(-1)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="btn px-4"
+                                style={{ background: "#7991BB", color: "#FFF" }}
+                            >
+                                Save
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
-
         </>
     );
+
 };
 
 export default AddVendor;

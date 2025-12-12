@@ -5,6 +5,7 @@ import Header from "../../../../components/Header/Header";
 import ItemTable, { SummaryBox, type ItemRow, type TcsOption } from "../../../../components/Table/ItemTable/ItemTable";
 import { FeatherUpload } from "../../../Sales/Customers/AddCustomer/Add";
 import './addPurchaseOrder.css'
+import { Info, Settings, X } from "react-feather";
 
 
 interface PurchaseOrderHeader {
@@ -55,6 +56,10 @@ export default function AddPurchaseOrder() {
             },
         ],
     });
+
+    const [showSettings, setShowSettings] = useState(false);
+    const [closing, setClosing] = useState(false);
+
 
     const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([
         { id: "tcs_5", name: "TCS Standard", rate: 5 },
@@ -126,10 +131,23 @@ export default function AddPurchaseOrder() {
 
     const handleOpenAddress = () => setShowAddressModal(true);
     const handleCloseAddress = () => setShowAddressModal(false);
+    const [mode, setMode] = useState<"auto" | "manual">("auto");
+    const [prefix, setPrefix] = useState("");
+    const [nextNumber, setNextNumber] = useState("");
+    const [restartYear, setRestartYear] = useState(false);
 
 
 
 
+
+
+
+    useEffect(() => {
+        document.body.style.overflow = showSettings ? "hidden" : "auto";
+        return () => {
+            document.body.style.overflow = "auto";
+        };
+    }, [showSettings]);
 
     useEffect(() => {
         document.body.style.overflow = showAddressModal ? "hidden" : "auto";
@@ -168,6 +186,15 @@ export default function AddPurchaseOrder() {
             return { ...prev, itemTable: updated };
         });
     };
+
+    const closePopup = () => {
+        setClosing(true);
+        setTimeout(() => {
+            setShowSettings(false);
+            setClosing(false);
+        }, 250);
+    };
+
 
     const handleAddRow = () => {
         setFormData(prev => ({
@@ -215,28 +242,39 @@ export default function AddPurchaseOrder() {
         navigate(-1);
     };
 
+    const applyAutoSO = () => {
+        if (mode === "auto") {
+            setFormData((prev) => ({
+                ...prev,
+                challan: {
+                    ...prev.purchaseOrder,
+                    challanNo: prefix + nextNumber,
+                },
+            }));
+        }
+        closePopup();
+    };
+
     return (
         <>
             <Header />
 
-            <div className="purchase-order-page" style={{ padding: "69px 1.8rem 0 1.8rem" }}>
-                <h1 className="h4 text-dark mb-4 pb-1">New Purchase Order</h1>
-
-                <form onSubmit={handleSubmit} className="mt-4" style={{ color: "#5E5E5E" }}>
-                    {/* Vendor Name + search icon */}
-                    {/* TWO COLUMN AREA: 4 FIELDS EACH SIDE */}
-                    <div className="row">
-                        {/* COLUMN 1: Vendor, Delivery Address, Purchase Order# */}
-                        <div className="col-lg-4">
-                            {/* Vendor Name */}
-                            <div className="row mb-3 align-items-center">
-                                <label className="col-sm-5 col-form-label fw-normal">
-                                    Vendor Name<span className="text-danger">*</span>
-                                </label>
-                                <div className="col-sm-6">
+            <div className="sales-orders-page">
+                <form onSubmit={handleSubmit} className="sales-order-form">
+                    {/* ONLY 3-column fields in their own card */}
+                    <div className="so-details-card mx-5 mb-4">
+                        <h1 className="sales-order-title mb-4">Purchase Order</h1>
+                        <div className="row g-3 three-column-form">
+                            {/* COLUMN 1 */}
+                            <div className="col-lg-4">
+                                {/* Vendor Name */}
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Vendor Name<span className="text-danger">*</span>:
+                                    </label>
                                     <select
                                         name="vendorName"
-                                        className="form-select form-select-sm"
+                                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                                         value={formData.purchaseOrder.vendorName}
                                         onChange={handleChange}
                                     >
@@ -245,31 +283,40 @@ export default function AddPurchaseOrder() {
                                         <option value="Vendor B">Vendor B</option>
                                     </select>
                                 </div>
-                            </div>
 
-                            {/* Purchase Order# */}
-                            <div className="row mb-3 align-items-center">
-                                <label className="col-sm-5 col-form-label fw-normal">
-                                    Purchase Order#<span className="text-danger">*</span>
-                                </label>
-                                <div className="col-sm-6">
+                                {/* Purchase Order# */}
+                                {/* Purchase Order No (same as Sales Order No) */}
+                                <div className="so-form-group position-relative mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Sales Order No:
+                                    </label>
+
                                     <input
                                         type="text"
                                         name="purchaseOrderNo"
-                                        className="form-control form-control-sm border"
+                                        className="form-control so-control"
                                         value={formData.purchaseOrder.purchaseOrderNo}
                                         onChange={handleChange}
+                                        placeholder="Auto-generated"
                                     />
-                                </div>
-                            </div>
 
-                            {/* Delivery Address (radio block) */}
-                            <div className="row mb-3 align-items-center">
-                                <label className="col-sm-5 col-form-label fw-normal">
-                                    Delivery Address<span className="text-danger">*</span>
-                                </label>
-                                <div className="col-sm-7">
-                                    <div className="mb-1">
+                                    {/* Settings icon INSIDE the input field on the right */}
+                                    <span
+                                        className="so-settings-icon"
+                                        onClick={() => setShowSettings(true)}
+                                    >
+                                        <Settings size={16} />
+                                    </span>
+                                </div>
+
+
+
+                                {/* Delivery Address */}
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Delivery Address<span className="text-danger">*</span>:
+                                    </label>
+                                    <div className="d-flex gap-2 mb-2">
                                         <div className="form-check form-check-inline">
                                             <input
                                                 className="form-check-input"
@@ -287,7 +334,7 @@ export default function AddPurchaseOrder() {
                                                     }))
                                                 }
                                             />
-                                            <label className="form-check-label" htmlFor="orgRadio">
+                                            <label className="form-check-label small" htmlFor="orgRadio">
                                                 Organization
                                             </label>
                                         </div>
@@ -308,15 +355,14 @@ export default function AddPurchaseOrder() {
                                                     }))
                                                 }
                                             />
-                                            <label className="form-check-label" htmlFor="custRadio">
+                                            <label className="form-check-label small" htmlFor="custRadio">
                                                 Customer
                                             </label>
                                         </div>
                                     </div>
                                     <button
                                         type="button"
-                                        className="btn btn-link p-0"
-                                        style={{ fontSize: "13px" }}
+                                        className="btn btn-link p-0 text-sm"
                                         onClick={handleOpenAddress}
                                     >
                                         Change destination to deliver
@@ -324,86 +370,79 @@ export default function AddPurchaseOrder() {
                                 </div>
                             </div>
 
-                        </div>
-
-                        {/* COLUMN 2: Reference#, Date, Delivery Date */}
-                        <div className="col-lg-4">
-                            {/* Reference# */}
-                            <div className="row mb-3 align-items-center">
-                                <label className="col-sm-4 col-form-label fw-normal">Reference#</label>
-                                <div className="col-sm-8">
+                            {/* COLUMN 2 */}
+                            <div className="col-lg-4">
+                                {/* Reference# */}
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Reference#:
+                                    </label>
                                     <input
                                         type="text"
                                         name="referenceNo"
-                                        className="form-control form-control-sm border"
+                                        className="form-control so-control"
                                         value={formData.purchaseOrder.referenceNo}
                                         onChange={handleChange}
                                     />
                                 </div>
-                            </div>
 
-                            {/* Date */}
-                            <div className="row mb-3 align-items-center">
-                                <label className="col-sm-4 col-form-label fw-normal">Date</label>
-                                <div className="col-sm-5">
+                                {/* Date */}
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Sales Order Date:
+                                    </label>
                                     <input
                                         type="date"
                                         name="orderDate"
-                                        className="form-control form-control-sm border"
+                                        className="form-control so-control"
                                         value={formData.purchaseOrder.orderDate}
                                         onChange={handleChange}
                                     />
                                 </div>
-                            </div>
 
-                            {/* Delivery Date */}
-                            <div className="row mb-3 align-items-center">
-                                <label className="col-sm-4 col-form-label fw-normal">Delivery Date</label>
-                                <div className="col-sm-5">
+                                {/* Delivery Date */}
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Expected Shipment:
+                                    </label>
                                     <input
                                         type="date"
                                         name="deliveryDate"
-                                        className="form-control form-control-sm border"
+                                        className="form-control so-control"
                                         value={formData.purchaseOrder.deliveryDate}
                                         onChange={handleChange}
                                     />
                                 </div>
                             </div>
-                        </div>
 
-                        {/* COLUMN 3: Shipment Preference, Payment Terms (2 fields) */}
-                        <div className="col-lg-4">
-                            {/* Shipment Preference */}
-                            <div className="row mb-3 align-items-center">
-                                <label className="col-sm-4 col-form-label fw-normal">
-                                    Shipment Preference
-                                </label>
-                                <div className="col-sm-8">
+                            {/* COLUMN 3 */}
+                            <div className="col-lg-4">
+                                {/* Shipment Preference */}
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Delivery Method:
+                                    </label>
                                     <select
                                         name="shipmentPreference"
-                                        className="form-select form-select-sm"
+                                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                                         value={formData.purchaseOrder.shipmentPreference}
                                         onChange={handleChange}
                                     >
-                                        <option value="" disabled>
-                                            Choose the shipment preference
-                                        </option>
+                                        <option value="" disabled>Select Delivery Method</option>
                                         <option value="By Air">By Air</option>
                                         <option value="By Road">By Road</option>
                                         <option value="By Sea">By Sea</option>
                                     </select>
                                 </div>
-                            </div>
 
-                            {/* Payment Terms */}
-                            <div className="row mb-3 align-items-center">
-                                <label className="col-sm-4 col-form-label fw-normal">
-                                    Payment Terms
-                                </label>
-                                <div className="col-sm-6">
+                                {/* Payment Terms */}
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Payment Terms:
+                                    </label>
                                     <select
                                         name="paymentTerms"
-                                        className="form-select form-select-sm"
+                                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                                         value={formData.purchaseOrder.paymentTerms}
                                         onChange={handleChange}
                                     >
@@ -418,109 +457,112 @@ export default function AddPurchaseOrder() {
                         </div>
                     </div>
 
+                    {/* Everything else stays OUTSIDE any card, with consistent margins */}
+                    <div className="mx-5">
+                        {/* Item table header */}
+                        <ItemTable
+                            rows={formData.itemTable}
+                            onRowChange={handleRowChange}
+                            onAddRow={handleAddRow}
+                            onRemoveRow={handleRemoveRow}
+                        />
 
+                        {/* Notes + Summary */}
+                        <div className="notes-summary-row">
+                            <div className="notes-column">
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Customer Notes:
+                                    </label>
+                                    <textarea
+                                        className="form-control so-control textarea"
+                                        name="customerNotes"
+                                        value={formData.purchaseOrder.customerNotes}
+                                        onChange={handleChange}
+                                        placeholder="Add note for customer..."
+                                    />
+                                </div>
 
-                    {/* Item Table Title */}
-                    <h5
-                        className="mt-4 fw-normal"
-                        style={{
-                            width: "100%",
-                            backgroundColor: "#EEEEEE",
-                            padding: "6px",
-                            borderRadius: "5px",
-                            border: "1px solid #D9D9D9",
-                            color: "#5E5E5E",
-                        }}
-                    >
-                        Item Table
-                    </h5>
-
-                    <ItemTable
-                        rows={formData.itemTable}
-                        onRowChange={handleRowChange}
-                        onAddRow={handleAddRow}
-                        onRemoveRow={handleRemoveRow}
-                    />
-
-                    {/* Notes + Summary */}
-                    <div className="notes-summary-row" style={{ display: "flex", gap: 5, marginTop: 18 }}>
-                        {/* Left: notes */}
-                        <div style={{ width: "50%" }}>
-                            <div className="mb-3">
-                                <label className="form-label">Customer Notes:</label>
-                                <textarea className="form-control form-control-sm border" style={{ resize: "none", height: "90px" }} name="customerNotes" value={formData.purchaseOrder.customerNotes} onChange={handleChange} />
+                                <div className="so-form-group">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Terms & Conditions:
+                                    </label>
+                                    <textarea
+                                        className="form-control so-control textarea"
+                                        name="termsAndConditions"
+                                        value={formData.purchaseOrder.termsAndConditions}
+                                        onChange={handleChange}
+                                        placeholder="Enter terms and conditions..."
+                                    />
+                                </div>
                             </div>
 
-                            <div className="mb-3">
-                                <label className="form-label">Terms & Conditions:</label>
-                                <textarea className="form-control form-control-sm border" style={{ resize: "none", height: "90px" }} name="termsAndConditions" value={formData.purchaseOrder.termsAndConditions} onChange={handleChange} />
-                            </div>
-                        </div>
-
-                        {/* Right: summary */}
-                        <div style={{ width: "50%" }}>
-                            <SummaryBox totals={totals} taxInfo={taxInfo} onTaxChange={handleTaxChange} tcsOptions={tcsOptions} onAddTcs={handleAddTcs} />
-                        </div>
-                    </div>
-
-                    {/* Documents */}
-                    <div className="row mb-4 mt-4">
-                        <label className="col-sm-1 col-form-label">Documents:</label>
-                        <div className="col-sm-11">
-                            <div
-                                onClick={() =>
-                                    document.getElementById("fileUploadInput")?.click()
-                                }
-                                className="d-flex flex-column align-items-center justify-content-center w-100 p-4 bg-light"
-                                style={{
-                                    minHeight: "120px",
-                                    border: "2px dotted #a0a0a0",
-                                    borderRadius: "8px",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                <FeatherUpload size={32} className="text-muted mb-2" />
-                                <span className="text-secondary small">
-                                    Click to Upload Documents
-                                </span>
-
-                                <input
-                                    id="fileUploadInput"
-                                    type="file"
-                                    multiple
-                                    className="d-none"
-                                    onChange={(e) => {
-                                        const files = e.target.files;
-                                        if (files?.length) {
-                                            console.log("Files uploaded:", files);
-                                            alert(`${files.length} file(s) selected!`);
-                                        }
-                                    }}
+                            <div className="summary-column">
+                                <SummaryBox
+                                    totals={totals}
+                                    taxInfo={taxInfo}
+                                    onTaxChange={handleTaxChange}
+                                    tcsOptions={tcsOptions}
+                                    onAddTcs={handleAddTcs}
                                 />
                             </div>
                         </div>
-                    </div>
 
-                    {/* Buttons */}
-                    <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-                        <button
-                            type="button"
-                            className="btn border me-3 px-4"
-                            onClick={() => navigate(-1)}
-                        >
-                            Cancel
-                        </button>
+                        {/* Documents */}
+                        <div className="row mb-4 mt-4 align-items-start">
+                            <label className="so-label text-sm text-muted-foreground fw-bold">
+                                Documents:
+                            </label>
+                            <div className="col-sm-11">
+                                <div
+                                    onClick={() => document.getElementById("fileUploadInput")?.click()}
+                                    className="doc-upload-box"
+                                >
+                                    <FeatherUpload size={32} className="text-muted mb-2" />
+                                    <span className="text-secondary small">
+                                        Click to Upload Documents
+                                    </span>
 
-                        <button
-                            type="submit"
-                            className="btn px-4"
-                            style={{ background: "#7991BB", color: "#FFF" }}
-                        >
-                            Save
-                        </button>
+                                    <input
+                                        id="fileUploadInput"
+                                        type="file"
+                                        multiple
+                                        className="d-none"
+                                        onChange={(e) => {
+                                            const files = e.target.files;
+                                            if (files?.length) {
+                                                console.log("Files uploaded:", files);
+                                                alert(`${files.length} file(s) selected!`);
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Buttons */}
+                        <div className="form-actions">
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary me-3 px-4"
+                                onClick={() => navigate(-1)}
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="submit"
+                                className="btn px-4"
+                                style={{ background: "#7991BB", color: "#FFF" }}
+                            >
+                                Save
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
+
+
 
             {showAddressModal && (
                 <div
@@ -592,6 +634,120 @@ export default function AddPurchaseOrder() {
                             >
                                 Cancel
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showSettings && (
+                <div className="settings-overlay" onClick={closePopup}>
+                    <div
+                        className={`settings-modal ${closing ? "closing" : "opening"
+                            }`}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="modal-header custom-header">
+                            <h4 className="mb-0 p-4">
+                                Configure Delivery Challan Number
+                            </h4>
+                            <X
+                                size={20}
+                                style={{ cursor: "pointer", marginRight: "15px" }}
+                                onClick={closePopup}
+                            />
+                        </div>
+
+                        <div className="modal-body mt-3">
+                            <p style={{ fontSize: "14px", color: "#555" }}>
+                                Your Delivery Challans are currently set to auto-generate
+                                numbers. Change settings if needed.
+                            </p>
+
+                            {/* Auto Mode */}
+                            <div className="form-check mb-3">
+                                <input
+                                    type="radio"
+                                    name="mode"
+                                    className="form-check-input"
+                                    checked={mode === "auto"}
+                                    onChange={() => setMode("auto")}
+                                />
+                                <label className="form-check-label" style={{ fontWeight: 500 }}>
+                                    Continue auto-generating Challan Numbers
+                                </label>
+                                <span style={{ marginLeft: "6px", cursor: "pointer" }}>
+                                    <Info size={18} />
+                                </span>
+                            </div>
+
+                            {mode === "auto" && (
+                                <div style={{ marginLeft: 25 }}>
+                                    <div style={{ display: "flex", gap: 20 }}>
+                                        <div style={{ flex: 1 }}>
+                                            <label className="form-label">Prefix</label>
+                                            <input
+                                                value={prefix}
+                                                onChange={(e) => setPrefix(e.target.value)}
+                                                className="form-control"
+                                                placeholder="DC-"
+                                            />
+                                        </div>
+
+                                        <div style={{ flex: 1 }}>
+                                            <label className="form-label">Next Number</label>
+                                            <input
+                                                value={nextNumber}
+                                                onChange={(e) => setNextNumber(e.target.value)}
+                                                className="form-control"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-3">
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                checked={restartYear}
+                                                onChange={(e) => setRestartYear(e.target.checked)}
+                                                className="me-2"
+                                            />
+                                            Restart numbering every fiscal year.
+                                        </label>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Manual Mode */}
+                            <div className="form-check mt-4">
+                                <input
+                                    type="radio"
+                                    name="mode"
+                                    className="form-check-input"
+                                    checked={mode === "manual"}
+                                    onChange={() => setMode("manual")}
+                                />
+                                <label className="form-check-label" style={{ fontWeight: 500 }}>
+                                    Enter Challan Numbers manually
+                                </label>
+                            </div>
+
+                            <div
+                                className="d-flex justify-content-end mt-4"
+                                style={{ gap: 10 }}
+                            >
+                                <button
+                                    className="btn btn-outline-secondary"
+                                    onClick={closePopup}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    className="btn btn-primary px-4"
+                                    onClick={applyAutoSO}
+                                >
+                                    Save
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
