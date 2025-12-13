@@ -1,0 +1,77 @@
+.modal-dialog-custom {
+    background: #ffffff;
+    border-radius: 10px;
+    width: 620px;
+    /* was ~520px – slightly wider */
+    max-width: 96vw;
+    /* still responsive on small screens */
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
+    overflow: hidden;
+}
+
+/* Header */
+.modal-header-custom {
+    padding: 14px 20px;
+    /* a bit more breathing room */
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f9fafb;
+}
+
+.modal-header-custom .modal-title {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Body */
+.modal-body-custom {
+    padding: 18px 22px 14px;
+    /* more padding all around */
+}
+
+/* Make rows less tight */
+.modal-body-custom .row {
+    margin-bottom: 8px;
+}
+
+/* Inline label + field layout */
+.form-inline-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* slightly larger gap between label and field */
+}
+
+/* Wider fixed label so text wraps less */
+.form-label-inline {
+    min-width: 130px;
+    /* was 115px */
+    font-size: 13px;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+/* Inputs / selects fill the rest */
+.form-control-inline,
+.form-select.form-control-inline {
+    flex: 1;
+    font-size: 13px;
+}
+
+/* Textarea – make taller by default for readability */
+.form-inline-group textarea.form-control-inline {
+    min-height: 80px;
+    resize: vertical;
+}
+
+/* Footer */
+.modal-footer-custom {
+    padding: 12px 20px 14px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background: #f9fafb;
+}

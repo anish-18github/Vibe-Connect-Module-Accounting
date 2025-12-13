@@ -11,12 +11,12 @@ export const parchasesTabs = [
     { label: "Recurring Expenses", path: "/purchases/recurring-expenses" },
     { label: "Purchase Orders", path: "/purchases/PurchaseOrders" },
     { label: "Bills", path: "/purchases/bills" },
-    { label: "Payment Made", path: "/sales/payment-received" }, //yet to be done 
+    { label: "Payment Made", path: "/purchases/payment-made" }, //yet to be done 
     { label: "Recurring Bills", path: "/purchases/recurringBills" },
-    { label: "Vender Credits", path: "/sales/credit-notes" },
+    { label: "Vender Credits", path: "/purchases/vendor-credit" },
 ];
 
- const columns = [
+const columns = [
     { key: "vendorId", label: "Vendor Id" },
     { key: "name", label: "Name" },
     { key: "paymentDuePeriod", label: "Customer Type" },

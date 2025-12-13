@@ -59,7 +59,7 @@ function DynamicTable({ columns, data, actions = false, rowsPerPage = 10, onAdd,
                     </button>
 
                     {/* Add Button */}
-                    <button className="btn btn-outline-secondary custom-add-btn px-4" onClick={onAdd}>
+                    <button className="btn btn-outline-secondary custom-add-btn px-4 py-1 border" onClick={onAdd}>
                         Add
                     </button>
                 </div>

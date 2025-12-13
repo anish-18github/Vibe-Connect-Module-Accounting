@@ -412,7 +412,7 @@ export default function AddDeliveryChallan() {
                             <label className="so-label text-sm text-muted-foreground fw-bold">
                                 Documents:
                             </label>
-                            <div className="col-sm-11">
+                            <div className="col-sm-12">
                                 <div
                                     className="doc-upload-box"
                                     onClick={() => document.getElementById("fileUploadInput")?.click()}

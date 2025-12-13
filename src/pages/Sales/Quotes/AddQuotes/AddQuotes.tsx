@@ -410,7 +410,7 @@ export default function AddQuotes() {
                             <label className="so-label text-sm text-muted-foreground fw-bold">
                                 Documents:
                             </label>
-                            <div className="col-sm-11">
+                            <div className="col-sm-12">
                                 <div
                                     className="doc-upload-box"
                                     onClick={() => document.getElementById("fileUploadInput")?.click()}
@@ -440,14 +440,14 @@ export default function AddQuotes() {
                         <div className="form-actions">
                             <button
                                 type="button"
-                                className="btn btn-outline-secondary me-3 px-4"
+                                className="btn border me-3 px-4"
                                 onClick={() => navigate(-1)}
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                className="btn px-4"
+                                className="btn me-3 px-4"
                                 style={{ background: "#7991BB", color: "#FFF" }}
                             >
                                 Save

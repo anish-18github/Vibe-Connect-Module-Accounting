@@ -556,7 +556,7 @@ const AddVendor = () => {
                             Phone:
                         </label>
                         <div className="row g-2">
-                            <div className="col-3">
+                            <div className="col-2">
                                 <input
                                     type="text"
                                     name="address.countryCode"
@@ -566,7 +566,7 @@ const AddVendor = () => {
                                     onChange={handleChange}
                                 />
                             </div>
-                            <div className="col-9">
+                            <div className="col-10">
                                 <input
                                     type="text"
                                     name="address.phoneNumber"
@@ -921,7 +921,7 @@ const AddVendor = () => {
                                         Phone:
                                     </label>
                                     <div className="row g-2">
-                                        <div className="col-3">
+                                        <div className="col-2">
                                             <input
                                                 type="tel"
                                                 name="vendor.countryCode"
@@ -975,7 +975,7 @@ const AddVendor = () => {
                         <div className="form-actions">
                             <button
                                 type="button"
-                                className="btn btn-outline-secondary me-3 px-4"
+                                className="btn border me-3 px-4"
                                 onClick={() => navigate(-1)}
                             >
                                 Cancel

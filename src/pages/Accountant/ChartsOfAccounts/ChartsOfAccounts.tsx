@@ -89,9 +89,9 @@ const ChartsOfAccounts = () => {
 
             {showModal && (
                 <div className="modal-backdrop-custom">
-                    <div className="modal-dialog-custom">
+                    <div className="modal-dialog-custom p-4">
                         <div className="modal-header-custom">
-                            <h5 className="modal-title">Create Account</h5>
+                            <h5 className="modal-title mb-0">Create Account</h5>
                             <button
                                 type="button"
                                 className="close-btn border-0 text-danger"
@@ -102,88 +102,99 @@ const ChartsOfAccounts = () => {
                         </div>
 
                         <div className="modal-body-custom">
-                            <div className="row">
-                                <div className="col-6 d-flex align-items-center mb-2">
-                                    <label className="form-label-inline me-2 mb-0">Account Type:</label>
-                                    <select
-                                        name="accountType"
-                                        className="form-select"
-                                        value={form.accountType}
-                                        onChange={handleChange}
-                                    >
-                                        <option value="" disabled>Select account type</option>
-                                        <option value="Bank">Bank</option>
-                                        <option value="Cash">Cash</option>
-                                        <option value="Fixed Asset">Fixed Asset</option>
-                                        <option value="Accounts Receivable">Accounts Receivable</option>
-                                    </select>
+                            {/* Row 1: Account Type + Account Name */}
+                            <div className="row g-3 align-items-center mb-2">
+                                <div className="col-12 col-md-6">
+                                    <div className="form-inline-group">
+                                        <label className="so-label text-sm text-muted-foreground fw-bold">Account Type</label>
+                                        <select
+                                            name="accountType"
+                                            className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                                            value={form.accountType}
+                                            onChange={handleChange}
+                                        >
+                                            <option value="" disabled>Select account type</option>
+                                            <option value="Bank">Bank</option>
+                                            <option value="Cash">Cash</option>
+                                            <option value="Fixed Asset">Fixed Asset</option>
+                                            <option value="Accounts Receivable">Accounts Receivable</option>
+                                        </select>
+                                    </div>
                                 </div>
 
-                                <div className="col-6 d-flex align-items-center mb-2">
-                                    <label className="form-label-inline me-2 mb-0">Account Name:</label>
-                                    <input
-                                        type="text"
-                                        name="accountName"
-                                        className="form-control border"
-                                        value={form.accountName}
-                                        onChange={handleChange}
-                                    />
+                                <div className="col-12 col-md-6">
+                                    <div className="form-inline-group">
+                                        <label className="so-label text-sm text-muted-foreground fw-bold">Account Name</label>
+                                        <input
+                                            type="text"
+                                            name="accountName"
+                                            className="form-control so-control border"
+                                            value={form.accountName}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="row mt-3">
-                                <div className="col-6">
-                                    <div className="d-flex align-items-center mb-2">
-                                        <label className="form-label-inline me-2 mb-0">Account Code:</label>
+                            {/* Row 2: Account Code + Description in one column (stacked) */}
+                            <div className="row g-3">
+                                <div className="col-12">
+                                    {/* Account Code */}
+                                    <div className="form-inline-group mb-2">
+                                        <label className="so-label text-sm text-muted-foreground fw-bold">Account Code</label>
                                         <input
                                             type="text"
                                             name="accountCode"
-                                            className="form-control border"
+                                            className="form-control so-control border"
                                             value={form.accountCode}
                                             onChange={handleChange}
                                         />
                                     </div>
 
-                                    <div className="form-check mt-1">
-                                        <input
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            id="watchlistCheckbox"
-                                            name="watchlist"
-                                            checked={form.watchlist}
+                                    {/* Description */}
+                                    <div className="form-inline-group align-items-start mb-2">
+                                        <label className="so-label text-sm text-muted-foreground fw-bold">Description</label>
+                                        <textarea
+                                            name="description"
+                                            className="form-control so-control subject-textarea border"
+                                            value={form.description}
                                             onChange={handleChange}
+                                            rows={3}
                                         />
-                                        <label className="form-check-label" htmlFor="watchlistCheckbox">
-                                            Add to the watchlist on my dashboard
-                                        </label>
                                     </div>
-                                </div>
-
-                                <div className="col-6 d-flex align-items-start mb-2">
-                                    <label className="form-label-inline me-2 mb-0">Description:</label>
-                                    <textarea
-                                        name="description"
-                                        className="form-control border"
-                                        value={form.description}
-                                        onChange={handleChange}
-                                        rows={3}
-                                    />
                                 </div>
                             </div>
 
+                            {/* Bottom: Checkbox alone */}
+                            <div className="mt-2">
+                                <div className="form-check">
+                                    <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        id="watchlistCheckbox"
+                                        name="watchlist"
+                                        checked={form.watchlist}
+                                        onChange={handleChange}
+                                    />
+                                    <label className="form-check-label" htmlFor="watchlistCheckbox">
+                                        Add to the watchlist on my dashboard
+                                    </label>
+                                </div>
+                            </div>
                         </div>
+
 
                         <div className="modal-footer-custom">
                             <button
                                 type="button"
-                                className="btn btn-primary"
+                                className="btn btn-primary px-4"
                                 onClick={handleContinue}
                             >
                                 Continue
                             </button>
                             <button
                                 type="button"
-                                className="btn btn-secondary"
+                                className="btn btn-outline-secondary px-4"
                                 onClick={handleCancel}
                             >
                                 Cancel
@@ -192,6 +203,7 @@ const ChartsOfAccounts = () => {
                     </div>
                 </div>
             )}
+
         </>
     );
 };

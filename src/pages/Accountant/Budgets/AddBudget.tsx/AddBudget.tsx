@@ -601,7 +601,7 @@ export default function AddBudget() {
                     <div className="mx-5 form-actions">
                         <button
                             type="button"
-                            className="btn btn-outline-secondary me-3 px-4"
+                            className="btn border me-3 px-4"
                             onClick={() => navigate(-1)}
                         >
                             Cancel

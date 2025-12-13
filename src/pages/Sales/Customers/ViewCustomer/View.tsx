@@ -29,6 +29,8 @@ const ViewCustomer: React.FC = () => {
 
     const IncomeData: IncomeData[] = customerIncomeData as IncomeData[];
 
+    
+
 
     // Create chart on mount and cleanup
     useEffect(() => {

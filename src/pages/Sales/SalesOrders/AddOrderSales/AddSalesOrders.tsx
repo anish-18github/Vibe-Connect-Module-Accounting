@@ -34,10 +34,48 @@ export default function AddSalesOrder() {
 
     const [showSettings, setShowSettings] = useState(false);
     const [mode, setMode] = useState<"auto" | "manual">("auto");
-    const [prefix, setPrefix] = useState("");
     const [nextNumber, setNextNumber] = useState("");
     const [restartYear, setRestartYear] = useState(false);
     const [closing, setClosing] = useState(false);
+    const [prefixPattern, setPrefixPattern] = useState<string>("CUSTOM");
+
+    // helper: build prefix string from pattern
+    const buildPrefixFromPattern = (pattern: string) => {
+        const now = new Date();
+        const yyyy = now.getFullYear().toString();
+        const mm = String(now.getMonth() + 1).padStart(2, "0");
+        const dd = String(now.getDate()).padStart(2, "0");
+
+        switch (pattern) {
+            case "YEAR":
+                return `${yyyy}-`;               // 2025-
+            case "YEAR_MONTH":
+                return `${yyyy}${mm}-`;          // 202512-
+            case "DATE_DDMMYYYY":
+                return `${dd}${mm}${yyyy}-`;     // 13122025-
+            case "YEAR_SLASH_MONTH":
+                return `${yyyy}/${mm}-`;         // 2025/12-
+            default:
+                return "";
+        }
+    };
+    const applyAutoSO = () => {
+        if (mode === "auto") {
+            const prefix = buildPrefixFromPattern(prefixPattern);
+            const fullNumber = `${prefix}${nextNumber}`;
+
+            setFormData(prev => ({
+                ...prev,
+                salesOrder: {
+                    ...prev.salesOrder,
+                    salesOrderNo: fullNumber,   // ✅ matches the input binding
+                },
+            }));
+        }
+        closePopup();
+    };
+
+
 
     const closePopup = () => {
         setClosing(true);
@@ -232,18 +270,7 @@ export default function AddSalesOrder() {
         navigate("/sales/orders");
     };
 
-    const applyAutoSO = () => {
-        if (mode === "auto") {
-            setFormData((prev) => ({
-                ...prev,
-                salesOrder: {
-                    ...prev.salesOrder,
-                    salesOrderNo: prefix + nextNumber,
-                },
-            }));
-        }
-        closePopup();
-    };
+
 
     return (
         <>
@@ -450,7 +477,7 @@ export default function AddSalesOrder() {
                             <label className="so-label text-sm text-muted-foreground fw-bold">
                                 Documents:
                             </label>
-                            <div className="col-sm-11">
+                            <div className="col-sm-12">
                                 <div
                                     onClick={() => document.getElementById("fileUploadInput")?.click()}
                                     className="doc-upload-box"
@@ -544,25 +571,39 @@ export default function AddSalesOrder() {
                             </div>
 
                             {mode === "auto" && (
-                                <div  className="auto-settings">
+                                <div className="auto-settings">
                                     <div className="auto-settings-row">
+                                        {/* PREFIX PATTERN SELECT */}
                                         <div style={{ flex: 1 }}>
-                                            <label className="form-label">Prefix</label>
-                                            <input
-                                                value={prefix}
-                                                onChange={(e) => setPrefix(e.target.value)}
-                                                className="form-control"
-                                                placeholder="SO-"
-                                            />
+                                            <label className="form-label">Prefix pattern</label>
+                                            <select
+                                                className="form-select"
+                                                value={prefixPattern}
+                                                onChange={(e) => setPrefixPattern(e.target.value)}
+                                            >
+                                                <option value="" disabled >-- Select prefix --</option>
+                                                <option value="YEAR">Current year (YYYY-)</option>
+                                                <option value="YEAR_MONTH">Current year + month (YYYYMM-)</option>
+                                                <option value="DATE_DDMMYYYY">Current date (DDMMYYYY-)</option>
+                                                <option value="YEAR_SLASH_MONTH">Year/Month (YYYY/MM-)</option>
+                                            </select>
+                                            <small className="text-muted d-block mt-1">
+                                                Example prefix: {buildPrefixFromPattern(prefixPattern)}
+                                            </small>
                                         </div>
 
+                                        {/* NEXT NUMBER */}
                                         <div style={{ flex: 1 }}>
                                             <label className="form-label">Next Number</label>
                                             <input
                                                 value={nextNumber}
                                                 onChange={(e) => setNextNumber(e.target.value)}
                                                 className="form-control"
+                                                placeholder="001"
                                             />
+                                            <small className="text-muted d-block mt-1">
+                                                Full example: {buildPrefixFromPattern(prefixPattern)}{nextNumber || "001"}
+                                            </small>
                                         </div>
                                     </div>
 
@@ -579,6 +620,7 @@ export default function AddSalesOrder() {
                                     </div>
                                 </div>
                             )}
+
 
                             <div className="form-check mt-4">
                                 <input

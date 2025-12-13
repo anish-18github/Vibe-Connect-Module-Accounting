@@ -50,23 +50,8 @@ interface BulkRow {
 const AddExpense: React.FC = () => {
     const [activeTab, setActiveKey] = useState("record-expense");
 
-    const navigate = useNavigate(); // Add this import: import { useNavigate } from 'react-router-dom';
+    const navigate = useNavigate();
 
-    const [formData, setFormData] = useState({
-        // put all your form fields here
-        date: "",
-        mileageType: "distanceTravelled",
-        employee: "",
-        amountCurrency: "INR",
-        amount: "",
-        distance: "",
-        distanceUnit: "Kilometer(s)",
-        paidThrough: "",
-        vendor: "",
-        invoiceNo: "",
-        notes: "",
-        customerName: "",
-    });
 
 
     const [expenseData, setExpenseData] = useState<ExpenseFormData>({
@@ -87,6 +72,8 @@ const AddExpense: React.FC = () => {
     };
 
 
+    const [showRateModal, setShowRateModal] = useState(false);
+    const [mileageRate, setMileageRate] = useState<number>(12000);
 
     const [mileageData, setMileageData] = useState<MileageFormData>({
         date: new Date().toISOString().split("T")[0],
@@ -161,13 +148,6 @@ const AddExpense: React.FC = () => {
         );
     };
 
-    // 3. Add handleChange function
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-    ) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
 
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -236,9 +216,9 @@ const AddExpense: React.FC = () => {
                                             <option>Travel Expenses</option>
                                             <option>Meals & Entertainment</option>
                                         </select>
-                                        <button type="button" className="btn btn-link p-0 text-sm" style={{ fontSize: "12px" }}>
+                                        {/* <button type="button" className="btn btn-link p-0 text-sm" style={{ fontSize: "12px" }}>
                                             Itemize
-                                        </button>
+                                        </button> */}
                                     </div>
                                 </div>
                             </div>
@@ -253,7 +233,7 @@ const AddExpense: React.FC = () => {
                                         <select
                                             name="currency"
                                             className="form-select so-control"
-                                            style={{ width: "90px" }}
+                                            style={{ width: "70px" }}
                                             value={expenseData.currency}
                                             onChange={handleExpenseChange}
                                         >
@@ -404,7 +384,7 @@ const AddExpense: React.FC = () => {
                         <div className="form-actions">
                             <button
                                 type="button"
-                                className="btn btn-outline-secondary me-3 px-4"
+                                className="btn border me-3 px-4"
                                 onClick={() => navigate(-1)}
                             >
                                 Cancel
@@ -422,10 +402,6 @@ const AddExpense: React.FC = () => {
             </div>
         </>
     );
-
-
-
-
 
     const renderRecordMileage = () => (
         <div className="sales-orders-page">
@@ -454,7 +430,7 @@ const AddExpense: React.FC = () => {
                                 <label className="so-label text-sm text-muted-foreground fw-bold">
                                     Calculate mileage using <span className="text-danger">*</span>:
                                 </label>
-                                <div className="d-flex flex-column gap-1">
+                                <div className="radio-row">
                                     <div className="form-check">
                                         <input
                                             className="form-check-input"
@@ -502,7 +478,7 @@ const AddExpense: React.FC = () => {
                                     Amount <span className="text-danger">*</span>:
                                 </label>
                                 <div className="d-flex gap-2">
-                                    <select name="amountCurrency" className="form-select so-control" style={{ width: "90px" }} value={mileageData.amountCurrency} onChange={handleMileageChange}>
+                                    <select name="amountCurrency" className="form-select so-control" style={{ width: "70px" }} value={mileageData.amountCurrency} onChange={handleMileageChange}>
                                         <option>INR</option>
                                         <option>USD</option>
                                     </select>
@@ -524,7 +500,7 @@ const AddExpense: React.FC = () => {
                                 <label className="so-label text-sm text-muted-foreground fw-bold">
                                     Distance <span className="text-danger">*</span>:
                                 </label>
-                                <div className="d-flex gap-2 mb-2">
+                                <div className="d-flex gap-1 mb-2">
                                     <input
                                         type="number"
                                         name="distance"
@@ -534,14 +510,26 @@ const AddExpense: React.FC = () => {
                                         placeholder="0.00"
                                         step="0.1"
                                     />
-                                    <select name="distanceUnit" className="form-select so-control" style={{ width: "130px" }} value={mileageData.distanceUnit} onChange={handleMileageChange}>
+                                    <select
+                                        name="distanceUnit"
+                                        className="form-select so-control"
+                                        style={{ width: "130px" }}
+                                        value={mileageData.distanceUnit}
+                                        onChange={handleMileageChange}
+                                    >
                                         <option>Kilometer(s)</option>
                                         <option>Mile(s)</option>
                                     </select>
                                 </div>
                                 <small className="text-muted d-block">
-                                    Rate per km = ₹12,000.00
-                                    <button type="button" className="btn btn-link p-0 ms-1 text-sm">Change</button>
+                                    Rate per km = ₹{mileageRate.toLocaleString()}
+                                    <button
+                                        type="button"
+                                        className="btn btn-link p-0 ms-1 text-sm"
+                                        onClick={() => setShowRateModal(true)}
+                                    >
+                                        Change
+                                    </button>
                                 </small>
                             </div>
                         </div>
@@ -618,7 +606,7 @@ const AddExpense: React.FC = () => {
                 {/* Buttons */}
                 <div className="mx-5 mb-5">
                     <div className="form-actions">
-                        <button type="button" className="btn btn-outline-secondary me-3 px-4" onClick={() => navigate(-1)}>
+                        <button type="button" className="btn border me-3 px-4" onClick={() => navigate(-1)}>
                             Cancel
                         </button>
                         <button type="submit" className="btn px-4" style={{ background: "#7991BB", color: "#FFF" }}>
@@ -629,7 +617,6 @@ const AddExpense: React.FC = () => {
             </form>
         </div>
     );
-
 
     // const renderBulkAddExpenses = () => (
     //     <div className="item-card">
@@ -767,8 +754,6 @@ const AddExpense: React.FC = () => {
     //         </div>
     //     </div>
     // );
-
-
 
     const renderBulkAddExpenses = () => (
         <div className="sales-orders-page">
@@ -916,7 +901,7 @@ const AddExpense: React.FC = () => {
                                     </select>
                                 </div>
 
-                                <div className="col-md-4 d-flex align-items-center mt-3 mt-md-4">
+                                <div className="col-md-4 d-flex align-items-center mt-3 mt-md-4 radio-row">
                                     <div className="form-check">
                                         <input
                                             type="checkbox"
@@ -942,12 +927,16 @@ const AddExpense: React.FC = () => {
                     {/* Add new expense row */}
                     <div
                         className="rounded-3 py-2 px-4 mt-3 d-flex justify-content-center"
+                        onClick={(e) => {
+                            e.stopPropagation();      // just in case wrapper ever gets an onClick again
+                            onAddRow();               // ✅ single call
+                        }}
                         style={{
                             border: "1px dashed #D0D5DD",
                             backgroundColor: "#FBFBFD",
                             cursor: "pointer",
                         }}
-                        onClick={onAddRow}
+                        // ❌ remove onClick={onAddRow}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.border = "1px dashed #3B82F6"; // blue-500
                         }}
@@ -958,14 +947,12 @@ const AddExpense: React.FC = () => {
                         <button
                             type="button"
                             className="btn btn-link text-decoration-none d-inline-flex align-items-center m-0 p-0 small"
-                            onClick={onAddRow}
+
                         >
                             <Plus size={15} className="me-2" />
                             <span>Add New Expense Row</span>
                         </button>
                     </div>
-
-
 
                 </div>
 
@@ -974,7 +961,7 @@ const AddExpense: React.FC = () => {
                     <div className="form-actions">
                         <button
                             type="button"
-                            className="btn btn-outline-secondary me-3 px-4"
+                            className="btn border me-3 px-4"
                             onClick={() => navigate(-1)}
                         >
                             Cancel
@@ -1030,6 +1017,59 @@ const AddExpense: React.FC = () => {
                     {tabs.find((t) => t.key === activeTab)?.content}
                 </div>
             </div>
+
+            {showRateModal && (
+                <div
+                    className="position-fixed top-0 start-0 w-100 h-100"
+                    style={{
+                        backgroundColor: "rgba(0,0,0,0.25)",
+                        zIndex: 1050
+                    }}
+                    onClick={() => setShowRateModal(false)}
+                >
+                    <div
+                        className="bg-white shadow rounded"
+                        style={{
+                            width: 320,
+                            padding: "16px 16px 20px",
+                            position: "absolute",
+                            top: "20%",
+                            left: "50%",
+                            transform: "translateX(-50%)"
+                        }}
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="d-flex justify-content-between align-items-center mb-3">
+                            <h6 className="mb-0">Edit Mileage Rate</h6>
+                            <button
+                                type="button"
+                                className="btn-close"
+                                aria-label="Close"
+                                onClick={() => setShowRateModal(false)}
+                            />
+                        </div>
+
+                        <label className="so-label text-sm text-muted-foreground fw-bold mb-1">
+                            Mileage rate (in INR)<span className="text-danger">*</span>
+                        </label>
+                        <input
+                            type="number"
+                            className="form-control so-control mb-3"
+                            value={mileageRate}
+                            onChange={e => setMileageRate(Number(e.target.value) || 0)}
+                        />
+
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={() => setShowRateModal(false)}
+                        >
+                            Save
+                        </button>
+                    </div>
+                </div>
+            )}
+
         </>
 
     );

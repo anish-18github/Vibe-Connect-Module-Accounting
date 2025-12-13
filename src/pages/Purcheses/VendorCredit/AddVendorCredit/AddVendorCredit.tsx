@@ -2,44 +2,32 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../../components/Header/Header";
 import { Info, Settings, X } from "react-feather";
-
 import ItemTable, {
     SummaryBox,
+    type ItemRow,
     type TcsOption,
 } from "../../../../components/Table/ItemTable/ItemTable";
+import { FeatherUpload } from "../../../Sales/Customers/AddCustomer/Add";
 
-import './creditNotes.css';
-import { FeatherUpload } from "../../Customers/AddCustomer/Add";
-
-interface ItemRow {
-    itemDetails: string;
-    quantity: number | string;
-    rate: number | string;
-    discount: number | string;
-    amount: number | string;
-}
-
-interface CreditNoteForm {
-    credit: {
-        customerName: string;
+interface VendorCreditForm {
+    vendorCredit: {
+        vendorName: string;
         creditNoteNo: string;
-        creditDate: string;
-        referenceNo: string;
+        orderNumber: string;
+        vendorCreditDate: string;
         subject: string;
-        paymentTerm: string;
-        salesperson: string;
-        notes: string;
-        terms: string;
+        accountsPayable: string;
+        customerNotes: string;
+        termsAndConditions: string;
     };
     itemTable: ItemRow[];
 }
 
 type TaxType = "TDS" | "TCS" | "";
 
-export default function AddCreditNote() {
+export default function AddVendorCredit() {
     const navigate = useNavigate();
 
-    // ---------------- Modal ----------------
     const [showSettings, setShowSettings] = useState(false);
     const [mode, setMode] = useState<"auto" | "manual">("auto");
     const [prefix, setPrefix] = useState("");
@@ -57,20 +45,21 @@ export default function AddCreditNote() {
 
     useEffect(() => {
         document.body.style.overflow = showSettings ? "hidden" : "auto";
+        return () => {
+            document.body.style.overflow = "auto";
+        };
     }, [showSettings]);
 
-    // ---------------- Form State ----------------
-    const [formData, setFormData] = useState<CreditNoteForm>({
-        credit: {
-            customerName: "",
+    const [formData, setFormData] = useState<VendorCreditForm>({
+        vendorCredit: {
+            vendorName: "",
             creditNoteNo: "",
-            creditDate: "",
-            referenceNo: "",
+            orderNumber: "",
+            vendorCreditDate: "",
             subject: "",
-            paymentTerm: "",
-            salesperson: "",
-            notes: "",
-            terms: "",
+            accountsPayable: "",
+            customerNotes: "",
+            termsAndConditions: "",
         },
         itemTable: [
             {
@@ -83,14 +72,21 @@ export default function AddCreditNote() {
         ],
     });
 
-    // ---------------- TCS Options ----------------
+    // Auto-fill current date
+    useEffect(() => {
+        const today = new Date().toISOString().split('T')[0];
+        setFormData(prev => ({
+            ...prev,
+            vendorCredit: { ...prev.vendorCredit, vendorCreditDate: today }
+        }));
+    }, []);
+
     const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([
         { id: "tcs_5", name: "TCS Standard", rate: 5 },
         { id: "tcs_12", name: "TCS Standard", rate: 12 },
         { id: "tcs_18", name: "TCS Standard", rate: 18 },
     ]);
 
-    // ---------------- Tax & Totals ----------------
     const [taxInfo, setTaxInfo] = useState({
         type: "" as TaxType,
         selectedTax: "",
@@ -107,22 +103,29 @@ export default function AddCreditNote() {
         grandTotal: 0,
     });
 
-    const computeSubtotal = (items: ItemRow[]) =>
-        items.reduce((acc, r) => acc + (parseFloat(String(r.amount)) || 0), 0);
+    const computeSubtotal = (items: ItemRow[]) => {
+        return items.reduce((acc, r) => {
+            const amt = parseFloat(String(r.amount || "0")) || 0;
+            return acc + amt;
+        }, 0);
+    };
 
     useEffect(() => {
         const subtotal = computeSubtotal(formData.itemTable);
-        let rate = 0;
 
+        let rate = 0;
         if (taxInfo.type === "TDS") {
-            rate = Number(taxInfo.selectedTax);
+            rate = Number(taxInfo.selectedTax || 0);
         } else if (taxInfo.type === "TCS") {
             const opt = tcsOptions.find((o) => o.id === taxInfo.selectedTax);
             rate = opt ? opt.rate : 0;
         }
 
-        const taxAmount = subtotal * (rate / 100);
-        const grand = subtotal + taxAmount + Number(taxInfo.adjustment || 0);
+        const taxAmount = +(subtotal * (rate / 100));
+        const grand =
+            taxInfo.type === "TDS"
+                ? subtotal - taxAmount + Number(taxInfo.adjustment || 0)
+                : subtotal + taxAmount + Number(taxInfo.adjustment || 0);
 
         setTaxInfo((prev) => ({
             ...prev,
@@ -130,7 +133,6 @@ export default function AddCreditNote() {
             taxAmount,
             total: grand,
         }));
-
         setTotals({
             subtotal,
             tax: taxAmount,
@@ -142,10 +144,10 @@ export default function AddCreditNote() {
         taxInfo.type,
         taxInfo.selectedTax,
         taxInfo.adjustment,
+        tcsOptions,
     ]);
 
-    // ---------------- Handlers ----------------
-    const handleTaxChange = (field: string, value: any) => {
+    const handleTaxChange = (field: any, value: any) => {
         setTaxInfo((prev) => ({ ...prev, [field]: value }));
     };
 
@@ -154,12 +156,14 @@ export default function AddCreditNote() {
     };
 
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >
     ) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            credit: { ...prev.credit, [name]: value },
+            vendorCredit: { ...prev.vendorCredit, [name]: value },
         }));
     };
 
@@ -168,7 +172,13 @@ export default function AddCreditNote() {
             ...prev,
             itemTable: [
                 ...prev.itemTable,
-                { itemDetails: "", quantity: "", rate: "", discount: "", amount: "" },
+                {
+                    itemDetails: "",
+                    quantity: "",
+                    rate: "",
+                    discount: "",
+                    amount: "",
+                },
             ],
         }));
     };
@@ -180,48 +190,58 @@ export default function AddCreditNote() {
         }));
     };
 
-    const handleRowChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleRowChange = (
+        index: number,
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
         const { name, value } = e.target;
-        const updated = [...formData.itemTable];
-        const row = { ...updated[index], [name]: value };
+        type Field = keyof ItemRow;
+        const field = name as Field;
 
-        const qty = parseFloat(String(row.quantity)) || 0;
-        const rate = parseFloat(String(row.rate)) || 0;
-        const discount = parseFloat(String(row.discount)) || 0;
+        setFormData((prev) => {
+            const updated = [...prev.itemTable];
+            const row = { ...updated[index] };
+            row[field] = value;
 
-        const before = qty * rate;
-        const final = before - (before * discount) / 100;
-        row.amount = final.toFixed(2);
+            const qty = parseFloat(String(row.quantity || "0")) || 0;
+            const rate = parseFloat(String(row.rate || "0")) || 0;
+            const discount = parseFloat(String(row.discount || "0")) || 0;
 
-        updated[index] = row;
-        setFormData((prev) => ({ ...prev, itemTable: updated }));
+            const before = qty * rate;
+            const final = before - (before * discount) / 100;
+
+            row.amount = final ? final.toFixed(2) : "";
+
+            updated[index] = row;
+            return { ...prev, itemTable: updated };
+        });
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const payload = {
+        const finalPayload = {
             ...formData,
             totals,
             taxInfo,
-            creditNoteId: Math.floor(100000 + Math.random() * 900000),
+            orderId: Math.floor(100000 + Math.random() * 900000),
             createdOn: new Date().toISOString().split("T")[0],
             createdBy: "Admin",
         };
 
-        const existing = JSON.parse(localStorage.getItem("creditNotes") || "[]");
-        existing.push(payload);
-        localStorage.setItem("creditNotes", JSON.stringify(existing));
+        const existing = JSON.parse(localStorage.getItem("vendorCredits") || "[]");
+        existing.push(finalPayload);
+        localStorage.setItem("vendorCredits", JSON.stringify(existing));
 
-        navigate("/credit-notes");
+        navigate("/purchases/vendor-credits"); // Adjust route as needed
     };
 
-    const applyAutoCN = () => {
+    const applyAutoSO = () => {
         if (mode === "auto") {
             setFormData((prev) => ({
                 ...prev,
-                credit: {
-                    ...prev.credit,
+                vendorCredit: {
+                    ...prev.vendorCredit,
                     creditNoteNo: prefix + nextNumber,
                 },
             }));
@@ -229,47 +249,75 @@ export default function AddCreditNote() {
         closePopup();
     };
 
-    // ---------------- UI ----------------
     return (
         <>
             <Header />
 
             <div className="sales-orders-page">
                 <form onSubmit={handleSubmit} className="sales-order-form">
-                    {/* TOP DETAILS CARD */}
+                    {/* 3-column fields - NEW VENDOR CREDIT FIELDS */}
                     <div className="so-details-card mx-5 mb-4">
-                        <h1 className="sales-order-title mb-4">New Credit Note</h1>
-
+                        <h1 className="sales-order-title mb-4">Vendor Credit</h1>
                         <div className="row g-3 three-column-form">
-                            {/* COLUMN 1: 3 fields */}
+                            {/* COLUMN 1: Vendor Name + Vendor Credit Date */}
                             <div className="col-lg-4">
                                 <div className="so-form-group mb-4">
                                     <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Customer:
+                                        Vendor Name:
                                     </label>
                                     <select
-                                        name="customerName"
-                                        className="form-select so-control"
-                                        value={formData.credit.customerName}
+                                        name="vendorName"
+                                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                                        value={formData.vendorCredit.vendorName}
                                         onChange={handleChange}
                                     >
-                                        <option value="">Select Customer</option>
-                                        <option value="Customer A">Customer A</option>
-                                        <option value="Customer B">Customer B</option>
+                                        <option value="">Select Vendor</option>
+                                        <option value="Vendor A">Vendor A</option>
+                                        <option value="Vendor B">Vendor B</option>
                                     </select>
                                 </div>
 
-                                <div className="so-form-group mb-4 position-relative">
+                                <div className="so-form-group mb-4">
                                     <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Credit Note No:
+                                        Vendor Credit Date:
+                                    </label>
+                                    <input
+                                        type="date"
+                                        className="form-control so-control"
+                                        name="vendorCreditDate"
+                                        value={formData.vendorCredit.vendorCreditDate}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+
+
+
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Order Number:
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="orderNumber"
+                                        className="form-control so-control"
+                                        value={formData.vendorCredit.orderNumber}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* COLUMN 2: Credit Note# (with settings) + Order Number */}
+                            <div className="col-lg-4">
+                                <div className="so-form-group position-relative mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Credit Note#:
                                     </label>
                                     <input
                                         type="text"
                                         name="creditNoteNo"
                                         className="form-control so-control"
-                                        value={formData.credit.creditNoteNo}
+                                        value={formData.vendorCredit.creditNoteNo}
                                         onChange={handleChange}
-                                        style={{ paddingRight: "35px" }}
                                         placeholder="Auto-generated"
                                     />
                                     <span
@@ -280,96 +328,45 @@ export default function AddCreditNote() {
                                     </span>
                                 </div>
 
+
+
                                 <div className="so-form-group mb-4">
                                     <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Reference:
+                                        Accounts Payable:
                                     </label>
-                                    <input
-                                        type="text"
-                                        name="referenceNo"
-                                        className="form-control so-control"
-                                        value={formData.credit.referenceNo}
+                                    <select
+                                        name="accountsPayable"
+                                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                                        value={formData.vendorCredit.accountsPayable}
                                         onChange={handleChange}
-                                        placeholder="Enter reference number"
-                                    />
+                                    >
+                                        <option value="">Select Account</option>
+                                        <option value="Accounts Payable">Accounts Payable</option>
+                                        <option value="Vendor Advance">Vendor Advance</option>
+                                    </select>
                                 </div>
                             </div>
 
-                            {/* COLUMN 2: 2 fields */}
+                            {/* COLUMN 3: Subject (textarea) + Accounts Payable */}
                             <div className="col-lg-4">
-                                <div className="so-form-group mb-4">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Payment Terms:
-                                    </label>
-                                    <select
-                                        name="paymentTerm"
-                                        className="form-select so-control"
-                                        value={formData.credit.paymentTerm}
-                                        onChange={handleChange}
-                                    >
-                                        <option value="">Select</option>
-                                        <option value="Advance">Advance</option>
-                                        <option value="Net 15">Net 15</option>
-                                        <option value="Net 30">Net 30</option>
-                                        <option value="Net 45">Net 45</option>
-                                    </select>
-                                </div>
-
-
-                                <div className="so-form-group mb-4">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Credit Note Date:
-                                    </label>
-                                    <input
-                                        type="date"
-                                        name="creditDate"
-                                        className="form-control so-control"
-                                        value={formData.credit.creditDate}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-
-                                <div className="so-form-group mb-4">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Salesperson:
-                                    </label>
-                                    <select
-                                        name="salesperson"
-                                        className="form-select so-control"
-                                        value={formData.credit.salesperson}
-                                        onChange={handleChange}
-                                    >
-                                        <option value="">Select Salesperson</option>
-                                        <option value="John">John</option>
-                                        <option value="Maria">Maria</option>
-                                    </select>
-                                </div>
-
-                            </div>
-
-                            {/* COLUMN 3: 2 fields */}
-                            <div className="col-lg-4">
-
-
                                 <div className="so-form-group mb-4">
                                     <label className="so-label text-sm text-muted-foreground fw-bold">
                                         Subject:
                                     </label>
                                     <textarea
                                         className="form-control so-control subject-textarea"
-                                        style={{ height: "60px", resize: "none" }}
                                         name="subject"
-                                        value={formData.credit.subject}
+                                        value={formData.vendorCredit.subject}
                                         onChange={handleChange}
-                                        placeholder="Enter credit note subject..."
+                                        rows={2}
+                                        placeholder="Enter subject..."
                                     />
                                 </div>
-
                             </div>
                         </div>
                     </div>
 
-                    {/* OUTSIDE CARD - Standard Sales Order layout */}
+                    {/* Everything else EXACTLY SAME as Sales Order */}
                     <div className="mx-5">
                         <ItemTable
                             rows={formData.itemTable}
@@ -382,27 +379,14 @@ export default function AddCreditNote() {
                             <div className="notes-column">
                                 <div className="so-form-group">
                                     <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Customer Notes:
+                                        Note:
                                     </label>
                                     <textarea
                                         className="form-control so-control textarea"
-                                        name="notes"
-                                        value={formData.credit.notes}
+                                        name="customerNotes"
+                                        value={formData.vendorCredit.customerNotes}
                                         onChange={handleChange}
                                         placeholder="Add note for customer..."
-                                    />
-                                </div>
-
-                                <div className="so-form-group">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Terms & Conditions:
-                                    </label>
-                                    <textarea
-                                        className="form-control so-control textarea"
-                                        name="terms"
-                                        value={formData.credit.terms}
-                                        onChange={handleChange}
-                                        placeholder="Enter terms and conditions..."
                                     />
                                 </div>
                             </div>
@@ -424,13 +408,14 @@ export default function AddCreditNote() {
                             </label>
                             <div className="col-sm-12">
                                 <div
-                                    className="doc-upload-box"
                                     onClick={() => document.getElementById("fileUploadInput")?.click()}
+                                    className="doc-upload-box"
                                 >
                                     <FeatherUpload size={32} className="text-muted mb-2" />
                                     <span className="text-secondary small">
                                         Click to Upload Documents
                                     </span>
+
                                     <input
                                         id="fileUploadInput"
                                         type="file"
@@ -456,6 +441,7 @@ export default function AddCreditNote() {
                             >
                                 Cancel
                             </button>
+
                             <button
                                 type="submit"
                                 className="btn px-4"
@@ -468,13 +454,11 @@ export default function AddCreditNote() {
                 </form>
             </div>
 
-
-            {/* ---------------- SETTINGS MODAL ---------------- */}
+            {/* Settings modal - EXACTLY SAME */}
             {showSettings && (
                 <div className="settings-overlay" onClick={closePopup}>
                     <div
-                        className={`settings-modal ${closing ? "closing" : "opening"
-                            }`}
+                        className={`settings-modal ${closing ? "closing" : "opening"}`}
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="modal-header custom-header">
@@ -489,12 +473,11 @@ export default function AddCreditNote() {
                         </div>
 
                         <div className="modal-body mt-3">
-                            <p className="small text-muted">
+                            <p style={{ fontSize: "14px", color: "#555" }}>
                                 Your Credit Notes are currently set to auto-generate numbers.
                                 Change settings if needed.
                             </p>
 
-                            {/* AUTO MODE */}
                             <div className="form-check mb-3">
                                 <input
                                     type="radio"
@@ -503,24 +486,27 @@ export default function AddCreditNote() {
                                     checked={mode === "auto"}
                                     onChange={() => setMode("auto")}
                                 />
-                                <label className="form-check-label">
+                                <label
+                                    className="form-check-label"
+                                    style={{ fontWeight: 500 }}
+                                >
                                     Continue auto-generating Credit Note Numbers
                                 </label>
-                                <span style={{ marginLeft: "6px" }}>
+                                <span style={{ marginLeft: "6px", cursor: "pointer" }}>
                                     <Info size={18} />
                                 </span>
                             </div>
 
                             {mode === "auto" && (
-                                <div style={{ marginLeft: 25 }}>
-                                    <div style={{ display: "flex", gap: 20 }}>
+                                <div className="auto-settings">
+                                    <div className="auto-settings-row">
                                         <div style={{ flex: 1 }}>
                                             <label className="form-label">Prefix</label>
                                             <input
                                                 value={prefix}
                                                 onChange={(e) => setPrefix(e.target.value)}
                                                 className="form-control"
-                                                placeholder="CN-"
+                                                placeholder="VCN-"
                                             />
                                         </div>
 
@@ -539,9 +525,7 @@ export default function AddCreditNote() {
                                             <input
                                                 type="checkbox"
                                                 checked={restartYear}
-                                                onChange={(e) =>
-                                                    setRestartYear(e.target.checked)
-                                                }
+                                                onChange={(e) => setRestartYear(e.target.checked)}
                                                 className="me-2"
                                             />
                                             Restart numbering every fiscal year.
@@ -550,7 +534,6 @@ export default function AddCreditNote() {
                                 </div>
                             )}
 
-                            {/* MANUAL MODE */}
                             <div className="form-check mt-4">
                                 <input
                                     type="radio"
@@ -559,19 +542,19 @@ export default function AddCreditNote() {
                                     checked={mode === "manual"}
                                     onChange={() => setMode("manual")}
                                 />
-                                <label className="form-check-label">
+                                <label
+                                    className="form-check-label"
+                                    style={{ fontWeight: 500 }}
+                                >
                                     Enter Credit Note Numbers manually
                                 </label>
                             </div>
 
-                            <div className="d-flex justify-content-end mt-4" style={{ gap: 10 }}>
+                            <div className="footer-actions" style={{ gap: 10 }}>
                                 <button className="btn btn-outline-secondary" onClick={closePopup}>
                                     Cancel
                                 </button>
-                                <button
-                                    className="btn btn-primary px-4"
-                                    onClick={applyAutoCN}
-                                >
+                                <button className="btn btn-primary px-4" onClick={applyAutoSO}>
                                     Save
                                 </button>
                             </div>

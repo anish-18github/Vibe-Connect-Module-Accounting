@@ -307,7 +307,7 @@ export default function AddRecurringBill() {
                                                     checked={formData.recurringBill.neverExpires}
                                                     onChange={handleChange}
                                                 />
-                                                <label className="form-check-label" style={{ fontSize: "11px" }}>
+                                                <label className="form-check-label radio-row" style={{ fontSize: "11px" }}>
                                                     Never Expire
                                                 </label>
                                             </div>
@@ -413,7 +413,7 @@ export default function AddRecurringBill() {
                             <label className="so-label text-sm text-muted-foreground fw-bold">
                                 Documents:
                             </label>
-                            <div className="col-sm-11">
+                            <div className="col-sm-12">
                                 <div
                                     onClick={() => document.getElementById("fileUploadInput")?.click()}
                                     className="doc-upload-box"
@@ -444,7 +444,7 @@ export default function AddRecurringBill() {
                         <div className="form-actions">
                             <button
                                 type="button"
-                                className="btn btn-outline-secondary me-3 px-4"
+                                className="btn border me-3 px-4"
                                 onClick={() => navigate(-1)}
                             >
                                 Cancel

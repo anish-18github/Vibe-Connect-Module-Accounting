@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../../../components/Header/Header";
 import Tabs from "../../../../components/Tab/Tabs";
+import './calculateBudget.css'
 
 type BudgetPeriod = "monthly" | "quarterly" | "half-yearly" | "yearly";
 
@@ -425,272 +426,286 @@ const CalculateBudget: React.FC = () => {
 
 
     const aleContent = (
-        <>
-            <div className="table-responsive">
-                <table className="table table-bordered table-sm align-middle">
-                    <thead className="table-light">
-                        <tr>
-                            <th style={{ minWidth: 220 }}>Account</th>
-                            {months.map((m) => (
-                                <th key={m} className="text-center">
-                                    {m}
-                                </th>
-                            ))}
-                            <th className="text-center">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {/* Assets */}
-                        {assetRows.length > 0 && (
-                            <>
-                                <tr className="table-light">
-                                    <td
-                                        colSpan={months.length + 2}
-                                        className="fw-semibold"
-                                        style={{ cursor: "pointer" }}
-                                        onClick={() => setShowAssetRows((prev) => !prev)}
-                                    >
-                                        <span
-                                            style={{
-                                                display: "inline-flex",
-                                                alignItems: "center",
-                                                marginRight: 8,
-                                                width: 16,
-                                                height: 16,
-                                                borderRadius: 2,
-                                                border: "1px solid #4a7cc2",
-                                                fontSize: 11,
-                                                justifyContent: "center",
-                                            }}
-                                        >
-                                            {showAssetRows ? "−" : "+"}
-                                        </span>
-                                        Assets
-                                    </td>
-                                </tr>
+        <div className="item-card mx-2">
+            <div className="item-card-header">
+                <span className="item-card-title">Account Level Estimates</span>
+            </div>
 
-                                {showAssetRows &&
-                                    assetRows.map((acc) => (
-                                        <tr key={`asset-${acc}`}>
-                                            <td style={{ paddingLeft: 28 }}>{acc}</td>
-                                            {months.map((m) => (
-                                                <td key={m}>
-                                                    <input
-                                                        type="number"
-                                                        className="form-control form-control-sm text-end"
-                                                        value={values[acc]?.[m] ?? 0}
-                                                        onChange={(e) =>
-                                                            handleCellChange(acc, m, e.target.value)
-                                                        }
-                                                    />
-                                                </td>
-                                            ))}
-                                            <td className="text-end fw-semibold">
-                                                {getRowTotal(acc)}
-                                            </td>
-                                        </tr>
-                                    ))}
+            <div className="item-card-body">
+                <div className="ale-table-wrapper">
 
-                                <tr className="table-light">
-                                    <td className="fw-semibold">Total Assets</td>
-                                    {months.map((m) => (
-                                        <td key={m} className="text-end">
-                                            {assetRows.reduce(
-                                                (sum, acc) => sum + (values[acc]?.[m] || 0),
-                                                0
-                                            )}
-                                        </td>
-                                    ))}
-                                    <td className="text-end fw-semibold">{getAssetTotal()}</td>
-                                </tr>
-                            </>
-                        )}
-
-                        {/* Liabilities */}
-                        {liabilityRows.length > 0 && (
-                            <>
-                                <tr className="table-light">
-                                    <td
-                                        colSpan={months.length + 2}
-                                        className="fw-semibold"
-                                        style={{ cursor: "pointer" }}
-                                        onClick={() => setShowLiabilityRows((prev) => !prev)}
-                                    >
-                                        <span
-                                            style={{
-                                                display: "inline-flex",
-                                                alignItems: "center",
-                                                marginRight: 8,
-                                                width: 16,
-                                                height: 16,
-                                                borderRadius: 2,
-                                                border: "1px solid #4a7cc2",
-                                                fontSize: 11,
-                                                justifyContent: "center",
-                                            }}
-                                        >
-                                            {showLiabilityRows ? "−" : "+"}
-                                        </span>
-                                        Liabilities
-                                    </td>
-                                </tr>
-
-                                {showLiabilityRows &&
-                                    liabilityRows.map((acc) => (
-                                        <tr key={`liability-${acc}`}>
-                                            <td style={{ paddingLeft: 28 }}>{acc}</td>
-                                            {months.map((m) => (
-                                                <td key={m}>
-                                                    <input
-                                                        type="number"
-                                                        className="form-control form-control-sm text-end"
-                                                        value={values[acc]?.[m] ?? 0}
-                                                        onChange={(e) =>
-                                                            handleCellChange(acc, m, e.target.value)
-                                                        }
-                                                    />
-                                                </td>
-                                            ))}
-                                            <td className="text-end fw-semibold">
-                                                {getRowTotal(acc)}
-                                            </td>
-                                        </tr>
-                                    ))}
-
-                                <tr className="table-light">
-                                    <td className="fw-semibold">Total Liabilities</td>
-                                    {months.map((m) => (
-                                        <td key={m} className="text-end">
-                                            {liabilityRows.reduce(
-                                                (sum, acc) => sum + (values[acc]?.[m] || 0),
-                                                0
-                                            )}
-                                        </td>
-                                    ))}
-                                    <td className="text-end fw-semibold">
-                                        {getLiabilityTotal()}
-                                    </td>
-                                </tr>
-                            </>
-                        )}
-
-                        {/* Equity */}
-                        {equityRows.length > 0 && (
-                            <>
-                                <tr className="table-light">
-                                    <td
-                                        colSpan={months.length + 2}
-                                        className="fw-semibold"
-                                        style={{ cursor: "pointer" }}
-                                        onClick={() => setShowEquityRows((prev) => !prev)}
-                                    >
-                                        <span
-                                            style={{
-                                                display: "inline-flex",
-                                                alignItems: "center",
-                                                marginRight: 8,
-                                                width: 16,
-                                                height: 16,
-                                                borderRadius: 2,
-                                                border: "1px solid #4a7cc2",
-                                                fontSize: 11,
-                                                justifyContent: "center",
-                                            }}
-                                        >
-                                            {showEquityRows ? "−" : "+"}
-                                        </span>
-                                        Equity
-                                    </td>
-                                </tr>
-
-                                {showEquityRows &&
-                                    equityRows.map((acc) => (
-                                        <tr key={`equity-${acc}`}>
-                                            <td style={{ paddingLeft: 28 }}>{acc}</td>
-                                            {months.map((m) => (
-                                                <td key={m}>
-                                                    <input
-                                                        type="number"
-                                                        className="form-control form-control-sm text-end"
-                                                        value={values[acc]?.[m] ?? 0}
-                                                        onChange={(e) =>
-                                                            handleCellChange(acc, m, e.target.value)
-                                                        }
-                                                    />
-                                                </td>
-                                            ))}
-                                            <td className="text-end fw-semibold">
-                                                {getRowTotal(acc)}
-                                            </td>
-                                        </tr>
-                                    ))}
-
-                                <tr className="table-light">
-                                    <td className="fw-semibold">Total Equity</td>
-                                    {months.map((m) => (
-                                        <td key={m} className="text-end">
-                                            {equityRows.reduce(
-                                                (sum, acc) => sum + (values[acc]?.[m] || 0),
-                                                0
-                                            )}
-                                        </td>
-                                    ))}
-                                    <td className="text-end fw-semibold">{getEquityTotal()}</td>
-                                </tr>
-                            </>
-                        )}
-                    </tbody>
-
-                    <tfoot>
-                        <tr className="table-light">
-                            <th>Assets − (Liabilities + Equity)</th>
-                            {months.map((m) => {
-                                const assetMonth = assetRows.reduce(
-                                    (sum, acc) => sum + (values[acc]?.[m] || 0),
-                                    0
-                                );
-                                const liabilityMonth = liabilityRows.reduce(
-                                    (sum, acc) => sum + (values[acc]?.[m] || 0),
-                                    0
-                                );
-                                const equityMonth = equityRows.reduce(
-                                    (sum, acc) => sum + (values[acc]?.[m] || 0),
-                                    0
-                                );
-                                const diff = assetMonth - (liabilityMonth + equityMonth);
-                                const color =
-                                    diff === 0 ? "#4a7cc2" : diff > 0 ? "#5cb85c" : "#d9534f";
-
-                                return (
-                                    <th key={m} className="text-end" style={{ color }}>
-                                        {diff}
+                    <table className="table table-sm align-middle item-table-inner ale-table">
+                        <thead>
+                            <tr>
+                                <th style={{ minWidth: 220 }}>Account</th>
+                                {months.map((m) => (
+                                    <th key={m} className="text-center">
+                                        {m}
                                     </th>
-                                );
-                            })}
-                            <th
-                                className="text-end"
-                                style={{
-                                    color:
-                                        getAleBalance() === 0
-                                            ? "#4a7cc2"
-                                            : getAleBalance() > 0
-                                                ? "#5cb85c"
-                                                : "#d9534f",
-                                }}
-                            >
-                                {getAleBalance()}
-                            </th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
+                                ))}
+                                <th className="text-center">Total</th>
+                            </tr>
+                        </thead>
 
-            <div className="mt-3 d-flex justify-content-end gap-2">
-                <button className="btn btn-primary btn-sm">Save</button>
-                <button className="btn btn-outline-secondary btn-sm">Cancel</button>
+                        <tbody>
+                            {/* Assets */}
+                            {assetRows.length > 0 && (
+                                <>
+                                    <tr className="table-light">
+                                        <td
+                                            colSpan={months.length + 2}
+                                            className="fw-semibold"
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() => setShowAssetRows((prev) => !prev)}
+                                        >
+                                            <span
+                                                style={{
+                                                    display: "inline-flex",
+                                                    alignItems: "center",
+                                                    marginRight: 8,
+                                                    width: 16,
+                                                    height: 16,
+                                                    borderRadius: 2,
+                                                    border: "1px solid #4a7cc2",
+                                                    fontSize: 11,
+                                                    justifyContent: "center",
+                                                }}
+                                            >
+                                                {showAssetRows ? "−" : "+"}
+                                            </span>
+                                            Assets
+                                        </td>
+                                    </tr>
+
+                                    {showAssetRows &&
+                                        assetRows.map((acc) => (
+                                            <tr key={`asset-${acc}`}>
+                                                <td style={{ paddingLeft: 28 }}>{acc}</td>
+                                                {months.map((m) => (
+                                                    <td key={m}>
+                                                        <input
+                                                            type="number"
+                                                            className="form-control form-control-sm text-end item-input border"
+                                                            value={values[acc]?.[m] ?? 0}
+                                                            onChange={(e) =>
+                                                                handleCellChange(acc, m, e.target.value)
+                                                            }
+                                                        />
+                                                    </td>
+                                                ))}
+                                                <td className="text-end fw-semibold">
+                                                    {getRowTotal(acc)}
+                                                </td>
+                                            </tr>
+                                        ))}
+
+                                    <tr className="table-light">
+                                        <td className="fw-semibold">Total Assets</td>
+                                        {months.map((m) => (
+                                            <td key={m} className="text-end">
+                                                {assetRows.reduce(
+                                                    (sum, acc) => sum + (values[acc]?.[m] || 0),
+                                                    0
+                                                )}
+                                            </td>
+                                        ))}
+                                        <td className="text-end fw-semibold">
+                                            {getAssetTotal()}
+                                        </td>
+                                    </tr>
+                                </>
+                            )}
+
+                            {/* Liabilities */}
+                            {liabilityRows.length > 0 && (
+                                <>
+                                    <tr className="table-light">
+                                        <td
+                                            colSpan={months.length + 2}
+                                            className="fw-semibold"
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() => setShowLiabilityRows((prev) => !prev)}
+                                        >
+                                            <span
+                                                style={{
+                                                    display: "inline-flex",
+                                                    alignItems: "center",
+                                                    marginRight: 8,
+                                                    width: 16,
+                                                    height: 16,
+                                                    borderRadius: 2,
+                                                    border: "1px solid #4a7cc2",
+                                                    fontSize: 11,
+                                                    justifyContent: "center",
+                                                }}
+                                            >
+                                                {showLiabilityRows ? "−" : "+"}
+                                            </span>
+                                            Liabilities
+                                        </td>
+                                    </tr>
+
+                                    {showLiabilityRows &&
+                                        liabilityRows.map((acc) => (
+                                            <tr key={`liability-${acc}`}>
+                                                <td style={{ paddingLeft: 28 }}>{acc}</td>
+                                                {months.map((m) => (
+                                                    <td key={m}>
+                                                        <input
+                                                            type="number"
+                                                            className="form-control form-control-sm text-end item-input border"
+                                                            value={values[acc]?.[m] ?? 0}
+                                                            onChange={(e) =>
+                                                                handleCellChange(acc, m, e.target.value)
+                                                            }
+                                                        />
+                                                    </td>
+                                                ))}
+                                                <td className="text-end fw-semibold">
+                                                    {getRowTotal(acc)}
+                                                </td>
+                                            </tr>
+                                        ))}
+
+                                    <tr className="table-light">
+                                        <td className="fw-semibold">Total Liabilities</td>
+                                        {months.map((m) => (
+                                            <td key={m} className="text-end">
+                                                {liabilityRows.reduce(
+                                                    (sum, acc) => sum + (values[acc]?.[m] || 0),
+                                                    0
+                                                )}
+                                            </td>
+                                        ))}
+                                        <td className="text-end fw-semibold">
+                                            {getLiabilityTotal()}
+                                        </td>
+                                    </tr>
+                                </>
+                            )}
+
+                            {/* Equity */}
+                            {equityRows.length > 0 && (
+                                <>
+                                    <tr className="table-light">
+                                        <td
+                                            colSpan={months.length + 2}
+                                            className="fw-semibold"
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() => setShowEquityRows((prev) => !prev)}
+                                        >
+                                            <span
+                                                style={{
+                                                    display: "inline-flex",
+                                                    alignItems: "center",
+                                                    marginRight: 8,
+                                                    width: 16,
+                                                    height: 16,
+                                                    borderRadius: 2,
+                                                    border: "1px solid #4a7cc2",
+                                                    fontSize: 11,
+                                                    justifyContent: "center",
+                                                }}
+                                            >
+                                                {showEquityRows ? "−" : "+"}
+                                            </span>
+                                            Equity
+                                        </td>
+                                    </tr>
+
+                                    {showEquityRows &&
+                                        equityRows.map((acc) => (
+                                            <tr key={`equity-${acc}`}>
+                                                <td style={{ paddingLeft: 28 }}>{acc}</td>
+                                                {months.map((m) => (
+                                                    <td key={m}>
+                                                        <input
+                                                            type="number"
+                                                            className="form-control form-control-sm text-end item-input border"
+                                                            value={values[acc]?.[m] ?? 0}
+                                                            onChange={(e) =>
+                                                                handleCellChange(acc, m, e.target.value)
+                                                            }
+                                                        />
+                                                    </td>
+                                                ))}
+                                                <td className="text-end fw-semibold">
+                                                    {getRowTotal(acc)}
+                                                </td>
+                                            </tr>
+                                        ))}
+
+                                    <tr className="table-light">
+                                        <td className="fw-semibold">Total Equity</td>
+                                        {months.map((m) => (
+                                            <td key={m} className="text-end">
+                                                {equityRows.reduce(
+                                                    (sum, acc) => sum + (values[acc]?.[m] || 0),
+                                                    0
+                                                )}
+                                            </td>
+                                        ))}
+                                        <td className="text-end fw-semibold">
+                                            {getEquityTotal()}
+                                        </td>
+                                    </tr>
+                                </>
+                            )}
+                        </tbody>
+
+                        <tfoot>
+                            <tr className="table-light">
+                                <th>Assets − (Liabilities + Equity)</th>
+                                {months.map((m) => {
+                                    const assetMonth = assetRows.reduce(
+                                        (sum, acc) => sum + (values[acc]?.[m] || 0),
+                                        0
+                                    );
+                                    const liabilityMonth = liabilityRows.reduce(
+                                        (sum, acc) => sum + (values[acc]?.[m] || 0),
+                                        0
+                                    );
+                                    const equityMonth = equityRows.reduce(
+                                        (sum, acc) => sum + (values[acc]?.[m] || 0),
+                                        0
+                                    );
+                                    const diff = assetMonth - (liabilityMonth + equityMonth);
+                                    const color =
+                                        diff === 0 ? "#4a7cc2" : diff > 0 ? "#5cb85c" : "#d9534f";
+
+                                    return (
+                                        <th key={m} className="text-end" style={{ color }}>
+                                            {diff}
+                                        </th>
+                                    );
+                                })}
+                                <th
+                                    className="text-end"
+                                    style={{
+                                        color:
+                                            getAleBalance() === 0
+                                                ? "#4a7cc2"
+                                                : getAleBalance() > 0
+                                                    ? "#5cb85c"
+                                                    : "#d9534f",
+                                    }}
+                                >
+                                    {getAleBalance()}
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div className="mt-3 d-flex justify-content-end gap-2 px-3">
+                    <button type="submit" className="btn px-4" style={{ background: "#7991BB", color: "#FFF" }}
+                    >Save</button>
+                    <button type="button" className="btn border me-3 px-4"  onClick={() => navigate(-1)}>Cancel</button>
+                </div>
             </div>
-        </>
+        </div>
     );
+
 
 
 

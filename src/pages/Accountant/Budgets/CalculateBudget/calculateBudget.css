@@ -1,0 +1,27 @@
+/* ALE table wrapper: horizontal scrolling for many months */
+.ale-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/* optional: prevent table from shrinking too much */
+.ale-table {
+    min-width: 900px;
+    /* adjust based on how many months you have */
+}
+
+/* Make ALE inputs wider inside month cells */
+.ale-table input.form-control,
+.ale-table .item-input {
+    min-width: 110px;
+    /* wider than default */
+    font-size: 12px;
+}
+
+/* If you want month columns slightly wider too */
+.ale-table th,
+.ale-table td {
+    white-space: nowrap;
+    /* keep month headers on one line */
+}

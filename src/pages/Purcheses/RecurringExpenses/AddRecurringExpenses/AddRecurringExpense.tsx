@@ -138,7 +138,7 @@ const AddRecurringExpense: React.FC = () => {
                                                     checked={formData.neverExpires}
                                                     onChange={handleChange}
                                                 />
-                                                <label className="form-check-label" style={{ fontSize: "11px" }}>
+                                                <label className="form-check-label radio-row" style={{ fontSize: "11px" }}>
                                                     Never
                                                 </label>
                                             </div>
@@ -197,7 +197,7 @@ const AddRecurringExpense: React.FC = () => {
                                         <select
                                             name="currency"
                                             className="form-select so-control"
-                                            style={{ maxWidth: "110px" }}
+                                            style={{ maxWidth: "70px" }}
                                             value={formData.currency}
                                             onChange={handleChange}
                                         >

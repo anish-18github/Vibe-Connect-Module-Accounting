@@ -41,6 +41,10 @@ import Bills from "../pages/Purcheses/Bills/Bills";
 import AddBill from "../pages/Purcheses/Bills/AddBill/AddBill";
 import RecurringBills from "../pages/Purcheses/RecurringBills/RecurringBills";
 import AddrecurringBill from "../pages/Purcheses/RecurringBills/AddRecurringBills/AddRecurringBill";
+import PaymentMade from "../pages/Purcheses/PaymentsMade/PaymentsMade";
+import AddPaymentMade from "../pages/Purcheses/PaymentsMade/AddPaymentMade/AddPaymentMade";
+import VendorCredit from "../pages/Purcheses/VendorCredit/VendorCredit";
+import AddVendorCredit from "../pages/Purcheses/VendorCredit/AddVendorCredit/AddVendorCredit";
 
 function AppRouter() {
     return (
@@ -99,8 +103,14 @@ function AppRouter() {
             <Route path="/purchases/bills" element={<Bills />} />
             <Route path="/purchases/add-bill" element={<AddBill />} />
 
+            <Route path="/purchases/payment-made" element={<PaymentMade />} />
+            <Route path="/purchases/add-paymentMade" element={<AddPaymentMade />} />
+
             <Route path="/purchases/recurringBills" element={<RecurringBills />} />
             <Route path="/purchases/add-recurringBill" element={<AddrecurringBill />} />
+
+            <Route path="/purchases/vendor-credit" element={<VendorCredit />} />
+            <Route path="/purchases/add-vendorCredit" element={<AddVendorCredit />} />
 
             {/* ACCOUNTANT ROUTES */}
             <Route path="/accountant" element={<Navigate to="/accountant/manual-journal" replace />} />

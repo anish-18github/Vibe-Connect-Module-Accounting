@@ -293,12 +293,12 @@ const BulkUpdate = () => {
 
                                     <div className="row g-3">
                                         <div className="col-md-6">
-                                            <label className="form-label">
+                                            <label className="so-label text-sm text-muted-foreground fw-bold">
                                                 Account <span className="text-danger">*</span>
                                             </label>
                                             <select
                                                 name="account"
-                                                className="form-select"
+                                                className="form-control so-control border"
                                                 value={form.account}
                                                 onChange={handleChange}
                                             >
@@ -313,10 +313,10 @@ const BulkUpdate = () => {
                                         </div>
 
                                         <div className="col-md-6">
-                                            <label className="form-label">Contact</label>
+                                            <label className="so-label text-sm text-muted-foreground fw-bold">Contact</label>
                                             <select
                                                 name="contact"
-                                                className="form-select"
+                                                className="form-control so-control border"
                                                 value={form.contact}
                                                 onChange={handleChange}
                                             >
@@ -329,12 +329,12 @@ const BulkUpdate = () => {
                                         </div>
 
                                         <div className="col-12">
-                                            <label className="form-label">Date Range</label>
+                                            <label className="so-label text-sm text-muted-foreground fw-bold">Date Range</label>
                                             <div className="d-flex gap-2">
                                                 <input
                                                     type="date"
                                                     name="dateFrom"
-                                                    className="form-control border"
+                                                    className="form-control so-control border"
                                                     value={form.dateFrom}
                                                     onChange={handleChange}
                                                 />
@@ -342,7 +342,7 @@ const BulkUpdate = () => {
                                                 <input
                                                     type="date"
                                                     name="dateTo"
-                                                    className="form-control border"
+                                                    className="form-control so-control border"
                                                     value={form.dateTo}
                                                     onChange={handleChange}
                                                 />
@@ -350,12 +350,12 @@ const BulkUpdate = () => {
                                         </div>
 
                                         <div className="col-12">
-                                            <label className="form-label">Amount Range</label>
+                                            <label className="so-label text-sm text-muted-foreground fw-bold">Amount Range</label>
                                             <div className="d-flex gap-2">
                                                 <input
                                                     type="number"
                                                     name="amountFrom"
-                                                    className="form-control border"
+                                                    className="form-control so-control border"
                                                     placeholder="From"
                                                     value={form.amountFrom}
                                                     onChange={handleChange}
@@ -364,7 +364,7 @@ const BulkUpdate = () => {
                                                 <input
                                                     type="number"
                                                     name="amountTo"
-                                                    className="form-control border"
+                                                    className="form-control so-control border"
                                                     placeholder="To"
                                                     value={form.amountTo}
                                                     onChange={handleChange}

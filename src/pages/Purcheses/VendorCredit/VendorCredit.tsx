@@ -1,37 +1,38 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../components/Header/Header";
-import Navbar from "../../../components/Navbar/NavBar";
 import DynamicTable from "../../../components/Table/DynamicTable";
+import Navbar from "../../../components/Navbar/NavBar";
 import { dashboardTabs } from "../../Dashboard/dashboard";
 import { parchasesTabs } from "../Vendors/Vendors";
 
 const columns = [
     { key: "date", label: "Date" },
-    { key: "payment", label: "Payment#" },
-    { key: "referenceNumber", label: "Reference" },
+    { key: "creditNote", label: "Credit Note#" },
+    { key: "referenceNumber", label: "Reference Number" },
     { key: "vendorName", label: "Vendor Name" },
-    { key: "bill", label: "Bill#" },
-    { key: "mode", label: "Mode" },
     { key: "status", label: "Status" },
+    { key: "amount", label: "Amount" },
+    { key: "balance", label: "Balance" },
 ];
 
-const PaymentMade = () => {
+const VendorCredit = () => {
 
     const navigate = useNavigate();
-    const [paymentsMade, setPaymentsMade] = useState<any[]>([]);
+    const [vendorCredits, setvendorCredits] = useState<any[]>([]);
 
 
 
     // INFUTURE HERE'S GET API CALL
     // Load from localStorage
     useEffect(() => {
-        const stored = JSON.parse(localStorage.getItem("bills") || "[]");
-        setPaymentsMade(stored);
+        const stored = JSON.parse(localStorage.getItem("vendorCredits") || "[]");
+        setvendorCredits(stored);
     }, []);
 
     return (
         <>
+
             <Header />
 
             <div style={{ padding: "56px 0px 0px" }}>
@@ -42,10 +43,10 @@ const PaymentMade = () => {
                 <div className=" mt-3" >
                     <DynamicTable
                         columns={columns}
-                        data={paymentsMade}
+                        data={vendorCredits}
                         actions={true}
                         rowsPerPage={10}
-                        onAdd={() => navigate("/purchases/add-paymentMade")} 
+                        onAdd={() => navigate("/purchases/add-vendorCredit")}
                         onView={(row) => navigate(`/purchases/view-vendor`)} />
                 </div>
 
@@ -54,4 +55,4 @@ const PaymentMade = () => {
     )
 }
 
-export default PaymentMade;
+export default VendorCredit;

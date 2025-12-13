@@ -236,8 +236,8 @@ export default function AddPayment() {
                                     <label className="so-label text-sm text-muted-foreground fw-bold">
                                         Tax Deducted:
                                     </label>
-                                    <div className="d-flex flex-column gap-2 mt-1">
-                                        <div className="form-check form-check-inline">
+                                    <div className="radio-row">
+                                        <div className="form-check">
                                             <input
                                                 type="radio"
                                                 id="taxNo"
@@ -251,7 +251,7 @@ export default function AddPayment() {
                                                 No tax deducted
                                             </label>
                                         </div>
-                                        <div className="form-check form-check-inline">
+                                        <div className="form-check">
                                             <input
                                                 type="radio"
                                                 id="taxYes"
@@ -502,7 +502,7 @@ export default function AddPayment() {
                                                 value={prefix}
                                                 onChange={(e) => setPrefix(e.target.value)}
                                                 className="form-control"
-                                                placeholder="SO-"
+                                                placeholder="PID-"
                                             />
                                         </div>
 

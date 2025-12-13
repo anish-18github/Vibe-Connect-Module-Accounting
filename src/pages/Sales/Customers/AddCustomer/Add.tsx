@@ -113,6 +113,10 @@ const Add = () => {
     const tabsContainerRef = useRef<HTMLDivElement>(null);
     const [activeTab, setActiveTab] = useState('Other Details');
     const [indicatorStyle, setIndicatorStyle] = useState({});
+    const [errors, setErrors] = useState({
+        displayName: "",
+    });
+
 
     // Contact Persons handlers
     const addContactPerson = () => {
@@ -166,17 +170,23 @@ const Add = () => {
         return () => window.removeEventListener('resize', calculateIndicatorPosition);
     }, [activeTab]);
 
-    // ✅ FIXED: Main form handler - Correct field mapping
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    ) => {
         const { name, value } = e.target;
         let sanitizedValue = value;
 
         // Sanitize phone numbers
-        if (name === "customer.countryCode" || name === "customer.phoneNumber" ||
-            name === "address.countryCode" || name === "address.phoneNumber") {
+        if (
+            name === "customer.countryCode" ||
+            name === "customer.phoneNumber" ||
+            name === "address.countryCode" ||
+            name === "address.phoneNumber"
+        ) {
             sanitizedValue = value.replace(/\D/g, "");
         }
 
+        // Generic nested update (unchanged)
         setFormData((prev) => {
             const updated = { ...prev };
             const keys = name.split(".");
@@ -189,7 +199,22 @@ const Add = () => {
             ref[keys[keys.length - 1]] = sanitizedValue;
             return updated;
         });
+
+        // ✅ Field‑specific validation: Company Name
+        if (name === "customer.companyName") {
+            const trimmed = sanitizedValue.trim();
+            let msg = "";
+
+            if (!trimmed) {
+                msg = "Company Name is required.";
+            } else if (trimmed.length < 3) {
+                msg = "Company Name must be at least 3 characters.";
+            }
+
+            setErrors((prev) => ({ ...prev, companyName: msg }));
+        }
     };
+
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -215,9 +240,9 @@ const Add = () => {
 
     // Render functions (unchanged but consolidated)
     const renderOtherDetailsTab = () => (
-        <div className="row g-4">
-            {/* LEFT COLUMN - PAN + Currency */}
-            <div className="col-lg-6">
+        <div className="row g-4 three-column-form">
+            {/* COLUMN 1: PAN + Currency (2 fields) */}
+            <div className="col-lg-4">
                 {/* PAN */}
                 <div className="so-form-group mb-4">
                     <label className="so-label text-sm text-muted-foreground fw-bold">
@@ -253,9 +278,8 @@ const Add = () => {
                 </div>
             </div>
 
-            {/* RIGHT COLUMN - Payment Terms + Portal Language */}
-            <div className="col-lg-6">
-                {/* Payment Terms */}
+            {/* COLUMN 2: Payment Terms */}
+            <div className="col-lg-4">
                 <div className="so-form-group mb-4">
                     <label className="so-label text-sm text-muted-foreground fw-bold">
                         Payment Terms:
@@ -273,8 +297,10 @@ const Add = () => {
                         ))}
                     </select>
                 </div>
+            </div>
 
-                {/* Portal Language */}
+            {/* COLUMN 3: Portal Language */}
+            <div className="col-lg-4">
                 <div className="so-form-group mb-4">
                     <label className="so-label text-sm text-muted-foreground fw-bold">
                         Portal Language:
@@ -294,8 +320,8 @@ const Add = () => {
                 </div>
             </div>
 
-            {/* FULL WIDTH Documents Upload - spans both columns */}
-            <div className="col-12">
+            {/* FULL WIDTH Documents - Below all columns */}
+            <div className="col-12 mt-4">
                 <div className="so-form-group mb-4">
                     <label className="so-label text-sm text-muted-foreground fw-bold mb-3">
                         Documents:
@@ -325,6 +351,7 @@ const Add = () => {
                 </div>
             </div>
         </div>
+
     );
 
 
@@ -457,7 +484,7 @@ const Add = () => {
                         Phone:
                     </label>
                     <div className="row g-2">
-                        <div className="col-3">
+                        <div className="col-2 ms-2">
                             <input
                                 type="text"
                                 name="address.countryCode"
@@ -467,7 +494,7 @@ const Add = () => {
                                 onChange={handleChange}
                                 inputMode="numeric"
                                 pattern="[0-9]*"
-                                style={{ marginLeft: "-25px" }}
+                            // style={{ marginLeft: "5px" }}
                             />
                         </div>
                         <div className="col-9">
@@ -515,7 +542,7 @@ const Add = () => {
                         <table className="table table-sm align-middle item-table-inner">
                             <thead>
                                 <tr>
-                                    <th className="fw-medium text-dark" style={{ width: "120px" }}>Salutation</th>
+                                    <th className="fw-medium text-dark" style={{ width: "125px" }}>Salutation</th>
                                     <th className="fw-medium text-dark">First Name</th>
                                     <th className="fw-medium text-dark">Last Name</th>
                                     <th className="fw-medium text-dark">Email Address</th>
@@ -742,7 +769,7 @@ const Add = () => {
                                         Phone:
                                     </label>
                                     <div className="row g-2">
-                                        <div className="col-4">
+                                        <div className="col-2">
                                             <input
                                                 type="text"
                                                 name="customer.countryCode"
@@ -754,7 +781,7 @@ const Add = () => {
                                                 pattern="[0-9]*"
                                             />
                                         </div>
-                                        <div className="col-8">
+                                        <div className="col-10">
                                             <input
                                                 type="text"
                                                 name="customer.phoneNumber"
@@ -774,7 +801,7 @@ const Add = () => {
                             <div className="col-lg-4">
                                 <div className="so-form-group mb-4">
                                     <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Company Name:
+                                        Company Name:*
                                     </label>
                                     <input
                                         type="text"
@@ -788,7 +815,7 @@ const Add = () => {
 
                                 <div className="so-form-group mb-4">
                                     <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Display Name:
+                                        Display Name:<span className="text-danger">*</span>
                                     </label>
                                     <input
                                         type="text"
@@ -796,8 +823,13 @@ const Add = () => {
                                         value={formData.customer.displayName}
                                         onChange={handleChange}
                                         placeholder='Enter Display name'
-                                        className="form-control so-control"
+                                        className={`form-control so-control ${errors.displayName ? "is-invalid" : ""}`}
                                     />
+                                    {errors.displayName && (
+                                        <div className="invalid-feedback d-block">
+                                            {errors.displayName}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

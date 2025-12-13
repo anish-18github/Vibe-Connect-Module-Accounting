@@ -316,8 +316,8 @@ export default function AddPurchaseOrder() {
                                     <label className="so-label text-sm text-muted-foreground fw-bold">
                                         Delivery Address<span className="text-danger">*</span>:
                                     </label>
-                                    <div className="d-flex gap-2 mb-2">
-                                        <div className="form-check form-check-inline">
+                                    <div className="radio-row">
+                                        <div className="form-check">
                                             <input
                                                 className="form-check-input"
                                                 type="radio"
@@ -338,7 +338,7 @@ export default function AddPurchaseOrder() {
                                                 Organization
                                             </label>
                                         </div>
-                                        <div className="form-check form-check-inline">
+                                        <div className="form-check">
                                             <input
                                                 className="form-check-input"
                                                 type="radio"
@@ -513,7 +513,7 @@ export default function AddPurchaseOrder() {
                             <label className="so-label text-sm text-muted-foreground fw-bold">
                                 Documents:
                             </label>
-                            <div className="col-sm-11">
+                            <div className="col-sm-12">
                                 <div
                                     onClick={() => document.getElementById("fileUploadInput")?.click()}
                                     className="doc-upload-box"
@@ -544,7 +544,7 @@ export default function AddPurchaseOrder() {
                         <div className="form-actions">
                             <button
                                 type="button"
-                                className="btn btn-outline-secondary me-3 px-4"
+                                className="btn border me-3 px-4"
                                 onClick={() => navigate(-1)}
                             >
                                 Cancel

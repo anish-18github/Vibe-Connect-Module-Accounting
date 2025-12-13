@@ -88,7 +88,7 @@ const CurrencyAdjustments = () => {
 
             {showModal && (
                 <div className="modal-backdrop-custom">
-                    <div className="modal-dialog-custom">
+                    <div className="modal-dialog-custom p-4">
                         <div className="modal-header-custom">
                             <h5 className="modal-title">Base Currency Adjustment</h5>
                             <button
@@ -104,10 +104,10 @@ const CurrencyAdjustments = () => {
                         <div className="modal-body-custom">
                             <div className="row">
                                 <div className="col-6">
-                                    <label>Currency:</label>
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">Currency:</label>
                                     <select
                                         name="currency"
-                                        className="form-select"
+                                        className=" form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                                         value={form.currency}
                                         onChange={handleChange}
                                     >
@@ -118,11 +118,11 @@ const CurrencyAdjustments = () => {
                                     </select>
                                 </div>
                                 <div className="col-6">
-                                    <label>Date of Adjustment:</label>
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">Date of Adjustment:</label>
                                     <input
                                         type="date"
                                         name="dateOfAdjustment"
-                                        className="form-control border"
+                                        className="form-control so-control border"
                                         value={form.dateOfAdjustment}
                                         onChange={handleChange}
                                     />
@@ -131,22 +131,22 @@ const CurrencyAdjustments = () => {
 
                             <div className="row mt-3">
                                 <div className="col-6">
-                                    <label>Notes:</label>
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">Notes:</label>
                                     <input
                                         type="text"
                                         name="notes"
-                                        className="form-control border"
+                                        className="form-control so-control border"
                                         value={form.notes}
                                         onChange={handleChange}
                                     />
                                 </div>
                                 <div className="col-6">
-                                    <label>Exchange Rate:</label>
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">Exchange Rate:</label>
                                     <input
                                         type="number"
                                         step="0.0001"
                                         name="exchangeRate"
-                                        className="form-control border"
+                                        className="form-control so-control border"
                                         value={form.exchangeRate}
                                         onChange={handleChange}
                                     />
