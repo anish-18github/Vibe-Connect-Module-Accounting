@@ -1,9 +1,0 @@
-node_modules
-dist
-build
-.git
-.vite
-coverage
-public
-*.min.js
-*.log

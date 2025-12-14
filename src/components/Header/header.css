@@ -25,19 +25,15 @@ body {
   align-items: center;
   gap: 20px;
   padding: 12px 25px;
-  background: #19376D;
+  background: #19376d;
   color: white;
   border-radius: 0px 0px 60px 60px;
   z-index: 1050;
 }
 
-
-
-
 .header h2 {
   font-weight: 390;
 }
-
 
 .profile {
   width: 45px;
@@ -58,14 +54,13 @@ body {
   font-size: 15px;
 }
 
-
 .side-bar {
   position: fixed;
   top: 0;
   left: 0;
   width: 61px;
   height: 100vh;
-  background-color: #7991BB;
+  background-color: #7991bb;
   z-index: 1;
 }
 
@@ -81,7 +76,7 @@ body {
   gap: 10px;
   padding: 10px 25px;
   font-size: 13px !important;
-  color: #5E5E5E;
+  color: #5e5e5e;
   background: white;
   /* border-bottom: 1px solid #eee; */
   /* Subtle separator */

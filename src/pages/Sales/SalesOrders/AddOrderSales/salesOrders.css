@@ -19,7 +19,6 @@
   padding: 10px;
 }
 
-
 /* -------------------- Inputs -------------------- */
 .input-field {
   border-radius: 6px;
@@ -32,7 +31,6 @@
 .input-field:focus {
   border-color: #5a5a5a;
 }
-
 
 /* -------------------- Buttons -------------------- */
 .btn-outline {
@@ -47,7 +45,6 @@
   background: #eeeeee;
 }
 
-
 /* -------------------- Divider -------------------- */
 .divider {
   width: 100%;
@@ -55,7 +52,6 @@
   background: #878787;
   margin: 12px 0;
 }
-
 
 /* -------------------- Form Layout -------------------- */
 .two-column-form {
@@ -88,13 +84,12 @@
   font-size: 13px;
   /* reduced from 14px */
   font-weight: 400;
-  color: #5E5E5E;
+  color: #5e5e5e;
 }
 
 .custom-border {
-  border-color: #D9D9D9;
+  border-color: #d9d9d9;
 }
-
 
 /* -------------------- IMPORTANT: Override Bootstrap -------------------- */
 .sales-orders-page .form-control,
@@ -102,11 +97,10 @@
 .sales-orders-page input,
 .sales-orders-page select,
 .sales-orders-page textarea {
-  border: 1px solid #D9D9D9 !important;
+  border: 1px solid #d9d9d9 !important;
   box-shadow: none !important;
   font-size: 12px;
   border-radius: 10px !important;
-
 }
 
 .sales-orders-page {
@@ -143,7 +137,6 @@
   color: #9ca3af;
   cursor: not-allowed;
 }
-
 
 /* -------------------- Responsive -------------------- */
 @media (max-width: 768px) {
@@ -183,7 +176,6 @@
   color: #5e5e5e;
 }
 
-
 /* common field layout */
 .so-form-group {
   margin-bottom: 12px;
@@ -210,7 +202,9 @@
   /* pill‑shaped corners */
   border: 1px solid #d9d9d9;
   background-color: #ffffff;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease,
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
     background-color 0.15s ease;
 }
 
@@ -238,7 +232,6 @@
   margin-bottom: 24px;
 }
 
-
 /* settings icon in sales order no */
 .so-settings-icon {
   position: absolute;
@@ -248,7 +241,6 @@
   cursor: pointer;
   color: #555;
 }
-
 
 /* item table header */
 .item-table-title {
@@ -291,7 +283,6 @@
   /* prevent overflow from long content */
 }
 
-
 /* documents upload box */
 .doc-upload-box {
   min-height: 110px;
@@ -306,7 +297,6 @@
   justify-content: center;
 }
 
-
 /* actions row */
 .form-actions {
   display: flex;
@@ -316,7 +306,6 @@
   padding-top: 14px;
   border-top: 1px solid #e5e7eb;
 }
-
 
 .settings-overlay {
   position: fixed;

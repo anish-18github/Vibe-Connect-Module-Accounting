@@ -1,67 +1,67 @@
 /* -------------------- Summary Box -------------------- */
 .summary-box {
-    border-radius: 10px;
-    padding: 16px;
-    background: #ffffff;
-    margin-top: 16px;
+  border-radius: 10px;
+  padding: 16px;
+  background: #ffffff;
+  margin-top: 16px;
 }
 
 /* -------------------- Item Table -------------------- */
 .item-table {
-    border: 1px solid #878787;
-    border-radius: 10px;
-    overflow: hidden;
+  border: 1px solid #878787;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .item-table thead th {
-    background: #f3f3f3;
-    border-bottom: 1px solid #878787;
-    padding: 10px;
-    font-weight: 600;
+  background: #f3f3f3;
+  border-bottom: 1px solid #878787;
+  padding: 10px;
+  font-weight: 600;
 }
 
 .item-table tbody tr {
-    border-bottom: 1px solid #878787;
+  border-bottom: 1px solid #878787;
 }
 
 .item-table tbody td {
-    padding: 10px;
+  padding: 10px;
 }
 
 /* -------------------- Inputs -------------------- */
 .input-field {
-    border-radius: 6px;
-    padding: 8px 10px;
-    outline: none;
+  border-radius: 6px;
+  padding: 8px 10px;
+  outline: none;
 }
 
 .input-field:focus {
-    border-color: #5a5a5a;
+  border-color: #5a5a5a;
 }
 
 /* -------------------- Buttons -------------------- */
 .btn-outline {
-    border: 1px solid #878787;
-    padding: 8px 16px;
-    background: transparent;
-    border-radius: 6px;
-    cursor: pointer;
+  border: 1px solid #878787;
+  padding: 8px 16px;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 .btn-outline:hover {
-    background: #eeeeee;
+  background: #eeeeee;
 }
 
 /* -------------------- Divider -------------------- */
 .divider {
-    width: 100%;
-    height: 1px;
-    background: #878787;
-    margin: 12px 0;
+  width: 100%;
+  height: 1px;
+  background: #878787;
+  margin: 12px 0;
 }
 
 /* -------------------- Form Layout -------------------- */
-    /* .two-column-form {
+/* .two-column-form {
         display: flex;
         gap: 2rem;
         margin-bottom: 2rem;
@@ -103,25 +103,22 @@
 .sales-orders-page input,
 .sales-orders-page select,
 .sales-orders-page textarea {
-    border: 1px solid #D9D9D9 !important;
-    /* test color */
-    box-shadow: none !important;
+  border: 1px solid #d9d9d9 !important;
+  /* test color */
+  box-shadow: none !important;
 }
 
 /* -------------------- Responsive -------------------- */
 @media (max-width: 768px) {
-    .two-column-form {
-        flex-direction: column;
-    }
+  .two-column-form {
+    flex-direction: column;
+  }
 
-    .left-column,
-    .right-column {
-        width: 100%;
-    }
+  .left-column,
+  .right-column {
+    width: 100%;
+  }
 }
-
-
-
 
 /* Focus */
 /* .sales-orders-page .form-control:focus,

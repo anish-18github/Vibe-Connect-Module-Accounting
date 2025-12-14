@@ -1,57 +1,57 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Header from "../../../components/Header/Header";
-import Navbar from "../../../components/Navbar/NavBar";
-import DynamicTable from "../../../components/Table/DynamicTable";
-import { dashboardTabs } from "../../Dashboard/dashboard";
-import { salesTabs } from "../Customers/Customers";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Header from '../../../components/Header/Header';
+import Navbar from '../../../components/Navbar/NavBar';
+import DynamicTable from '../../../components/Table/DynamicTable';
+import { dashboardTabs } from '../../Dashboard/dashboard';
+import { salesTabs } from '../Customers/Customers';
+import useFormSuccess from '../../../components/Toast/useFormSuccess';
+import { Toast } from '../../../components/Toast/Toast';
+import { useGlobalToast } from '../../../components/Toast/ToastContext';
 
 const Invoices = () => {
-    const columns = [
-        { key: "name", label: "Name" },
-        { key: "deliveryChallanNo", label: "Delivery Challan No." },
-        { key: "type", label: "Type" },
-        { key: "date", label: "Date" },
-        { key: "reference", label: "Reference" }
-    ];
+  const { toast, setToast } = useGlobalToast();
+  useFormSuccess();
+  const columns = [
+    { key: 'name', label: 'Name' },
+    { key: 'deliveryChallanNo', label: 'Delivery Challan No.' },
+    { key: 'type', label: 'Type' },
+    { key: 'date', label: 'Date' },
+    { key: 'reference', label: 'Reference' },
+  ];
 
-    const navigate = useNavigate();
-    const [customers, setCustomers] = useState<any[]>([]);
+  const navigate = useNavigate();
+  const [customers, setCustomers] = useState<any[]>([]);
 
-    // INFUTURE HERE'S GET API CALL
-    // Load from localStorage
-    useEffect(() => {
-        const stored = JSON.parse(localStorage.getItem("customers") || "[]");
-        setCustomers(stored);
-    }, []);
+  // INFUTURE HERE'S GET API CALL
+  // Load from localStorage
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem('customers') || '[]');
+    setCustomers(stored);
+  }, []);
 
-    return (
-        <>
+  return (
+    <>
+      <Toast toast={toast} setToast={setToast} />
+      <Header />
 
-            <Header />
+      <div style={{ padding: '56px 0px 0px' }}>
+        <Navbar tabs={dashboardTabs} />
+        <Navbar tabs={salesTabs} />
 
-            <div style={{ padding: "56px 0px 0px" }}>
-
-
-
-                <Navbar tabs={dashboardTabs} />
-                <Navbar tabs={salesTabs} />
-
-
-                <div className=" mt-3">
-                    <DynamicTable
-                        columns={columns}
-                        data={customers}
-                        actions={true}
-                        rowsPerPage={10}
-                        onAdd={() => navigate("/sales/add-invoice")} //May be change it latter. "/add-customer"
-                        onView={(row) => navigate(`/view-customer/${row.customerId}`)} />
-                </div>
-            </div>
-
-
-        </>
-    )
-}
+        <div className=" mt-3">
+          <DynamicTable
+            columns={columns}
+            data={customers}
+            actions={true}
+            rowsPerPage={10}
+            onAdd={() => navigate('/sales/add-invoice')} //May be change it latter. "/add-customer"
+            onView={(row) => navigate(`/view-customer/${row.customerId}`)}
+          />
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default Invoices;

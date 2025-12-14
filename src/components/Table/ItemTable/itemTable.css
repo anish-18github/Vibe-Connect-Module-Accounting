@@ -173,7 +173,6 @@
   background: transparent;
 }
 
-
 /* ---------------- Item Table card (new design like screenshot) ---------------- */
 
 /* ---------- outer card ---------- */
@@ -318,13 +317,13 @@
 
 /* left fields take remaining space */
 .notes-summary-row .left-fields,
-.notes-summary-row>div:first-child {
+.notes-summary-row > div:first-child {
   flex: 1;
 }
 
 /* right summary box fixed width */
 .notes-summary-row .right-summary,
-.notes-summary-row>div:last-child {
+.notes-summary-row > div:last-child {
   width: 320px;
 }
 

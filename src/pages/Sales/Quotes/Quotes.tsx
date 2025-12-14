@@ -1,67 +1,65 @@
-import { useNavigate } from "react-router-dom";
-import Header from "../../../components/Header/Header";
-import DynamicTable from "../../../components/Table/DynamicTable";
-import { useEffect, useState } from "react";
-import Navbar from "../../../components/Navbar/NavBar";
-import { salesTabs } from "../Customers/Customers";
-import { dashboardTabs } from "../../Dashboard/dashboard";
+import { useNavigate } from 'react-router-dom';
+import Header from '../../../components/Header/Header';
+import DynamicTable from '../../../components/Table/DynamicTable';
+import { useEffect, useState } from 'react';
+import Navbar from '../../../components/Navbar/NavBar';
+import { salesTabs } from '../Customers/Customers';
+import { dashboardTabs } from '../../Dashboard/dashboard';
+import useFormSuccess from '../../../components/Toast/useFormSuccess';
+import { Toast } from '../../../components/Toast/Toast';
+import { useGlobalToast } from '../../../components/Toast/ToastContext';
 
 const Quotes = () => {
+  const { toast, setToast } = useGlobalToast();
+  useFormSuccess();
+  const columns = [
+    { key: 'name', label: 'Name' },
+    { key: 'quote', label: 'Quote' },
+    { key: 'createdOn', label: 'Created On' },
+    { key: 'expiredOn', label: 'Expire On' },
+    { key: 'createdBy', label: 'Created By' },
+  ];
 
-    const columns = [
-        { key: "name", label: "Name" },
-        { key: "quote", label: "Quote" },
-        { key: "createdOn", label: "Created On" },
-        { key: "expiredOn", label: "Expire On" },
-        { key: "createdBy", label: "Created By" }
-    ];
+  const navigate = useNavigate();
+  const [quotes, setQuotes] = useState<any[]>([]);
 
-    const navigate = useNavigate();
-    const [quotes, setQuotes] = useState<any[]>([]);
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem('quotes') || '[]');
 
-    useEffect(() => {
-        const stored = JSON.parse(localStorage.getItem("quotes") || "[]");
+    const formatted = stored.map((q: any) => ({
+      name: q.customerName,
+      quote: q.quote?.quoteNumber || 'N/A',
+      createdOn: q.quoteDate,
+      expiredOn: q.expiryDate,
+      createdBy: q.salesPerson,
+      customerId: q.customerId,
+    }));
 
-        const formatted = stored.map((q: any) => ({
-            name: q.customerName,
-            quote: q.quote?.quoteNumber || "N/A",
-            createdOn: q.quoteDate,
-            expiredOn: q.expiryDate,
-            createdBy: q.salesPerson,
-            customerId: q.customerId
-        }));
+    setQuotes(formatted);
+  }, []);
 
-        setQuotes(formatted);
-    }, []);
+  return (
+    <>
+      <Toast toast={toast} setToast={setToast} />
+      <Header />
 
+      <div style={{ padding: '56px 0px 0px' }}>
+        <Navbar tabs={dashboardTabs} />
+        <Navbar tabs={salesTabs} />
 
-
-    return (
-        <>
-
-            <Header />
-
-            <div style={{ padding: "56px 0px 0px" }}>
-
-
-                <Navbar tabs={dashboardTabs} />
-                <Navbar tabs={salesTabs} />
-
-                <div className="mt-3">
-                    <DynamicTable
-                        columns={columns}
-                        data={quotes}
-                        actions={true}
-                        rowsPerPage={10}
-                        onAdd={() => navigate("/sales/add-quotes")}
-                        onView={(row) => navigate(`/view-customer/${row.customerId}`)} />
-                </div>
-
-
-            </div>
-
-        </>
-    );
-}
+        <div className="mt-3">
+          <DynamicTable
+            columns={columns}
+            data={quotes}
+            actions={true}
+            rowsPerPage={10}
+            onAdd={() => navigate('/sales/add-quotes')}
+            onView={(row) => navigate(`/view-customer/${row.customerId}`)}
+          />
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default Quotes;

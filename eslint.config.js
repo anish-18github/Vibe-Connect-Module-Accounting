@@ -19,11 +19,5 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
-    rules: {
-      // Many existing files call setState inside mount effects — warn for now.
-      'react-hooks/set-state-in-effect': 'warn',
-      'react-refresh/only-export-components': 'warn',
-      '@typescript-eslint/no-explicit-any': 'warn',
-    },
   },
 ])

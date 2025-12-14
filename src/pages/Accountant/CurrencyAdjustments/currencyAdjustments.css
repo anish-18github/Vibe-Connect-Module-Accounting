@@ -1,84 +1,80 @@
 .modal-backdrop-custom {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.35);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    overflow-x: hidden;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  overflow-x: hidden;
 }
 
 .modal-dialog-custom {
-    background: #fff;
-    border-radius: 10px !important;
-    width: 520px;
-    max-width: 90vw;
-    padding: 1.5rem 1.75rem 1.75rem;
-    overflow-x: hidden;
-    /* more padding */
+  background: #fff;
+  border-radius: 10px !important;
+  width: 520px;
+  max-width: 90vw;
+  padding: 1.5rem 1.75rem 1.75rem;
+  overflow-x: hidden;
+  /* more padding */
 }
 
 .modal-body-custom .row {
-    margin-right: 0;
-    margin-left: 0;
+  margin-right: 0;
+  margin-left: 0;
 }
 
 .modal-body-custom .col-6 {
-    padding-right: 8px;
-    padding-left: 8px;
+  padding-right: 8px;
+  padding-left: 8px;
 }
 
-
-
-.modal-body-custom .row+.row {
-    margin-top: 1.25rem;
+.modal-body-custom .row + .row {
+  margin-top: 1.25rem;
 }
 
 .form-label-inline {
-    min-width: 150px;
-    /* tweak to align labels */
-    font-weight: 500;
-    text-align: right;
-    /* optional: right-align text */
+  min-width: 150px;
+  /* tweak to align labels */
+  font-weight: 500;
+  text-align: right;
+  /* optional: right-align text */
 }
 
 .modal-header-custom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.6rem 1rem 0.8rem;
-    margin: -1.5rem -1.75rem 1.25rem;
-    background-color: #e2e5ea;
-    border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 1rem 0.8rem;
+  margin: -1.5rem -1.75rem 1.25rem;
+  background-color: #e2e5ea;
+  border-radius: 10px 10px 0 0;
 }
 
 .modal-title {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .close-btn {
-    border: none;
-    background: transparent;
-    font-size: 1.2rem;
-    line-height: 1;
-    cursor: pointer;
+  border: none;
+  background: transparent;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
 }
-
 
 .modal-footer-custom {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 1.75rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.75rem;
 }
 
-
 @media (max-width: 576px) {
-    .modal-body-custom .col-6 {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
+  .modal-body-custom .col-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
 }

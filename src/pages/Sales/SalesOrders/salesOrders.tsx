@@ -1,57 +1,57 @@
-import { useNavigate } from "react-router-dom";
-import Header from "../../../components/Header/Header";
-import Navbar from "../../../components/Navbar/NavBar";
-import { dashboardTabs } from "../../Dashboard/dashboard";
-import { salesTabs } from "../Customers/Customers";
-import { useEffect, useState } from "react";
-import DynamicTable from "../../../components/Table/DynamicTable";
+import { useNavigate } from 'react-router-dom';
+import Header from '../../../components/Header/Header';
+import Navbar from '../../../components/Navbar/NavBar';
+import { dashboardTabs } from '../../Dashboard/dashboard';
+import { salesTabs } from '../Customers/Customers';
+import { useEffect, useState } from 'react';
+import DynamicTable from '../../../components/Table/DynamicTable';
+import useFormSuccess from '../../../components/Toast/useFormSuccess';
+import { Toast } from '../../../components/Toast/Toast';
+import { useGlobalToast } from '../../../components/Toast/ToastContext';
 
 const SalesOrders = () => {
+  const { toast, setToast } = useGlobalToast();
+  useFormSuccess();
+  const columns = [
+    { key: 'name', label: 'Name' },
+    { key: 'anc', label: 'ABC' },
+    { key: 'createdOn', label: 'Created On' },
+    { key: 'expiryOn', label: 'Expiry On' },
+    { key: 'createdBy', label: 'Created By' },
+  ];
 
-    const columns = [
-        { key: "name", label: "Name" },
-        { key: "anc", label: "ABC" },
-        { key: "createdOn", label: "Created On" },
-        { key: "expiryOn", label: "Expiry On" },
-        { key: "createdBy", label: "Created By" }
-    ];
+  const navigate = useNavigate();
+  const [customers, setCustomers] = useState<any[]>([]);
 
-    const navigate = useNavigate();
-    const [customers, setCustomers] = useState<any[]>([]);
+  // INFUTURE HERE'S GET API CALL
+  // Load from localStorage
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem('customers') || '[]');
+    setCustomers(stored);
+  }, []);
 
-    // INFUTURE HERE'S GET API CALL
-    // Load from localStorage
-    useEffect(() => {
-        const stored = JSON.parse(localStorage.getItem("customers") || "[]");
-        setCustomers(stored);
-    }, []);
+  return (
+    <>
+      <Toast toast={toast} setToast={setToast} />
+      <Header />
 
+      <div style={{ padding: '56px 0px 0px' }}>
+        <Navbar tabs={dashboardTabs} />
+        <Navbar tabs={salesTabs} />
 
-    return (
-
-        <>
-
-            <Header />
-
-            <div style={{ padding: "56px 0px 0px" }}>
-
-                <Navbar tabs={dashboardTabs} />
-                <Navbar tabs={salesTabs} />
-
-                <div className=" mt-3">
-                    <DynamicTable
-                        columns={columns}
-                        data={customers}
-                        actions={true}
-                        rowsPerPage={10}
-                        onAdd={() => navigate("/sales/add-salesOrders")}
-                        onView={(row) => navigate(`/view-customer/${row.customerId}`)} />
-                </div>
-            </div>
-
-
-        </>
-    )
-}
+        <div className=" mt-3">
+          <DynamicTable
+            columns={columns}
+            data={customers}
+            actions={true}
+            rowsPerPage={10}
+            onAdd={() => navigate('/sales/add-salesOrders')}
+            onView={(row) => navigate(`/view-customer/${row.customerId}`)}
+          />
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default SalesOrders;

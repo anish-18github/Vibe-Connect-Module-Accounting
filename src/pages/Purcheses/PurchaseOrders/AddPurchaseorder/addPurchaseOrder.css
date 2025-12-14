@@ -1,67 +1,65 @@
 .modal-backdrop-custom {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.35);
-    display: flex;
-    align-items: center;
-    /* vertically center */
-    justify-content: center;
-    z-index: 1050;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  /* vertically center */
+  justify-content: center;
+  z-index: 1050;
 }
 
 /* key changes here */
 .modal-dialog-custom {
-    background: #fff;
-    border-radius: 4px;
-    width: 480px;
-    max-width: 95%;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-    padding: 16px 18px 14px;
+  background: #fff;
+  border-radius: 4px;
+  width: 480px;
+  max-width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  padding: 16px 18px 14px;
 }
 
 /* Chrome, Edge, Safari */
 .modal-dialog-custom::-webkit-scrollbar {
-    width: 6px;
-    /* scrollbar width */
+  width: 6px;
+  /* scrollbar width */
 }
 
 .modal-dialog-custom::-webkit-scrollbar-track {
-    background: #f5f5f5;
-    /* track color */
-    border-radius: 4px;
+  background: #f5f5f5;
+  /* track color */
+  border-radius: 4px;
 }
 
 .modal-dialog-custom::-webkit-scrollbar-thumb {
-    background-color: #b5bdc9;
-    /* thumb color */
-    border-radius: 4px;
+  background-color: #b5bdc9;
+  /* thumb color */
+  border-radius: 4px;
 }
 
 .modal-dialog-custom::-webkit-scrollbar-thumb:hover {
-    background-color: #8f98aa;
+  background-color: #8f98aa;
 }
 
 /* Firefox */
 .modal-dialog-custom {
-    scrollbar-width: thin;
-    /* auto | thin | none */
-    scrollbar-color: #b5bdc9 #f5f5f5;
-    /* thumb track */
+  scrollbar-width: thin;
+  /* auto | thin | none */
+  scrollbar-color: #b5bdc9 #f5f5f5;
+  /* thumb track */
 }
 
-
-
 .modal-footer {
-    display: flex;
-    justify-content: flex-start;
-    gap: 8px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
 }
 
 .btn-close {
-    border: none;
-    background: transparent;
-    font-size: 18px;
-    line-height: 1;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1;
 }

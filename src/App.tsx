@@ -1,14 +1,15 @@
-import React from "react";
 import AppRouter from "./router/AppRouter";
-import "./index.css";
+import { Toast } from "./components/Toast/Toast";
+import { useGlobalToast } from "./components/Toast/ToastContext";
 
-/**
- * Root application component.
- * Keep this file minimal — use `AppRouter` for route handling
- * and move global providers (theme, auth) here when needed.
- */
-const App: React.FC = () => {
-	return <AppRouter />;
-};
+function App() {
+  const { toast, setToast } = useGlobalToast();
+  return (
+    <>
+      <Toast toast={toast} setToast={setToast} />
+      <AppRouter />
+    </>
+  );
+}
 
 export default App;
