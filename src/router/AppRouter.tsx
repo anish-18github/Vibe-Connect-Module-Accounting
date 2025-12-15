@@ -13,7 +13,7 @@ import AddDeliveryChallan from '../pages/Sales/DeliveryChallans/AddDeliveryChall
 import Invoices from '../pages/Sales/Invoices/Invoices';
 import AddInvoice from '../pages/Sales/Invoices/AddInvoice/AddInvoice';
 import PaymentReceived from '../pages/Sales/PaymentReceived/PaymentReceived';
-import AddRecurringInvoices from '../pages/Sales/PaymentInvoices/AddRecurringInvoive/AddRecurringInvoice';
+// import AddRecurringInvoices from '../pages/Sales/PaymentInvoices/AddRecurringInvoive/AddRecurringInvoice';
 import PaymentInvoices from '../pages/Sales/PaymentInvoices/PaymentInvoices';
 import CreditNote from '../pages/Sales/CreditNotes/CreditNotes';
 import AddCreditNote from '../pages/Sales/CreditNotes/AddCreditNotes/AddCreditNote';
@@ -45,6 +45,21 @@ import PaymentMade from '../pages/Purcheses/PaymentsMade/PaymentsMade';
 import AddPaymentMade from '../pages/Purcheses/PaymentsMade/AddPaymentMade/AddPaymentMade';
 import VendorCredit from '../pages/Purcheses/VendorCredit/VendorCredit';
 import AddVendorCredit from '../pages/Purcheses/VendorCredit/AddVendorCredit/AddVendorCredit';
+// import MasterSetup from '../pages/Society/MasterSetup';
+import AddRecurringInvoices from '../pages/Sales/PaymentInvoices/AddRecurringInvoive/AddRecurringInvoice';
+import AddMasterSetup from '../pages/Society/MasterSetup/AddMasterSetup/AddMasterSetup';
+import MasterSetup from '../pages/Society/MasterSetup/MasterSetup';
+import MemeberManagement from '../pages/Society/MemberManagement/MemberManagement';
+import MemberManagementForm from '../pages/Society/MemberManagement/MemberManagementForm/MemberManagementform';
+import MaintenanceManagement from '../pages/Society/MaintenanceManagement/MaintenanceManagement';
+import MaintenanceManagementForm from '../pages/Society/MaintenanceManagement/MaintenanceManagementForm/MaintenanceManagementform';
+import Budgeting from '../pages/Society/Budgeting/Budgeting';
+import AddBudgeting from '../pages/Society/Budgeting/AddBudgeting/AddBudgeting';
+import ReportsAndAnalytics from '../pages/Society/ReportsAndAnalytics/ReportsAndAnalytics';
+import AddReportAndAnalytics from '../pages/Society/ReportsAndAnalytics/AddReportAndAnalytics/AddReportAndAnalytics';
+import Reporting from '../pages/Reporting/Reporting';
+import CreateReport from '../pages/Reporting/CreateReport/CreateReport';
+import CreateCustomReport from '../pages/Reporting/CreateReport/CreateCustomReport';
 
 function AppRouter() {
   return (
@@ -130,6 +145,35 @@ function AppRouter() {
       <Route path="/accountant/calculate-budget" element={<CalculateBudget />} />
 
       <Route path="/accountant/transaction-locking" element={<TransactionLocking />} />
+
+
+
+      {/* SOCIETY */}
+
+      <Route path="/society" element={<Navigate to="/society/master-setup" replace />} />
+
+      <Route path="/society/master-setup" element={<MasterSetup />} />
+      <Route path="/society/add-masteSetup" element={<AddMasterSetup />} />
+
+      <Route path="/society/member-management" element={<MemeberManagement />} />
+      <Route path="/society/member-management-form" element={<MemberManagementForm />} />
+
+      <Route path="/society/maintenance-management" element={<MaintenanceManagement />} />
+      <Route path="/society/maintenance-management-form" element={<MaintenanceManagementForm />} />
+
+      <Route path="/society/budgeting" element={<Budgeting />} />
+      <Route path="/society/add-budgeting" element={<AddBudgeting />} />
+
+      <Route path="/society/Reports-Analytics" element={<ReportsAndAnalytics />} />
+      <Route path="/society/add-reportAnalytics" element={<AddReportAndAnalytics />} />
+
+      {/* REPORTING */}
+      <Route path="/reporting" element={<Reporting />} />
+      <Route path="/reporting/create-report" element={<CreateReport />} />
+      <Route path="/reporting/create-custom-report/profitloss" element={<CreateCustomReport />} />
+
+
+
     </Routes>
   );
 }

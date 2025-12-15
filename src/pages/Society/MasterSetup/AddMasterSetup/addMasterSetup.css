@@ -1,0 +1,78 @@
+.add-master-setup .doc-upload-box {
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  background-color: #f9fafb;
+  cursor: pointer;
+
+  /* Make it behave like a short input */
+  display: flex;
+  flex-direction: row;          /* row instead of column */
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+
+  padding: 4px 10px;            /* much smaller padding */
+  min-height: 34px;             /* similar to .form-control height */
+  height: auto;                 /* let content define height */
+  box-sizing: border-box;
+}
+
+/* Icon + text sizes */
+.doc-upload-box .text-muted {
+  font-size: 0.8rem;
+}
+
+.doc-upload-box span.small {
+  font-size: 0.75rem;
+}
+
+/* Keep form-group content stacked and stable to avoid layout shifts */
+.so-form-group {
+	display: flex;
+	flex-direction: column;
+}
+
+/* Ensure inputs/selects don't resize layout when error text appears */
+.so-form-group .form-control,
+.so-form-group .form-select {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+/* Consistent small (error/help) styling and reserved space to prevent shifting */
+.so-form-group small.text-danger {
+	font-size: 12px;
+	line-height: 16px;
+	display: block;
+	margin-top: 4px;
+	min-height: 18px; /* reserve space even when empty */
+	color: #dc3545; /* keep theme error color */
+}
+
+/* Make position-relative containers align correctly and reserve space for icon button */
+.position-relative {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+/* Reserve padding on input so right-aligned icon/button doesn't overlap text */
+.position-relative .form-control {
+	padding-right: 40px;
+}
+
+/* Style the icon button to match theme and not affect layout */
+.position-relative .btn.position-absolute {
+	position: absolute;
+	right: 8px;
+	top: 50%;
+	transform: translateY(-50%);
+	padding: 4px;
+	border: none;
+	background: transparent;
+	color: rgba(0,0,0,0.45); /* muted theme */
+}
+
+/* Small tweaks for radio/button rows to keep height consistent */
+.d-flex.align-items-center.gap-3 { gap: 8px; }
+.d-flex .form-check { margin: 0; }

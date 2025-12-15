@@ -1,0 +1,31 @@
+/* Make table body text smaller */
+.item-table-inner .item-table-body td {
+    font-size: 0.75rem;
+    /* or 0.8rem depending on your design */
+    line-height: 1.2;
+}
+
+/* Slightly smaller input text as well */
+.item-table-inner .item-input-sm {
+    font-size: 0.75rem;
+    padding-top: 0.1rem;
+    padding-bottom: 0.1rem;
+}
+
+/* Add clear horizontal lines between rows */
+.item-table-inner.item-table-bordered tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+/* Last row (footer) a bit stronger */
+.item-table-inner .item-table-footer {
+    border-top: 2px solid #cbd5f5;
+    background-color: #f8fafc;
+}
+
+/* Reduce vertical padding so it stays compact */
+.item-table-inner td,
+.item-table-inner th {
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+}
