@@ -60,6 +60,7 @@ import AddReportAndAnalytics from '../pages/Society/ReportsAndAnalytics/AddRepor
 import Reporting from '../pages/Reporting/Reporting';
 import CreateReport from '../pages/Reporting/CreateReport/CreateReport';
 import CreateCustomReport from '../pages/Reporting/CreateReport/CreateCustomReport';
+import FinalReport from '../pages/Reporting/FinalReport/FinalReport';
 
 function AppRouter() {
   return (
@@ -172,6 +173,7 @@ function AppRouter() {
       <Route path="/reporting/create-report" element={<CreateReport />} />
       <Route path="/reporting/create-custom-report/profitloss" element={<CreateCustomReport />} />
 
+      <Route path="/reporting/final-report" element={<FinalReport />} />
 
 
     </Routes>

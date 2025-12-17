@@ -100,8 +100,9 @@ const CurrencyAdjustments = () => {
                   </label>
                   <select
                     name="currency"
-                    className=" form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                    className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                     value={form.currency}
+                    style={{ fontSize: 12 }}
                     onChange={handleChange}
                   >
                     <option value="" disabled>
@@ -120,6 +121,7 @@ const CurrencyAdjustments = () => {
                     type="date"
                     name="dateOfAdjustment"
                     className="form-control so-control border"
+                    style={{ fontSize: 12 }}
                     value={form.dateOfAdjustment}
                     onChange={handleChange}
                   />
@@ -154,10 +156,11 @@ const CurrencyAdjustments = () => {
             </div>
 
             <div className="modal-footer-custom">
-              <button type="button" className="btn btn-primary" onClick={handleContinue}>
+              <button type="button" className="btn px-4"
+                style={{ background: '#7991BB', color: '#FFF' }} onClick={handleContinue}>
                 Continue
               </button>
-              <button type="button" className="btn btn-secondary" onClick={handleCancel}>
+              <button type="button" className="btn border me-3 px-4" onClick={handleCancel}>
                 Cancel
               </button>
             </div>

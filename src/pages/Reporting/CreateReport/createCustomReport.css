@@ -1,0 +1,11 @@
+.sales-orders-page .custom-report-steps {
+    padding: 65px 1.8rem 24px 1.8rem;
+    background: #f5f7fb;
+    /* height: 100vh ; */
+}
+
+.btn-share-active {
+    background-color: #7991bb;
+    border-color: #7991bb;
+    color: #fff;
+}

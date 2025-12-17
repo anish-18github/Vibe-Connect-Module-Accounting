@@ -1,0 +1,9 @@
+.so-select-sm {
+    font-size: 12px;
+    /* adjust as needed */
+}
+
+.so-select-sm option,
+.so-select-sm optgroup {
+    font-size: 12px;
+}

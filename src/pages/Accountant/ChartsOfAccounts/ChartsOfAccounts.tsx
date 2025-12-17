@@ -109,6 +109,7 @@ const ChartsOfAccounts = () => {
                       name="accountType"
                       className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                       value={form.accountType}
+                      style={{ fontSize: 12 }}
                       onChange={handleChange}
                     >
                       <option value="" disabled>
@@ -131,6 +132,7 @@ const ChartsOfAccounts = () => {
                       type="text"
                       name="accountName"
                       className="form-control so-control border"
+                      style={{ fontSize: 12 }}
                       value={form.accountName}
                       onChange={handleChange}
                     />
@@ -150,6 +152,7 @@ const ChartsOfAccounts = () => {
                       type="text"
                       name="accountCode"
                       className="form-control so-control border"
+                      style={{ fontSize: 12 }}
                       value={form.accountCode}
                       onChange={handleChange}
                     />
@@ -164,6 +167,7 @@ const ChartsOfAccounts = () => {
                       name="description"
                       className="form-control so-control subject-textarea border"
                       value={form.description}
+                      style={{ fontSize: 12 }}
                       onChange={handleChange}
                       rows={3}
                     />
@@ -190,12 +194,12 @@ const ChartsOfAccounts = () => {
             </div>
 
             <div className="modal-footer-custom">
-              <button type="button" className="btn btn-primary px-4" onClick={handleContinue}>
+              <button type="button" className="btn px-4" style={{ background: '#7991BB', color: '#FFF' }} onClick={handleContinue}>
                 Continue
               </button>
               <button
                 type="button"
-                className="btn btn-outline-secondary px-4"
+                className="btn border me-3 px-4"
                 onClick={handleCancel}
               >
                 Cancel

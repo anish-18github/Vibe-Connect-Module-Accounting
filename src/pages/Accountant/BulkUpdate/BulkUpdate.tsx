@@ -280,6 +280,7 @@ const BulkUpdate = () => {
                         name="account"
                         className="form-control so-control border"
                         value={form.account}
+                        style={{ fontSize: 12 }}
                         onChange={handleChange}
                       >
                         <option value="">Select account</option>
@@ -297,6 +298,7 @@ const BulkUpdate = () => {
                       <select
                         name="contact"
                         className="form-control so-control border"
+                        style={{ fontSize: 12 }}
                         value={form.contact}
                         onChange={handleChange}
                       >
@@ -317,6 +319,7 @@ const BulkUpdate = () => {
                           type="date"
                           name="dateFrom"
                           className="form-control so-control border"
+                          style={{ fontSize: 12 }}
                           value={form.dateFrom}
                           onChange={handleChange}
                         />
@@ -325,6 +328,7 @@ const BulkUpdate = () => {
                           type="date"
                           name="dateTo"
                           className="form-control so-control border"
+                          style={{ fontSize: 12 }}
                           value={form.dateTo}
                           onChange={handleChange}
                         />
@@ -340,6 +344,7 @@ const BulkUpdate = () => {
                           type="number"
                           name="amountFrom"
                           className="form-control so-control border"
+                          style={{ fontSize: 12 }}
                           placeholder="From"
                           value={form.amountFrom}
                           onChange={handleChange}
@@ -349,6 +354,7 @@ const BulkUpdate = () => {
                           type="number"
                           name="amountTo"
                           className="form-control so-control border"
+                          style={{ fontSize: 12 }}
                           placeholder="To"
                           value={form.amountTo}
                           onChange={handleChange}
@@ -361,10 +367,11 @@ const BulkUpdate = () => {
             </div>
 
             <div className="modal-footer-custom">
-              <button type="button" className="btn btn-secondary" onClick={handleCancel}>
+              <button type="button" className="btn border me-3 px-4" onClick={handleCancel}>
                 Cancel
               </button>
-              <button type="button" className="btn btn-primary" onClick={handleContinue}>
+              <button type="button" className="btn px-4" style={{ background: '#7991BB', color: '#FFF' }}
+                onClick={handleContinue}>
                 Continue
               </button>
             </div>

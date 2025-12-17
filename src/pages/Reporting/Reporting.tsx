@@ -46,7 +46,9 @@ const Reporting = () => {
         // redirect based on selected account type
         // adjust routes as needed
         if (accountType === 'Profit and Loss') {
-            navigate('/reporting/create-custom-report/profitloss');
+            navigate('/reporting/create-custom-report/profitloss', {
+                state: { reportType: accountType }
+            });
         } else if (accountType === 'Expense Report') {
             navigate('/reporting/custom/expense');
         } else if (accountType === 'Balance Sheet') {
@@ -101,13 +103,14 @@ const Reporting = () => {
 
                                 <div className="row g-3 align-items-center mb-2">
                                     <div className="col-12 col-md-6">
-                                        <div className="form-inline-group">
+                                        <div className="so-form-group form-inline-group">
                                             <label className="so-label text-sm text-muted-foreground fw-bold">
                                                 Account Type
                                             </label>
                                             <select
                                                 name="accountType"
-                                                className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                                                className="form-select so-control"
+                                                style={{ fontSize: 12 }}
                                                 value={accountType}
                                                 onChange={(e) => setAccountType(e.target.value)}
                                             >
