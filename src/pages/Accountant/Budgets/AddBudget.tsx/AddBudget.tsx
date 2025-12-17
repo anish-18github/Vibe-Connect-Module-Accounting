@@ -96,6 +96,7 @@ export default function AddBudget() {
   const [showIncomeGroup, setShowIncomeGroup] = useState(true);
   const [showOtherIncomeGroup, setShowOtherIncomeGroup] = useState(false);
   const [selectedIncomeOptions, setSelectedIncomeOptions] = useState<string[]>([]);
+  const [incomeSnapshot, setIncomeSnapshot] = useState<string[]>([]);
 
 
 
@@ -103,21 +104,26 @@ export default function AddBudget() {
   const [showExpenseGroup, setShowExpenseGroup] = useState(true);
   const [showOtherExpenseGroup, setShowOtherExpenseGroup] = useState(false);
   const [selectedExpenseOptions, setSelectedExpenseOptions] = useState<string[]>([]);
+  const [expenseSnapshot, setExpenseSnapshot] = useState<string[]>([]);
 
   // Asset modal
   const [showAssetModal, setShowAssetModal] = useState(false);
   const [expandedAssetGroups, setExpandedAssetGroups] = useState<string[]>([]);
   const [selectedAssetOptions, setSelectedAssetOptions] = useState<string[]>([]);
+  const [assetSnapshot, setAssetSnapshot] = useState<string[]>([]);
 
   // Liability modal
   const [showLiabilityModal, setShowLiabilityModal] = useState(false);
   const [expandedLiabilityGroups, setExpandedLiabilityGroups] = useState<string[]>([]);
   const [selectedLiabilityOptions, setSelectedLiabilityOptions] = useState<string[]>([]);
+  const [liabilitySnapshot, setLiabilitySnapshot] = useState<string[]>([]);
 
   // Equity modal
   const [showEquityModal, setShowEquityModal] = useState(false);
   const [selectedEquityOptions, setSelectedEquityOptions] = useState<string[]>([]);
   const [showEquityGroup, setShowEquityGroup] = useState(true);
+  const [equitySnapshot, setEquitySnapshot] = useState<string[]>([]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -211,6 +217,11 @@ export default function AddBudget() {
     }));
   };
 
+  const openIncomeModal = () => {
+    setIncomeSnapshot(selectedIncomeOptions); // or a copy: [...selectedIncomeOptions]
+    setShowIncomeModal(true);
+  };
+
   const closeIncomeModal = () => {
     applyIncomeSelection();
     setShowIncomeModal(false);
@@ -228,6 +239,11 @@ export default function AddBudget() {
       ...prev,
       expenseAccount: selectedExpenseOptions.join(', '),
     }));
+  };
+
+  const openExpenseModal = () => {
+    setExpenseSnapshot(selectedExpenseOptions); // backup current selection
+    setShowExpenseModal(true);
   };
 
   const closeExpenseModal = () => {
@@ -300,6 +316,21 @@ export default function AddBudget() {
     }));
   };
 
+  const openAssetModal = () => {
+    // hydrate from form string if needed
+    const fromForm = form.assetAccount
+      ? form.assetAccount
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+      : [];
+
+    setSelectedAssetOptions(fromForm);
+    setAssetSnapshot(fromForm);      // snapshot for Cancel
+    setShowAssetModal(true);
+  };
+
+
   const closeAssetModal = () => {
     applyAssetSelection();
     setShowAssetModal(false);
@@ -357,6 +388,21 @@ export default function AddBudget() {
     }));
   };
 
+  const openLiabilityModal = () => {
+    const fromForm = form.liabilityAccount
+      ? form.liabilityAccount
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+      : [];
+
+    setSelectedLiabilityOptions(fromForm);
+    setLiabilitySnapshot(fromForm);   // backup for Cancel
+    setShowLiabilityModal(true);
+  };
+
+
+
   const closeLiabilityModal = () => {
     applyLiabilitySelection();
     setShowLiabilityModal(false);
@@ -376,6 +422,21 @@ export default function AddBudget() {
       equityAccount: selectedEquityOptions.join(', '),
     }));
   };
+
+  const openEquityModal = () => {
+    const fromForm = form.equityAccount
+      ? form.equityAccount
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+      : [];
+
+    setSelectedEquityOptions(fromForm);
+    setEquitySnapshot(fromForm);   // backup for Cancel
+    setShowEquityModal(true);
+  };
+
+
 
   const closeEquityModal = () => {
     applyEquitySelection();
@@ -472,15 +533,13 @@ export default function AddBudget() {
                     Income Accounts:
                   </label>
 
-                  {/* Selected income pills box */}
-                  <div
-                    className="border rounded-top px-2 pt-2 pb-1 bg-white"
-                    style={{ minHeight: '40px', borderBottom: 'none' }}
-                  >
-                    {selectedIncomeOptions.length === 0 ? (
-                      <span className="text-muted small">No accounts selected</span>
-                    ) : (
-                      selectedIncomeOptions.map((name) => (
+                  {/* Show box ONLY after at least one account is selected */}
+                  {selectedIncomeOptions.length > 0 && (
+                    <div
+                      className="border rounded-top px-2 pt-2 pb-1 bg-white"
+                      style={{ minHeight: '40px', borderBottom: 'none' }}
+                    >
+                      {selectedIncomeOptions.map((name) => (
                         <span
                           key={name}
                           className="badge bg-light text-dark border me-2 mb-1"
@@ -488,19 +547,20 @@ export default function AddBudget() {
                         >
                           {name}
                         </span>
-                      ))
-                    )}
-                  </div>
+                      ))}
+                    </div>
+                  )}
 
                   {/* Helper row with dotted border */}
                   <button
                     type="button"
                     className="w-100 text-start bg-white"
-                    onClick={() => setShowIncomeModal(true)}
+
+                    onClick={openIncomeModal}
                     style={{
                       border: '1px dashed #4a7cc2',
-                      borderTopLeftRadius: 0,
-                      borderTopRightRadius: 0,
+                      borderTopLeftRadius: selectedIncomeOptions.length > 0 ? 0 : 4,
+                      borderTopRightRadius: selectedIncomeOptions.length > 0 ? 0 : 4,
                       borderRadius: 7,
                       padding: '6px 10px',
                       fontSize: '13px',
@@ -514,20 +574,19 @@ export default function AddBudget() {
                 </div>
               </div>
 
+
               <div className="col-lg-6">
                 <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Expense Accounts:
                   </label>
 
-                  <div
-                    className="border rounded-top px-2 pt-2 pb-1 bg-white"
-                    style={{ minHeight: '40px', borderBottom: 'none' }}
-                  >
-                    {selectedExpenseOptions.length === 0 ? (
-                      <span className="text-muted small">No accounts selected</span>
-                    ) : (
-                      selectedExpenseOptions.map((name) => (
+                  {selectedExpenseOptions.length > 0 && (
+                    <div
+                      className="border rounded-top px-2 pt-2 pb-1 bg-white"
+                      style={{ minHeight: '40px', borderBottom: 'none' }}
+                    >
+                      {selectedExpenseOptions.map((name) => (
                         <span
                           key={name}
                           className="badge bg-light text-dark border me-2 mb-1"
@@ -535,18 +594,19 @@ export default function AddBudget() {
                         >
                           {name}
                         </span>
-                      ))
-                    )}
-                  </div>
+                      ))}
+                    </div>
+                  )}
 
                   <button
                     type="button"
                     className="w-100 text-start bg-white"
-                    onClick={() => setShowExpenseModal(true)}
+                    onClick={openExpenseModal}
+                    // onClick={() => setShowExpenseModal(true)}
                     style={{
                       border: '1px dashed #4a7cc2',
-                      borderTopLeftRadius: 0,
-                      borderTopRightRadius: 0,
+                      borderTopLeftRadius: selectedExpenseOptions.length > 0 ? 0 : 4,
+                      borderTopRightRadius: selectedExpenseOptions.length > 0 ? 0 : 4,
                       borderRadius: 7,
                       padding: '6px 10px',
                       fontSize: '13px',
@@ -559,6 +619,7 @@ export default function AddBudget() {
                   </button>
                 </div>
               </div>
+
 
             </div>
           </div>
@@ -603,26 +664,58 @@ export default function AddBudget() {
                     <label className="so-label text-sm text-muted-foreground fw-bold">
                       Asset Accounts:
                     </label>
-                    <input
-                      type="text"
-                      name="assetAccount"
-                      className="form-control so-control"
-                      value={form.assetAccount}
-                      readOnly
-                      onClick={() => {
-                        setSelectedAssetOptions(
-                          form.assetAccount
-                            ? form.assetAccount
-                              .split(',')
-                              .map((s) => s.trim())
-                              .filter(Boolean)
-                            : [],
-                        );
-                        setShowAssetModal(true);
+
+                    {/* Show only after selection */}
+                    {selectedAssetOptions.length > 0 && (
+                      <div
+                        className="border rounded-top px-2 pt-2 pb-1 bg-white"
+                        style={{ minHeight: '40px', borderBottom: 'none' }}
+                      >
+                        {selectedAssetOptions.map((name) => (
+                          <span
+                            key={name}
+                            className="badge bg-light text-dark border me-2 mb-1"
+                            style={{ fontWeight: 400 }}
+                          >
+                            {name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      className="w-100 text-start bg-white"
+                      onClick={openAssetModal}
+                      // onClick={() => {
+                      //   // if you still store string in form.assetAccount and want to hydrate array:
+                      //   setSelectedAssetOptions(
+                      //     form.assetAccount
+                      //       ? form.assetAccount
+                      //         .split(',')
+                      //         .map((s) => s.trim())
+                      //         .filter(Boolean)
+                      //       : [],
+                      //   );
+                      //   setShowAssetModal(true);
+                      // }}
+                      style={{
+                        border: '1px dashed #4a7cc2',
+                        borderTopLeftRadius: selectedAssetOptions.length > 0 ? 0 : 4,
+                        borderTopRightRadius: selectedAssetOptions.length > 0 ? 0 : 4,
+                        borderRadius: 7,
+                        padding: '6px 10px',
+                        fontSize: '13px',
+                        color: '#4a7cc2',
                       }}
-                    />
+                    >
+                      {selectedAssetOptions.length === 0
+                        ? 'Add accounts'
+                        : 'Add or Remove Accounts'}
+                    </button>
                   </div>
                 </div>
+
 
                 {/* Liability */}
                 <div className="col-lg-4">
@@ -630,26 +723,56 @@ export default function AddBudget() {
                     <label className="so-label text-sm text-muted-foreground fw-bold">
                       Liability Accounts:
                     </label>
-                    <input
-                      type="text"
-                      name="liabilityAccount"
-                      className="form-control so-control"
-                      value={form.liabilityAccount}
-                      readOnly
-                      onClick={() => {
-                        setSelectedLiabilityOptions(
-                          form.liabilityAccount
-                            ? form.liabilityAccount
-                              .split(',')
-                              .map((s) => s.trim())
-                              .filter(Boolean)
-                            : [],
-                        );
-                        setShowLiabilityModal(true);
+
+                    {selectedLiabilityOptions.length > 0 && (
+                      <div
+                        className="border rounded-top px-2 pt-2 pb-1 bg-white"
+                        style={{ minHeight: '40px', borderBottom: 'none' }}
+                      >
+                        {selectedLiabilityOptions.map((name) => (
+                          <span
+                            key={name}
+                            className="badge bg-light text-dark border me-2 mb-1"
+                            style={{ fontWeight: 400 }}
+                          >
+                            {name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      className="w-100 text-start bg-white"
+                      onClick={openLiabilityModal}
+                      // onClick={() => {
+                      //   setSelectedLiabilityOptions(
+                      //     form.liabilityAccount
+                      //       ? form.liabilityAccount
+                      //         .split(',')
+                      //         .map((s) => s.trim())
+                      //         .filter(Boolean)
+                      //       : [],
+                      //   );
+                      //   setShowLiabilityModal(true);
+                      // }}
+                      style={{
+                        border: '1px dashed #4a7cc2',
+                        borderTopLeftRadius: selectedLiabilityOptions.length > 0 ? 0 : 4,
+                        borderTopRightRadius: selectedLiabilityOptions.length > 0 ? 0 : 4,
+                        borderRadius: 7,
+                        padding: '6px 10px',
+                        fontSize: '13px',
+                        color: '#4a7cc2',
                       }}
-                    />
+                    >
+                      {selectedLiabilityOptions.length === 0
+                        ? 'Add accounts'
+                        : 'Add or Remove Accounts'}
+                    </button>
                   </div>
                 </div>
+
 
                 {/* Equity */}
                 <div className="col-lg-4">
@@ -657,26 +780,56 @@ export default function AddBudget() {
                     <label className="so-label text-sm text-muted-foreground fw-bold">
                       Equity Accounts:
                     </label>
-                    <input
-                      type="text"
-                      name="equityAccount"
-                      className="form-control so-control"
-                      value={form.equityAccount}
-                      readOnly
-                      onClick={() => {
-                        setSelectedEquityOptions(
-                          form.equityAccount
-                            ? form.equityAccount
-                              .split(',')
-                              .map((s) => s.trim())
-                              .filter(Boolean)
-                            : [],
-                        );
-                        setShowEquityModal(true);
+
+                    {selectedEquityOptions.length > 0 && (
+                      <div
+                        className="border rounded-top px-2 pt-2 pb-1 bg-white"
+                        style={{ minHeight: '40px', borderBottom: 'none' }}
+                      >
+                        {selectedEquityOptions.map((name) => (
+                          <span
+                            key={name}
+                            className="badge bg-light text-dark border me-2 mb-1"
+                            style={{ fontWeight: 400 }}
+                          >
+                            {name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      className="w-100 text-start bg-white"
+                      onClick={openEquityModal}
+                      // onClick={() => {
+                      //   setSelectedLiabilityOptions(
+                      //     form.liabilityAccount
+                      //       ? form.liabilityAccount
+                      //         .split(',')
+                      //         .map((s) => s.trim())
+                      //         .filter(Boolean)
+                      //       : [],
+                      //   );
+                      //   setShowLiabilityModal(true);
+                      // }}
+                      style={{
+                        border: '1px dashed #4a7cc2',
+                        borderTopLeftRadius: selectedEquityOptions.length > 0 ? 0 : 4,
+                        borderTopRightRadius: selectedEquityOptions.length > 0 ? 0 : 4,
+                        borderRadius: 7,
+                        padding: '6px 10px',
+                        fontSize: '13px',
+                        color: '#4a7cc2',
                       }}
-                    />
+                    >
+                      {selectedEquityOptions.length === 0
+                        ? 'Add accounts'
+                        : 'Add or Remove Accounts'}
+                    </button>
                   </div>
                 </div>
+
               </div>
             )}
           </div>
@@ -847,11 +1000,33 @@ export default function AddBudget() {
             </div>
 
             {/* Footer */}
-            <div className="d-flex justify-content-end px-3 py-2 border-top">
-              <button type="button" className="btn btn-sm border px-3" onClick={closeIncomeModal}>
-                Close
+            <div className="d-flex justify-content-center gap-2 px-3 py-2 border-top">
+              {/* Cancel: restore snapshot + close */}
+              <button
+                type="button"
+                className="btn btn-sm border px-3"
+                onClick={() => {
+                  setSelectedIncomeOptions(incomeSnapshot);  // revert changes
+                  setShowIncomeModal(false);                 // close modal
+                }}
+              >
+                Cancel
+              </button>
+
+              {/* Update: apply + close */}
+              <button
+                type="button"
+                className="btn btn-sm px-3"
+                style={{ background: '#7991BB', color: '#FFF' }}
+                onClick={() => {
+                  applyIncomeSelection();   // keeps selectedIncomeOptions as-is, syncs form.incomeAccount
+                  setShowIncomeModal(false);
+                }}
+              >
+                Update
               </button>
             </div>
+
           </div>
         </div>
       )}
@@ -1036,11 +1211,33 @@ export default function AddBudget() {
             </div>
 
             {/* Footer */}
-            <div className="d-flex justify-content-end px-3 py-2 border-top">
-              <button type="button" className="btn btn-sm border px-3" onClick={closeExpenseModal}>
-                Close
+            <div className="d-flex justify-content-center gap-2 px-3 py-2 border-top">
+              {/* Cancel: restore snapshot + close */}
+              <button
+                type="button"
+                className="btn btn-sm border px-3"
+                onClick={() => {
+                  setSelectedExpenseOptions(expenseSnapshot);
+                  setShowExpenseModal(false);
+                }}
+              >
+                Cancel
+              </button>
+
+              {/* Update: apply + close */}
+              <button
+                type="button"
+                className="btn btn-sm px-3"
+                style={{ background: '#7991BB', color: '#FFF' }}
+                onClick={() => {
+                  applyExpenseSelection();  // your existing function that updates form.expenseAccount
+                  setShowExpenseModal(false);
+                }}
+              >
+                Update
               </button>
             </div>
+
           </div>
         </div>
       )}
@@ -1224,11 +1421,31 @@ export default function AddBudget() {
             </div>
 
             {/* Footer */}
-            <div className="d-flex justify-content-end px-3 py-2 border-top">
-              <button type="button" className="btn btn-sm border px-3" onClick={closeAssetModal}>
-                Close
+            <div className="d-flex justify-content-center gap-2 px-3 py-2 border-top">
+              <button
+                type="button"
+                className="btn btn-sm border px-3"
+                onClick={() => {
+                  setSelectedAssetOptions(assetSnapshot);
+                  setShowAssetModal(false);
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-sm px-3"
+                style={{ background: '#7991BB', color: '#FFF' }}
+                onClick={() => {
+                  applyAssetSelection();   // your function that sets form.assetAccount
+                  setShowAssetModal(false);
+                }}
+              >
+                Update
               </button>
             </div>
+
           </div>
         </div>
       )}
@@ -1332,15 +1549,32 @@ export default function AddBudget() {
             </div>
 
             {/* Footer */}
-            <div className="d-flex justify-content-end px-3 py-2 border-top">
+            <div className="d-flex justify-content-center gap-2 px-3 py-2 border-top">
               <button
                 type="button"
                 className="btn btn-sm border px-3"
-                onClick={closeLiabilityModal}
+                onClick={() => {
+                  setSelectedLiabilityOptions(liabilitySnapshot);
+                  setShowLiabilityModal(false);
+                }}
               >
-                Close
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-sm px-3"
+                style={{ background: '#7991BB', color: '#FFF' }}
+                onClick={() => {
+                  applyLiabilitySelection(); // sets form.liabilityAccount from selectedLiabilityOptions
+                  setShowLiabilityModal(false);
+                }}
+              >
+                Update
               </button>
             </div>
+
+
           </div>
         </div>
       )}
@@ -1436,11 +1670,32 @@ export default function AddBudget() {
             </div>
 
             {/* Footer */}
-            <div className="d-flex justify-content-end px-3 py-2 border-top">
-              <button type="button" className="btn btn-sm border px-3" onClick={closeEquityModal}>
-                Close
+            <div className="d-flex justify-content-center gap-2 px-3 py-2 border-top">
+              <button
+                type="button"
+                className="btn btn-sm border px-3"
+                onClick={() => {
+                  setSelectedEquityOptions(equitySnapshot);
+                  setShowEquityModal(false);
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-sm px-3"
+                style={{ background: '#7991BB', color: '#FFF' }}
+                onClick={() => {
+                  applyEquitySelection(); // sets form.equityAccount from selectedEquityOptions
+                  setShowEquityModal(false);
+                }}
+              >
+                Update
               </button>
             </div>
+
+
           </div>
         </div>
       )}
