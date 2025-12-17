@@ -4,6 +4,8 @@ import { useToast, Toast } from "../../../../components/Toast/Toast";
 import Header from "../../../../components/Header/Header";
 import { FeatherUpload } from "../../../Sales/Customers/AddCustomer/Add";
 
+import './MMF.css'
+
 interface FormDataType {
     profile: Record<string, any>;
     contact: Record<string, any>;
@@ -77,7 +79,7 @@ const MemberManagementForm = () => {
                 <form className="sales-order-form" onSubmit={handleSubmit}>
                     {/* ===== Owner / Resident Profile ===== */}
                     <div className="so-details-card mx-5 mb-3">
-                        <h1 className="sales-order-title mb-3">Owner/Resident Profile</h1>
+                        <h1 className="sales-order-title mb-3" style={{ fontSize: 15 }}>Owner/Resident Profile</h1>
 
                         <div className="row g-3 three-column-form">
                             {/* Col 1 */}
@@ -254,7 +256,7 @@ const MemberManagementForm = () => {
 
                             {/* Col 3 */}
                             <div className="col-lg-4">
-                                <div className="so-form-group mb-4">
+                                <div className="so-form-group mb-5">
                                     <label className="so-label text-sm text-muted-foreground fw-bold">
                                         Email Address:
                                     </label>
@@ -265,20 +267,30 @@ const MemberManagementForm = () => {
                                         onChange={handleChange}
                                     />
                                 </div>
+                                <div className="so-form-group mb-4">
+                                    <div
+                                        className="d-flex align-items-center"
+                                        style={{ flexWrap: 'nowrap' }}
+                                    >
+                                        <label
+                                            className="so-label text-sm text-muted-foreground fw-bold mb-0 me-2"
+                                            style={{ whiteSpace: 'nowrap', flex: '0 0 auto' }}
+                                        >
+                                            KYC Documents:
+                                        </label>
 
-                                <div className="so-form-group mb-4 d-flex align-items-start">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold me-3 mb-0">
-                                        KYC Documents:
-                                    </label>
-                                    <div className="form-check form-switch">
-                                        <input
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            name="contact.kyc"
-                                            onChange={handleChange}
-                                        />
+                                        <div className="form-check form-switch m-0">
+                                            <input
+                                                className="form-check-input"
+                                                type="checkbox"
+                                                name="contact.kyc"
+                                                onChange={handleChange}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
+
+
                             </div>
                         </div>
                     </div>
@@ -295,19 +307,29 @@ const MemberManagementForm = () => {
                         <div className="row g-3 three-column-form">
                             {/* Col 1 */}
                             <div className="col-lg-4">
-                                <div className="so-form-group mb-4 d-flex align-items-start">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold mb-0 me-3">
-                                        Auto Bill Generator:
-                                    </label>
-                                    <div className="form-check form-switch">
-                                        <input
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            name="billing.autoBill"
-                                            onChange={handleChange}
-                                        />
+                                <div className="so-form-group mb-4" style={{ paddingTop: 35 }}>
+                                    <div
+                                        className="d-flex align-items-center"
+                                        style={{ flexWrap: 'nowrap' }}
+                                    >
+                                        <label
+                                            className="so-label text-sm text-muted-foreground fw-bold mb-0 me-2"
+                                            style={{ whiteSpace: 'nowrap', flex: '0 0 auto' }}
+                                        >
+                                            Auto Bill Generator:
+                                        </label>
+
+                                        <div className="form-check form-switch m-0">
+                                            <input
+                                                className="form-check-input"
+                                                type="checkbox"
+                                                name="billing.autoBill"
+                                                onChange={handleChange}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
+
 
                                 <div className="so-form-group mb-4">
                                     <label className="so-label text-sm text-muted-foreground fw-bold">
@@ -421,7 +443,7 @@ const MemberManagementForm = () => {
                         </div>
 
                         {/* Last row: financial note / auditor / upload */}
-                        <div className="row g-3 mt-2">
+                        <div className="row g-3 ">
                             <div className="col-lg-4">
                                 <div className="so-form-group mb-2">
                                     <label className="so-label text-sm text-muted-foreground fw-bold">
@@ -699,6 +721,18 @@ const MemberManagementForm = () => {
                                         placeholder="0.00"
                                     />
                                 </div>
+
+                                <div className="so-form-group mb-4">
+                                    <label className="so-label text-sm text-muted-foreground fw-bold">
+                                        Status:
+                                    </label>
+                                    <select
+                                        name="maint.status"
+                                        className="form-select so-control"
+                                    >
+                                        <option value="">Select</option>
+                                    </select>
+                                </div>
                             </div>
 
                             {/* Col 3 */}
@@ -725,17 +759,6 @@ const MemberManagementForm = () => {
                                     />
                                 </div>
 
-                                <div className="so-form-group mb-4">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Status:
-                                    </label>
-                                    <select
-                                        name="maint.status"
-                                        className="form-select so-control"
-                                    >
-                                        <option value="">Select</option>
-                                    </select>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -850,31 +873,50 @@ const MemberManagementForm = () => {
                         <div className="row g-3 three-column-form">
                             {/* Col 1 */}
                             <div className="col-lg-4">
-                                <div className="so-form-group mb-4 d-flex align-items-start">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold mb-0 me-3">
-                                        Auto Generated:
-                                    </label>
-                                    <div className="form-check form-switch">
-                                        <input
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            name="doc.autoGenerated"
-                                        />
+                                <div className="so-form-group mb-5" style={{ paddingTop: 30 }}>
+                                    <div
+                                        className="d-flex align-items-center"
+                                        style={{ flexWrap: 'nowrap' }}
+                                    >
+                                        <label
+                                            className="so-label text-sm text-muted-foreground fw-bold mb-0 me-2"
+                                            style={{ whiteSpace: 'nowrap', flex: '0 0 auto' }}
+                                        >
+                                            Auto Generated:
+                                        </label>
+
+                                        <div className="form-check form-switch m-0">
+                                            <input
+                                                className="form-check-input"
+                                                type="checkbox"
+                                                name="doc.autoGenerated"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="so-form-group mb-4 d-flex align-items-start">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold mb-0 me-3">
-                                        Approval Required:
-                                    </label>
-                                    <div className="form-check form-switch">
-                                        <input
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            name="doc.approvalRequired"
-                                        />
+                                <div className="so-form-group mb-4" style={{ paddingTop: 15 }}>
+                                    <div
+                                        className="d-flex align-items-center"
+                                        style={{ flexWrap: 'nowrap' }}
+                                    >
+                                        <label
+                                            className="so-label text-sm text-muted-foreground fw-bold mb-0 me-2"
+                                            style={{ whiteSpace: 'nowrap', flex: '0 0 auto' }}
+                                        >
+                                            Approval Required:
+                                        </label>
+
+                                        <div className="form-check form-switch m-0">
+                                            <input
+                                                className="form-check-input"
+                                                type="checkbox"
+                                                name="doc.approvalRequired"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
+
 
                                 <div className="so-form-group mb-4">
                                     <label className="so-label text-sm text-muted-foreground fw-bold">
@@ -1059,9 +1101,18 @@ const MemberManagementForm = () => {
 
                     {/* Submit button */}
                     <div className="d-flex justify-content-center my-4">
+
+                        <button
+                            type="button"
+                            className="btn border me-3 px-4"
+                            onClick={() => navigate(-1)}
+                        >
+                            Cancel
+                        </button>
+
                         <button
                             type="submit"
-                            className="btn px-5"
+                            className="btn px-4"
                             style={{ background: "#7991BB", color: "#FFFFFF" }}
                         >
                             Submit

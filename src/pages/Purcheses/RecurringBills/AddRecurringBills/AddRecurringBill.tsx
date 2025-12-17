@@ -265,6 +265,52 @@ export default function AddRecurringBill() {
                   </select>
                 </div>
 
+
+                {/* Payment Terms */}
+                <div className="so-form-group mb-4">
+                  <label className="so-label text-sm text-muted-foreground fw-bold">
+                    Payment Terms:
+                  </label>
+                  <select
+                    name="paymentTerms"
+                    className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                    value={formData.recurringBill.paymentTerms}
+                    onChange={handleChange}
+                  >
+                    <option value="" disabled>
+                      Select
+                    </option>
+                    <option value="Due on Receipt">Due on Receipt</option>
+                    <option value="Net 15">Net 15</option>
+                    <option value="Net 30">Net 30</option>
+                    <option value="Net 45">Net 45</option>
+                  </select>
+                </div>
+
+              </div>
+
+              {/* COLUMN 3: Accounts Payable, Payment Terms */}
+              <div className="col-lg-4">
+                {/* Accounts Payable */}
+                <div className="so-form-group mb-4">
+                  <label className="so-label text-sm text-muted-foreground fw-bold">
+                    Accounts Payable:
+                  </label>
+                  <select
+                    name="accountsPayable"
+                    className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                    value={formData.recurringBill.accountsPayable}
+                    onChange={handleChange}
+                  >
+                    <option value="" disabled>
+                      Select account
+                    </option>
+                    <option value="AP-1">Accounts Payable 1</option>
+                    <option value="AP-2">Accounts Payable 2</option>
+                  </select>
+                </div>
+
+
                 {/* Start / End */}
                 <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
@@ -307,49 +353,7 @@ export default function AddRecurringBill() {
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* COLUMN 3: Accounts Payable, Payment Terms */}
-              <div className="col-lg-4">
-                {/* Accounts Payable */}
-                <div className="so-form-group mb-4">
-                  <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Accounts Payable:
-                  </label>
-                  <select
-                    name="accountsPayable"
-                    className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
-                    value={formData.recurringBill.accountsPayable}
-                    onChange={handleChange}
-                  >
-                    <option value="" disabled>
-                      Select account
-                    </option>
-                    <option value="AP-1">Accounts Payable 1</option>
-                    <option value="AP-2">Accounts Payable 2</option>
-                  </select>
-                </div>
-
-                {/* Payment Terms */}
-                <div className="so-form-group mb-4">
-                  <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Payment Terms:
-                  </label>
-                  <select
-                    name="paymentTerms"
-                    className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
-                    value={formData.recurringBill.paymentTerms}
-                    onChange={handleChange}
-                  >
-                    <option value="" disabled>
-                      Select
-                    </option>
-                    <option value="Due on Receipt">Due on Receipt</option>
-                    <option value="Net 15">Net 15</option>
-                    <option value="Net 30">Net 30</option>
-                    <option value="Net 45">Net 45</option>
-                  </select>
-                </div>
               </div>
             </div>
           </div>

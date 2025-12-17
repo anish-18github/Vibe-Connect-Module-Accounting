@@ -76,3 +76,10 @@
 /* Small tweaks for radio/button rows to keep height consistent */
 .d-flex.align-items-center.gap-3 { gap: 8px; }
 .d-flex .form-check { margin: 0; }
+
+
+.radio-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}

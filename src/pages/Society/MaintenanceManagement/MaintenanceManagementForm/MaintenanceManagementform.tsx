@@ -1,6 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import Header from "../../../../components/Header/Header"
 
 const MaintenanceManagementForm = () => {
+
+    const navigate = useNavigate();
+
     return (
         <>
             <Header />
@@ -87,16 +91,16 @@ const MaintenanceManagementForm = () => {
                             </div>
                         </div>
 
-                        <div className="col-lg-8">
+                        <div className="col-lg-4">
                             <div className="so-form-group mb-4">
                                 <label className="so-label fw-bold">Description</label>
                                 <input type="text" className="form-control so-control" />
                             </div>
                         </div>
 
-                        <div className="col-lg-4">
-                            <label className="so-label fw-bold">Include Penalties</label>
-                            <div className="d-flex gap-3 mt-2">
+                        <div className="so-form-group col-lg-4">
+                            <label className="so-label text-sm text-muted-foreground fw-bold">Include Penalties</label>
+                            <div className="radio-row" style={{ fontSize: 13 }}>
                                 <div className="form-check">
                                     <input type="radio" className="form-check-input" name="penalty" />
                                     <label className="form-check-label">Yes</label>
@@ -142,8 +146,8 @@ const MaintenanceManagementForm = () => {
                         </div>
 
                         <div className="col-lg-4">
-                            <label className="so-label fw-bold">Auto Apply</label>
-                            <div className="d-flex gap-3 mt-2">
+                            <label className="so-label text-sm text-muted-foreground fw-bold">Auto Apply</label>
+                            <div className="radio-row" style={{ fontSize: 13 }}>
                                 <div className="form-check">
                                     <input type="radio" className="form-check-input" name="autoApply" />
                                     <label className="form-check-label">Yes</label>
@@ -177,8 +181,8 @@ const MaintenanceManagementForm = () => {
                                 </select>
                             </div>
 
-                            <label className="so-label fw-bold">Amount Received</label>
-                            <div className="d-flex gap-3 mt-2">
+                            <label className="so-label text-sm text-muted-foreground fw-bold">Amount Received</label>
+                            <div className="radio-row" style={{ fontSize: 13 }}>
                                 <div className="form-check">
                                     <input type="radio" className="form-check-input" name="amountReceived" />
                                     <label className="form-check-label">Yes</label>
@@ -312,8 +316,9 @@ const MaintenanceManagementForm = () => {
                 <div className="so-details-card mx-5 mb-3 mt-3">
                     <h1 className="sales-order-title mb-3">Maintenance Ledger</h1>
 
-                    <div className="row g-3 three-column-form">
-                        <div className="col-lg-4">
+                    <div className="row g-5 mx-4">
+                        {/* Column 1 */}
+                        <div className="col-lg-6">
                             <div className="so-form-group mb-4">
                                 <label className="so-label fw-bold">Transaction Type</label>
                                 <select className="form-select so-control">
@@ -323,7 +328,8 @@ const MaintenanceManagementForm = () => {
                             </div>
                         </div>
 
-                        <div className="col-lg-4">
+                        {/* Column 2 */}
+                        <div className="col-lg-6">
                             <div className="so-form-group mb-4">
                                 <label className="so-label fw-bold">Balance Type</label>
                                 <select className="form-select so-control">
@@ -334,6 +340,7 @@ const MaintenanceManagementForm = () => {
                         </div>
                     </div>
                 </div>
+
 
 
 
@@ -372,8 +379,8 @@ const MaintenanceManagementForm = () => {
                         </div>
 
                         <div className="col-lg-4">
-                            <label className="so-label fw-bold">Approval By Admin</label>
-                            <div className="d-flex gap-3 mt-2">
+                            <label className="so-label text-sm text-muted-foreground fw-bold">Approval By Admin</label>
+                            <div className="radio-row" style={{ fontSize: 13 }}>
                                 <div className="form-check">
                                     <input type="radio" className="form-check-input" name="adminApproval" />
                                     <label className="form-check-label">Yes</label>

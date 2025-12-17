@@ -97,6 +97,8 @@ export default function AddBudget() {
   const [showOtherIncomeGroup, setShowOtherIncomeGroup] = useState(false);
   const [selectedIncomeOptions, setSelectedIncomeOptions] = useState<string[]>([]);
 
+
+
   // Expense modal states
   const [showExpenseGroup, setShowExpenseGroup] = useState(true);
   const [showOtherExpenseGroup, setShowOtherExpenseGroup] = useState(false);
@@ -143,35 +145,35 @@ export default function AddBudget() {
       // inside handleSubmit, just before navigate(...)
       const incomeAccounts = form.incomeAccount
         ? form.incomeAccount
-            .split(',')
-            .map((s) => s.trim())
-            .filter(Boolean)
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
         : [];
 
       const expenseAccounts = form.expenseAccount
         ? form.expenseAccount
-            .split(',')
-            .map((s) => s.trim())
-            .filter(Boolean)
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
         : [];
 
       const assetAccounts = form.assetAccount
         ? form.assetAccount
-            .split(',')
-            .map((s) => s.trim())
-            .filter(Boolean)
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
         : [];
       const liabilityAccounts = form.liabilityAccount
         ? form.liabilityAccount
-            .split(',')
-            .map((s) => s.trim())
-            .filter(Boolean)
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
         : [];
       const equityAccounts = form.equityAccount
         ? form.equityAccount
-            .split(',')
-            .map((s) => s.trim())
-            .filter(Boolean)
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
         : [];
 
       navigate('/accountant/calculate-budget', {
@@ -467,19 +469,48 @@ export default function AddBudget() {
               <div className="col-lg-6">
                 <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Income Account:
+                    Income Accounts:
                   </label>
-                  <input
-                    type="text"
-                    name="incomeAccount"
-                    className="form-control so-control"
-                    value={form.incomeAccount}
-                    readOnly
-                    onClick={() => {
-                      setSelectedIncomeOptions([]);
-                      setShowIncomeModal(true);
+
+                  {/* Selected income pills box */}
+                  <div
+                    className="border rounded-top px-2 pt-2 pb-1 bg-white"
+                    style={{ minHeight: '40px', borderBottom: 'none' }}
+                  >
+                    {selectedIncomeOptions.length === 0 ? (
+                      <span className="text-muted small">No accounts selected</span>
+                    ) : (
+                      selectedIncomeOptions.map((name) => (
+                        <span
+                          key={name}
+                          className="badge bg-light text-dark border me-2 mb-1"
+                          style={{ fontWeight: 400 }}
+                        >
+                          {name}
+                        </span>
+                      ))
+                    )}
+                  </div>
+
+                  {/* Helper row with dotted border */}
+                  <button
+                    type="button"
+                    className="w-100 text-start bg-white"
+                    onClick={() => setShowIncomeModal(true)}
+                    style={{
+                      border: '1px dashed #4a7cc2',
+                      borderTopLeftRadius: 0,
+                      borderTopRightRadius: 0,
+                      borderRadius: 7,
+                      padding: '6px 10px',
+                      fontSize: '13px',
+                      color: '#4a7cc2',
                     }}
-                  />
+                  >
+                    {selectedIncomeOptions.length === 0
+                      ? 'Add accounts'
+                      : 'Add or Remove Accounts'}
+                  </button>
                 </div>
               </div>
 
@@ -488,19 +519,47 @@ export default function AddBudget() {
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Expense Accounts:
                   </label>
-                  <input
-                    type="text"
-                    name="expenseAccount"
-                    className="form-control so-control"
-                    value={form.expenseAccount}
-                    readOnly
-                    onClick={() => {
-                      setSelectedExpenseOptions([]);
-                      setShowExpenseModal(true);
+
+                  <div
+                    className="border rounded-top px-2 pt-2 pb-1 bg-white"
+                    style={{ minHeight: '40px', borderBottom: 'none' }}
+                  >
+                    {selectedExpenseOptions.length === 0 ? (
+                      <span className="text-muted small">No accounts selected</span>
+                    ) : (
+                      selectedExpenseOptions.map((name) => (
+                        <span
+                          key={name}
+                          className="badge bg-light text-dark border me-2 mb-1"
+                          style={{ fontWeight: 400 }}
+                        >
+                          {name}
+                        </span>
+                      ))
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    className="w-100 text-start bg-white"
+                    onClick={() => setShowExpenseModal(true)}
+                    style={{
+                      border: '1px dashed #4a7cc2',
+                      borderTopLeftRadius: 0,
+                      borderTopRightRadius: 0,
+                      borderRadius: 7,
+                      padding: '6px 10px',
+                      fontSize: '13px',
+                      color: '#4a7cc2',
                     }}
-                  />
+                  >
+                    {selectedExpenseOptions.length === 0
+                      ? 'Add accounts'
+                      : 'Add or Remove Accounts'}
+                  </button>
                 </div>
               </div>
+
             </div>
           </div>
 
@@ -508,27 +567,29 @@ export default function AddBudget() {
           <div className="mx-5 mb-4">
             {/* ALE Toggle Button */}
             <div className="row mb-4">
-              <div className="col-12">
+              <div className="col-12 ">
                 <button
                   type="button"
-                  className="btn btn-link p-0 d-flex align-items-center so-expand-toggle w-100 text-start"
+                  className="btn btn-link p-0 d-flex align-items-center so-expand-toggle w-100 text-start ms-3"
                   onClick={() => setShowAle((prev) => !prev)}
                   style={{ textDecoration: 'none', color: '#5E5E5E' }}
                 >
+                  Include Asset, Liability, and Equity Account in Budget
+
                   <span
                     className="d-inline-flex align-items-center justify-content-center me-2"
                     style={{
-                      width: 16,
-                      height: 16,
+                      width: 14,
+                      height: 14,
                       borderRadius: 2,
                       border: '1px solid #4a7cc2',
                       fontSize: 12,
                       lineHeight: 1,
+                      marginLeft: 12
                     }}
                   >
                     {showAle ? '−' : '+'}
                   </span>
-                  Include Asset, Liability, and Equity Account in Budget
                 </button>
               </div>
             </div>
@@ -552,9 +613,9 @@ export default function AddBudget() {
                         setSelectedAssetOptions(
                           form.assetAccount
                             ? form.assetAccount
-                                .split(',')
-                                .map((s) => s.trim())
-                                .filter(Boolean)
+                              .split(',')
+                              .map((s) => s.trim())
+                              .filter(Boolean)
                             : [],
                         );
                         setShowAssetModal(true);
@@ -579,9 +640,9 @@ export default function AddBudget() {
                         setSelectedLiabilityOptions(
                           form.liabilityAccount
                             ? form.liabilityAccount
-                                .split(',')
-                                .map((s) => s.trim())
-                                .filter(Boolean)
+                              .split(',')
+                              .map((s) => s.trim())
+                              .filter(Boolean)
                             : [],
                         );
                         setShowLiabilityModal(true);
@@ -606,9 +667,9 @@ export default function AddBudget() {
                         setSelectedEquityOptions(
                           form.equityAccount
                             ? form.equityAccount
-                                .split(',')
-                                .map((s) => s.trim())
-                                .filter(Boolean)
+                              .split(',')
+                              .map((s) => s.trim())
+                              .filter(Boolean)
                             : [],
                         );
                         setShowEquityModal(true);

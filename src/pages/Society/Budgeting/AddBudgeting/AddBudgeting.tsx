@@ -111,8 +111,11 @@ const AddBudgeting = () => {
                         </div>
                     </div>
 
+                    {/* Divider */}
+                    <div className="mx-5" style={{ borderTop: "1px solid #e5e7eb" }} />
+
                     {/* Monthly Allocation */}
-                    <div className="so-details-card mx-5 mb-4">
+                    <div className="so-details-card mx-5 mb-4 mt-3">
                         <h2 className="sales-order-title mb-4">Monthly Allocation</h2>
 
                         <div className="row g-3 three-column-form">
@@ -171,8 +174,11 @@ const AddBudgeting = () => {
                         </div>
                     </div>
 
+                    {/* Divider */}
+                    <div className="mx-5" style={{ borderTop: "1px solid #e5e7eb" }} />
+
                     {/* Budget vs Actual */}
-                    <div className="so-details-card mx-5 mb-4">
+                    <div className="so-details-card mx-5 mb-4 mt-3">
                         <h2 className="sales-order-title mb-4">Budget vs Actual Comparison</h2>
 
                         <div className="item-card">
@@ -225,14 +231,22 @@ const AddBudgeting = () => {
                                                             placeholder="00.00"
                                                         />
                                                     </td>
+
+
                                                     <td className="d-flex align-items-center">
-                                                        <input
-                                                            type="number"
-                                                            className="form-control form-control-sm no-spinner border-0"
-                                                            placeholder="00.00"
-                                                        />
-                                                        <span className="ms-1">%</span>
-                                                    </td>
+                                                        <div className="position-relative">
+                                                            <input
+                                                                type="number"
+                                                                className="form-control form-control-sm no-spinner border-0"
+                                                                placeholder="00.00"
+                                                            />
+                                                            <span
+                                                                className="position-absolute top-50 end-0 translate-middle-y me-2 text-muted"
+                                                                style={{ pointerEvents: 'none', fontSize: 12 }}
+                                                            >
+                                                                %
+                                                            </span>
+                                                        </div>                                                   </td>
                                                 </tr>
 
                                                 {/* Row 2 */}
@@ -266,12 +280,21 @@ const AddBudgeting = () => {
                                                         />
                                                     </td>
                                                     <td className="d-flex align-items-center">
-                                                        <input
-                                                            type="number"
-                                                            className="form-control form-control-sm no-spinner border-0"
-                                                            placeholder="00.00"
-                                                        />
-                                                        <span className="ms-1">%</span>
+                                                        <div className="position-relative">
+
+                                                            <input
+                                                                type="number"
+                                                                className="form-control form-control-sm no-spinner border-0"
+                                                                placeholder="00.00"
+                                                            />
+                                                            <span
+                                                                className="position-absolute top-50 end-0 translate-middle-y me-2 text-muted"
+                                                                style={{ pointerEvents: 'none', fontSize: 12 }}
+                                                            >
+                                                                %
+                                                            </span>
+                                                        </div>
+
                                                     </td>
                                                 </tr>
 
@@ -299,6 +322,8 @@ const AddBudgeting = () => {
                                                         />
                                                     </td>
                                                     <td>
+
+
                                                         <input
                                                             type="number"
                                                             className="form-control form-control-sm no-spinner border-0"
@@ -306,12 +331,19 @@ const AddBudgeting = () => {
                                                         />
                                                     </td>
                                                     <td className="d-flex align-items-center">
-                                                        <input
-                                                            type="number"
-                                                            className="form-control form-control-sm no-spinner border-0"
-                                                            placeholder="00.00"
-                                                        />
-                                                        <span className="ms-1">%</span>
+                                                        <div className="position-relative">
+
+                                                            <input
+                                                                type="number"
+                                                                className="form-control form-control-sm no-spinner border-0"
+                                                                placeholder="00.00"
+                                                            />
+                                                            <span
+                                                                className="position-absolute top-50 end-0 translate-middle-y me-2 text-muted"
+                                                                style={{ pointerEvents: 'none', fontSize: 12 }}
+                                                            >
+                                                                %
+                                                            </span>                                                        </div>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -330,9 +362,12 @@ const AddBudgeting = () => {
                         </div>
                     </div>
 
+                    {/* Divider */}
+                    <div className="mx-5" style={{ borderTop: "1px solid #e5e7eb" }} />
+
 
                     {/* Revision History */}
-                    <div className="so-details-card mx-5 mb-4">
+                    <div className="so-details-card mx-5 mb-4 mt-3">
                         <h2 className="sales-order-title mb-4">Revision History</h2>
 
                         <div className="row g-3 three-column-form">
@@ -433,8 +468,11 @@ const AddBudgeting = () => {
                         </div>
                     </div>
 
+                    {/* Divider */}
+                    <div className="mx-5" style={{ borderTop: "1px solid #e5e7eb" }} />
+
                     {/* Reminder Notifications */}
-                    <div className="so-details-card mx-5 mb-4">
+                    <div className="so-details-card mx-5 mb-4 mt-3">
                         <h2 className="sales-order-title mb-4">Reminder Notifications</h2>
 
                         <div className="row g-3 three-column-form">
@@ -510,8 +548,11 @@ const AddBudgeting = () => {
                         </div>
                     </div>
 
+                    {/* Divider */}
+                    <div className="mx-5" style={{ borderTop: "1px solid #e5e7eb" }} />
+
                     {/* Forecasting */}
-                    <div className="so-details-card mx-5 mb-4">
+                    <div className="so-details-card mx-5 mb-4 mt-3">
                         <h2 className="sales-order-title mb-4">Forecasting</h2>
 
                         <div className="row g-3 three-column-form">

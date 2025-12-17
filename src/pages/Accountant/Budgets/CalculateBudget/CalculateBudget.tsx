@@ -298,7 +298,7 @@ const CalculateBudget: React.FC = () => {
 
               <tfoot>
                 <tr className="table-light">
-                  <th className="fw-medium text-dark">Profit / Loss</th>
+                  <th className="fw-medium text-dark" style={{ fontSize: 13 }}>Profit / Loss</th>
                   {months.map((m) => {
                     const incomeMonthTotal = incomeRows.reduce(
                       (sum, acc) => sum + (values[acc]?.[m] || 0),
@@ -312,7 +312,7 @@ const CalculateBudget: React.FC = () => {
                     const color = diff > 0 ? '#4a7cc2' : diff < 0 ? '#d9534f' : 'inherit';
 
                     return (
-                      <th key={m} className="text-end fw-medium align-middle" style={{ color }}>
+                      <th key={m} className="text-end fw-medium align-middle" style={{ color, fontSize: 13 }}>
                         {diff}
                       </th>
                     );
@@ -338,7 +338,7 @@ const CalculateBudget: React.FC = () => {
       </div>
 
       <div className="mx-5 form-actions">
-        <button className="btn btn-outline-secondary me-3 px-4 btn-sm">Cancel</button>
+        <button className="btn border me-3 px-4" onClick={() => navigate(-1)}>Cancel</button>
         <button className="btn px-4 btn-sm" style={{ background: '#7991BB', color: '#FFF' }}>
           Save
         </button>
@@ -548,7 +548,7 @@ const CalculateBudget: React.FC = () => {
 
             <tfoot>
               <tr className="table-light">
-                <th>Assets − (Liabilities + Equity)</th>
+                <th style={{ fontSize: 13 }}>Assets − (Liabilities + Equity)</th>
                 {months.map((m) => {
                   const assetMonth = assetRows.reduce(
                     (sum, acc) => sum + (values[acc]?.[m] || 0),
@@ -563,10 +563,10 @@ const CalculateBudget: React.FC = () => {
                     0,
                   );
                   const diff = assetMonth - (liabilityMonth + equityMonth);
-                  const color = diff === 0 ? '#4a7cc2' : diff > 0 ? '#5cb85c' : '#d9534f';
+                  const color = diff === 0 ? '#010203ff' : diff > 0 ? '#5cb85c' : '#d9534f';
 
                   return (
-                    <th key={m} className="text-end" style={{ color }}>
+                    <th key={m} className="text-end" style={{ color, fontSize: 13 }}>
                       {diff}
                     </th>
                   );
@@ -621,18 +621,27 @@ const CalculateBudget: React.FC = () => {
   return (
     <>
       <Header />
-      <div style={{ padding: '69px 1.8rem 0 1.8rem' }}>
-        <h1 className="h4 text-dark mb-2">Calculate Budget</h1>
-        <p className="text-muted mb-3" style={{ fontSize: '0.9rem' }}>
-          Budget: {state.name || '-'} | Fiscal Year: {state.fiscalYear || '-'} | Period:{' '}
-          {state.period || '-'}
-        </p>
+      <div className="sales-orders-page" style={{ paddingTop: 80 }}>
 
-        {/* Tabs header */}
-        <Tabs tabs={tabs} defaultActiveKey="income-expense" onChange={(key) => setActiveTab(key)} />
+        <div className='mx-4'>
 
-        {/* Tabs body – render content for active tab */}
-        <div className="mt-3">{tabs.find((t) => t.key === activeTab)?.content}</div>
+          <h1 className="h4 text-dark mb-2">Calculate Budget</h1>
+          <p className="text-muted mb-3" style={{ fontSize: 12 }}>
+            Budget: {state.name || '-'} | Fiscal Year: {state.fiscalYear || '-'} | Period:{' '}
+            {state.period || '-'}
+          </p>
+
+          <div className="ps-4 mb-4 " style={{ fontSize: 14 }}>
+
+            {/* Tabs header */}
+            <Tabs tabs={tabs} defaultActiveKey="income-expense" onChange={(key) => setActiveTab(key)} />
+          </div>
+
+          {/* Tabs body – render content for active tab */}
+          <div className="mt-3">{tabs.find((t) => t.key === activeTab)?.content}</div>
+        </div>
+
+
       </div>
     </>
   );

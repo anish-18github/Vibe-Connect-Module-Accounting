@@ -126,8 +126,11 @@ const ReportsAnalytics = () => {
                         </div>
                     </div>
 
+                    {/* Divider */}
+                    <div className="mx-5" style={{ borderTop: "1px solid #e5e7eb" }} />
+
                     {/* Expense Reports */}
-                    <div className="so-details-card mx-5 mb-4">
+                    <div className="so-details-card mx-5 mb-4 mt-3">
                         <h2 className="sales-order-title mb-4">Expense Reports</h2>
 
                         <div className="row g-3 three-column-form">
@@ -204,8 +207,11 @@ const ReportsAnalytics = () => {
                         </div>
                     </div>
 
+                    <div className="mx-5" style={{ borderTop: "1px solid #e5e7eb" }} />
+
+
                     {/* Balance Sheet */}
-                    <div className="so-details-card mx-5 mb-4">
+                    <div className="so-details-card mx-5 mb-4 mt-3">
                         <h2 className="sales-order-title mb-4">Balance Sheet</h2>
 
                         <div className="row g-3 three-column-form mb-3">
@@ -260,7 +266,7 @@ const ReportsAnalytics = () => {
                                                 <td className="text-end">
                                                     <input
                                                         type="number"
-                                                        className="form-control form-control-sm no-spinner border-0 text-end item-input-sm"
+                                                        className="form-control form-control-sm no-spinner border-0 text-end item-input-sm item-input-narrow"
                                                         placeholder="0"
                                                     />
                                                 </td>
@@ -272,13 +278,14 @@ const ReportsAnalytics = () => {
                                             <td className="text-end">
                                                 <input
                                                     type="number"
-                                                    className="form-control form-control-sm no-spinner border-0 text-end item-input-sm"
+                                                    className="form-control form-control-sm no-spinner border-0 text-end item-input-sm item-input-narrow"
                                                     placeholder="0"
                                                     disabled
                                                 />
                                             </td>
                                         </tr>
                                     </tbody>
+
                                 </table>
 
 
@@ -314,7 +321,7 @@ const ReportsAnalytics = () => {
                                                 <td className="text-end">
                                                     <input
                                                         type="number"
-                                                        className="form-control form-control-sm no-spinner border-0 text-end"
+                                                        className="form-control form-control-sm no-spinner border-0 text-end item-input-narrow"
                                                         placeholder="0"
                                                     />
                                                 </td>
@@ -325,7 +332,7 @@ const ReportsAnalytics = () => {
                                             <td className="text-end">
                                                 <input
                                                     type="number"
-                                                    className="form-control form-control-sm no-spinner border-0 text-end"
+                                                    className="form-control form-control-sm no-spinner border-0 text-end item-input-narrow"
                                                     placeholder="0"
                                                     disabled
                                                 />
@@ -360,7 +367,7 @@ const ReportsAnalytics = () => {
                                                 <td className="text-end">
                                                     <input
                                                         type="number"
-                                                        className="form-control form-control-sm no-spinner border-0 text-end"
+                                                        className="form-control form-control-sm no-spinner border-0 text-end item-input-narrow"
                                                         placeholder="0"
                                                     />
                                                 </td>
@@ -371,7 +378,7 @@ const ReportsAnalytics = () => {
                                             <td className="text-end">
                                                 <input
                                                     type="number"
-                                                    className="form-control form-control-sm no-spinner border-0 text-end"
+                                                    className="form-control form-control-sm no-spinner border-0 text-end item-input-narrow"
                                                     placeholder="0"
                                                     disabled
                                                 />
@@ -383,8 +390,11 @@ const ReportsAnalytics = () => {
                         </div>
                     </div>
 
+                    <div className="mx-5" style={{ borderTop: "1px solid #e5e7eb" }} />
+
+
                     {/* Profit & Loss */}
-                    <div className="so-details-card mx-5 mb-4">
+                    <div className="so-details-card mx-5 mb-4 mt-3">
                         <h2 className="sales-order-title mb-4">Profit &amp; Loss</h2>
 
                         <div className="row g-3 three-column-form mb-3">
@@ -437,7 +447,7 @@ const ReportsAnalytics = () => {
                                                 <td className="text-end">
                                                     <input
                                                         type="number"
-                                                        className="form-control form-control-sm no-spinner border-0 text-end"
+                                                        className="form-control form-control-sm no-spinner border-0 text-end item-input-narrow"
                                                         placeholder="0"
                                                     />
                                                 </td>
@@ -448,7 +458,7 @@ const ReportsAnalytics = () => {
                                             <td className="text-end">
                                                 <input
                                                     type="number"
-                                                    className="form-control form-control-sm no-spinner border-0 text-end"
+                                                    className="form-control form-control-sm no-spinner border-0 text-end item-input-narrow"
                                                     placeholder="0"
                                                     disabled
                                                 />
@@ -492,7 +502,7 @@ const ReportsAnalytics = () => {
                                                 <td className="text-end">
                                                     <input
                                                         type="number"
-                                                        className="form-control form-control-sm no-spinner border-0 text-end"
+                                                        className="form-control form-control-sm no-spinner border-0 text-end item-input-narrow"
                                                         placeholder="0"
                                                     />
                                                 </td>
@@ -503,7 +513,7 @@ const ReportsAnalytics = () => {
                                             <td className="text-end">
                                                 <input
                                                     type="number"
-                                                    className="form-control form-control-sm no-spinner border-0 text-end"
+                                                    className="form-control form-control-sm no-spinner border-0 text-end item-input-narrow"
                                                     placeholder="0"
                                                     disabled
                                                 />
@@ -515,8 +525,11 @@ const ReportsAnalytics = () => {
                         </div>
                     </div>
 
+                    <div className="mx-5" style={{ borderTop: "1px solid #e5e7eb" }} />
+
+
                     {/* Maintenance Due Report */}
-                    <div className="so-details-card mx-5 mb-4">
+                    <div className="so-details-card mx-5 mb-4 mt-3">
                         <h2 className="sales-order-title mb-4">Maintenance Due Report</h2>
 
                         <div className="row g-3 three-column-form">
@@ -590,8 +603,11 @@ const ReportsAnalytics = () => {
                         </div>
                     </div>
 
+                    <div className="mx-5" style={{ borderTop: "1px solid #e5e7eb" }} />
+
+
                     {/* Forecasting */}
-                    <div className="so-details-card mx-5 mb-4">
+                    <div className="so-details-card mx-5 mb-4 mt-3">
                         <h2 className="sales-order-title mb-4">Forecasting</h2>
 
                         <div className="row g-3 three-column-form">

@@ -570,7 +570,7 @@ const AddVendor = () => {
             <table className="table table-sm align-middle item-table-inner">
               <thead>
                 <tr>
-                  <th style={{ width: '120px' }} className="fw-medium text-dark">
+                  <th style={{ width: '125px' }} className="fw-medium text-dark">
                     Salutation
                   </th>
                   <th className="fw-medium text-dark">First Name</th>
@@ -605,6 +605,7 @@ const AddVendor = () => {
                       <input
                         type="text"
                         className="form-control form-control-sm border-0 item-input"
+                        style={{ height: 30 }}
                         value={person.firstName}
                         onChange={(e) => handleContactChange(index, 'firstName', e.target.value)}
                       />
@@ -612,6 +613,8 @@ const AddVendor = () => {
                     <td>
                       <input
                         type="text"
+
+                        style={{ height: 30 }}
                         className="form-control form-control-sm border-0 item-input"
                         value={person.lastName}
                         onChange={(e) => handleContactChange(index, 'lastName', e.target.value)}
@@ -620,6 +623,8 @@ const AddVendor = () => {
                     <td>
                       <input
                         type="email"
+
+                        style={{ height: 30 }}
                         className="form-control form-control-sm border-0 item-input"
                         value={person.email}
                         onChange={(e) => handleContactChange(index, 'email', e.target.value)}
@@ -628,6 +633,8 @@ const AddVendor = () => {
                     <td>
                       <input
                         type="text"
+
+                        style={{ height: 30 }}
                         className="form-control form-control-sm border-0 item-input"
                         value={person.phone}
                         onChange={(e) => handleContactChange(index, 'phone', e.target.value)}
@@ -636,6 +643,8 @@ const AddVendor = () => {
                     <td>
                       <input
                         type="text"
+
+                        style={{ height: 30 }}
                         className="form-control form-control-sm border-0 item-input"
                         value={person.designation}
                         onChange={(e) => handleContactChange(index, 'designation', e.target.value)}
@@ -644,6 +653,8 @@ const AddVendor = () => {
                     <td>
                       <input
                         type="text"
+
+                        style={{ height: 30 }}
                         className="form-control form-control-sm border-0 item-input"
                         value={person.department}
                         onChange={(e) => handleContactChange(index, 'department', e.target.value)}
@@ -652,6 +663,8 @@ const AddVendor = () => {
                     <td className="text-center">
                       <button
                         type="button"
+
+                        style={{ height: 30 }}
                         className="btn btn-sm p-1"
                         onClick={() => removeContactPerson(index)}
                         title="Remove"

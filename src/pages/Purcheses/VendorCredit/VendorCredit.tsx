@@ -8,7 +8,7 @@ import { parchasesTabs } from '../Vendors/Vendors';
 
 const columns = [
   { key: 'date', label: 'Date' },
-  { key: 'creditNote', label: 'Credit Note#' },
+  { key: 'creditNote', label: 'Credit Note' },
   { key: 'referenceNumber', label: 'Reference Number' },
   { key: 'vendorName', label: 'Vendor Name' },
   { key: 'status', label: 'Status' },

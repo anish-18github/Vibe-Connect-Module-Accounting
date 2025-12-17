@@ -243,7 +243,7 @@ const AddMasterSetup = () => {
             <div className="sales-orders-page add-master-setup">                <form className="sales-order-form" onSubmit={handleSubmit}>
                 {/* ===== Society Details ===== */}
                 <div className="so-details-card mx-5 mb-3">
-                    <h1 className="sales-order-title mb-3">Society Details</h1>
+                    <h1 className="sales-order-title mb-3" style={{ fontSize: 15 }}>Society Details</h1>
 
                     <div className="row g-3 three-column-form">
                         {/* col 1 */}
@@ -350,7 +350,7 @@ const AddMasterSetup = () => {
 
                 {/* ===== Building / Flats Details ===== */}
                 <div className="so-details-card mx-5 mb-3 mt-3">
-                    <h1 className="sales-order-title mb-3">Building / Flats Details</h1>
+                    <h1 className="sales-order-title mb-3" style={{ fontSize: 15 }}>Building / Flats Details</h1>
 
                     <div className="row g-3 three-column-form">
                         {/* col 1 */}
@@ -508,7 +508,7 @@ const AddMasterSetup = () => {
 
                 {/* ===== Chart of Accounts ===== */}
                 <div className="so-details-card mx-5 mb-3 mt-3">
-                    <h1 className="sales-order-title mb-3">Chart of Accounts</h1>
+                    <h1 className="sales-order-title mb-3" style={{ fontSize: 15 }}>Chart of Accounts</h1>
 
                     <div className="row g-3 three-column-form">
                         {/* col 1 */}
@@ -621,7 +621,7 @@ const AddMasterSetup = () => {
 
                         {/* col 3 */}
                         <div className="col-lg-4">
-                            <div className="so-form-group mb-4">
+                            <div className="so-form-group" style={{ marginBottom: 30 }}>
                                 <label className="so-label text-sm text-muted-foreground fw-bold">
                                     Account Type:
                                 </label>
@@ -641,11 +641,11 @@ const AddMasterSetup = () => {
                                 {errors.accountType && <small className="text-danger">{errors.accountType}</small>}
                             </div>
 
-                            <div className="so-form-group mb-4">
+                            <div className="so-form-group" style={{ marginBottom: 38 }}>
                                 <label className="so-label text-sm text-muted-foreground fw-bold">
                                     TDS Deductible:
                                 </label>
-                                <div className="d-flex align-items-center gap-3">
+                                <div className="d-flex align-items-center gap-3" >
                                     <div className="radio-row">
                                         <input
                                             className="form-check-input"
@@ -655,9 +655,9 @@ const AddMasterSetup = () => {
                                             checked={formData.coa.tds === 'yes'}
                                             onChange={handleInputChange}
                                         />
-                                        <label className="form-check-label">Yes</label>
+                                        <label className="form-check-label" style={{ fontSize: 15 }}>Yes</label>
                                     </div>
-                                    <div className="form-check">
+                                    <div className="radio-row">
                                         <input
                                             className="form-check-input"
                                             type="radio"
@@ -666,7 +666,7 @@ const AddMasterSetup = () => {
                                             checked={formData.coa.tds === 'no'}
                                             onChange={handleInputChange}
                                         />
-                                        <label className="form-check-label">No</label>
+                                        <label className="form-check-label" style={{ fontSize: 15 }}>No</label>
                                     </div>
                                 </div>
                             </div>
@@ -676,7 +676,7 @@ const AddMasterSetup = () => {
                                     GST Application:
                                 </label>
                                 <div className="d-flex align-items-center gap-3">
-                                    <div className="form-check">
+                                    <div className="radio-row">
                                         <input
                                             className="form-check-input"
                                             type="radio"
@@ -687,7 +687,7 @@ const AddMasterSetup = () => {
                                         />
                                         <label className="form-check-label">Yes</label>
                                     </div>
-                                    <div className="form-check">
+                                    <div className="radio-row">
                                         <input
                                             className="form-check-input"
                                             type="radio"
@@ -709,7 +709,7 @@ const AddMasterSetup = () => {
 
                 {/* ===== Maintenance Categories ===== */}
                 <div className="so-details-card mx-5 mb-3 mt-3">
-                    <h1 className="sales-order-title mb-3">Maintenance Categories</h1>
+                    <h1 className="sales-order-title mb-3" style={{ fontSize: 15 }}>Maintenance Categories</h1>
 
                     <div className="row g-3 three-column-form">
                         {/* col 1 */}
@@ -845,7 +845,7 @@ const AddMasterSetup = () => {
 
                 {/* ===== Bank Accounts ===== */}
                 <div className="so-details-card mx-5 mb-3 mt-3">
-                    <h1 className="sales-order-title mb-3">Bank Accounts</h1>
+                    <h1 className="sales-order-title mb-3" style={{ fontSize: 15 }}>Bank Accounts</h1>
 
                     <div className="row g-3 three-column-form">
                         {/* col 1 */}
@@ -928,7 +928,7 @@ const AddMasterSetup = () => {
 
                 {/* ===== Staff Master ===== */}
                 <div className="so-details-card mx-5 mb-3 mt-3">
-                    <h1 className="sales-order-title mb-3">Staff Master</h1>
+                    <h1 className="sales-order-title mb-3" style={{ fontSize: 15 }}>Staff Master</h1>
 
                     <div className="row g-3 three-column-form">
                         {/* col 1 */}
@@ -1018,7 +1018,7 @@ const AddMasterSetup = () => {
 
                 {/* ===== Document Settings ===== */}
                 <div className="so-details-card mx-5 mb-3 mt-3">
-                    <h1 className="sales-order-title mb-3">Document Settings</h1>
+                    <h1 className="sales-order-title mb-3" style={{ fontSize: 15 }}>Document Settings</h1>
 
                     <div className="row g-3 three-column-form">
                         {/* col 1 */}
@@ -1222,8 +1222,16 @@ const AddMasterSetup = () => {
                 {/* Submit button */}
                 <div className="d-flex justify-content-center my-4">
                     <button
+                        type="button"
+                        className="btn border me-3 px-4"
+                        onClick={() => navigate(-1)}
+                    >
+                        Cancel
+                    </button>
+
+                    <button
                         type="submit"
-                        className="btn px-5"
+                        className="btn px-4"
                         style={{ background: "#7991BB", color: "#FFFFFF" }}
                         disabled={isSubmitting}
                     >

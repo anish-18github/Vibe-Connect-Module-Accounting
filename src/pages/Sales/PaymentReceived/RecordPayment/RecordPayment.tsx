@@ -220,9 +220,9 @@ export default function AddPayment() {
                     value={formData.amountReceived}
                     onChange={handleChange}
                   />
-                  <div className="form-check">
+                  <div className="form-check" style={{ fontSize: 12 }}>
                     <input type="checkbox" className="me-2 border" id="fullAmount" />
-                    <label htmlFor="fullAmount" className="form-check-label small">
+                    <label htmlFor="fullAmount" className="form-check-label" >
                       Received full amount
                     </label>
                   </div>
@@ -231,7 +231,68 @@ export default function AddPayment() {
 
               {/* COLUMN 2: Amount Received + Tax Deducted Radios */}
               <div className="col-lg-4">
+
                 <div className="so-form-group mb-4">
+                  <label className="so-label text-sm text-muted-foreground fw-bold">
+                    Payment Date:
+                  </label>
+                  <input
+                    type="date"
+                    name="paymentDate"
+                    className="form-control so-control"
+                    value={formData.paymentDate}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="so-form-group mb-4">
+                  <label className="so-label text-sm text-muted-foreground fw-bold">
+                    Payment ID:
+                  </label>
+
+                  <div style={{ position: 'relative', width: '100%' }}>
+
+                    <input
+                      type="text"
+                      name="paymentId"
+                      className="form-control so-control"
+                      value={formData.paymentId}
+                      onChange={handleChange}
+                      style={{ paddingRight: '35px' }}
+                    />
+                    <span style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      cursor: 'pointer',
+                      color: '#6c757d',
+                    }} onClick={() => setShowSettings(true)}>
+                      <Settings size={16} />
+                    </span>
+                  </div>
+
+                </div>
+
+                <div className="so-form-group mb-4">
+                  <label className="so-label text-sm text-muted-foreground fw-bold">
+                    Reference:
+                  </label>
+                  <input
+                    type="text"
+                    name="reference"
+                    className="form-control so-control"
+                    value={formData.reference}
+                    onChange={handleChange}
+                  />
+                </div>
+
+              </div>
+
+              {/* COLUMN 3: TDS Rate (conditional) + Payment Date + Payment ID + Reference */}
+              <div className="col-lg-4">
+
+                <div className="so-form-group" style={{ marginBottom: 36 }}>
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Tax Deducted:
                   </label>
@@ -285,52 +346,7 @@ export default function AddPayment() {
                     </select>
                   </div>
                 )}
-              </div>
 
-              {/* COLUMN 3: TDS Rate (conditional) + Payment Date + Payment ID + Reference */}
-              <div className="col-lg-4">
-                <div className="so-form-group mb-4">
-                  <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Payment Date:
-                  </label>
-                  <input
-                    type="date"
-                    name="paymentDate"
-                    className="form-control so-control"
-                    value={formData.paymentDate}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="so-form-group mb-4 position-relative">
-                  <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Payment ID:
-                  </label>
-                  <input
-                    type="text"
-                    name="paymentId"
-                    className="form-control so-control"
-                    value={formData.paymentId}
-                    onChange={handleChange}
-                    style={{ paddingRight: '35px' }}
-                  />
-                  <span className="so-settings-icon" onClick={() => setShowSettings(true)}>
-                    <Settings size={16} />
-                  </span>
-                </div>
-
-                <div className="so-form-group mb-4">
-                  <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Reference:
-                  </label>
-                  <input
-                    type="text"
-                    name="reference"
-                    className="form-control so-control"
-                    value={formData.reference}
-                    onChange={handleChange}
-                  />
-                </div>
               </div>
             </div>
           </div>
@@ -356,8 +372,8 @@ export default function AddPayment() {
                   </thead>
                   <tbody>
                     {usageRows.map((row, index) => (
-                      <tr key={index}>
-                        <td>{row.date}</td>
+                      <tr key={index} style={{ fontSize: 12 }}>
+                        <td >{row.date}</td>
                         <td>{row.invoiceNumber}</td>
                         <td>₹ {row.invoiceAmount}</td>
                         <td>₹ {row.amountDue}</td>
@@ -404,8 +420,8 @@ export default function AddPayment() {
                 </div>
               </div>
 
-              <div className="summary-column">
-                <div className="border rounded p-3" style={{ minHeight: '200px' }}>
+              <div className="summary-column" style={{ background: "#ffff" }}>
+                <div className="border rounded p-3" style={{ minHeight: '200px', fontSize: 13, borderRadius: 10 }}>
                   <div className="d-flex justify-content-between mb-2">
                     <span>Amount Received:</span>
                     <strong>₹ {summary.amountReceived}</strong>

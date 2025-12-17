@@ -11,10 +11,10 @@ import { useGlobalToast } from '../../../components/Toast/ToastContext';
 
 const columns = [
   { key: 'date', label: 'Date' },
-  { key: 'payment', label: 'Payment#' },
+  { key: 'payment', label: 'Payment' },
   { key: 'referenceNumber', label: 'Reference' },
   { key: 'vendorName', label: 'Vendor Name' },
-  { key: 'bill', label: 'Bill#' },
+  { key: 'bill', label: 'Bill' },
   { key: 'mode', label: 'Mode' },
   { key: 'status', label: 'Status' },
 ];

@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import Header from '../../../../components/Header/Header';
 import Toast, { useToast } from '../../../../components/Toast/Toast';
+import { useNavigate } from 'react-router-dom';
 
 const AddRecurringExpense: React.FC = () => {
+  
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     profileName: '',
     repeatEvery: '',
@@ -268,7 +272,7 @@ const AddRecurringExpense: React.FC = () => {
 
             {/* Buttons */}
             <div className="d-flex justify-content-center mt-4 pt-4 border-top">
-              <button type="button" className="btn border me-3 px-4">
+              <button type="button" className="btn border me-3 px-4" onClick={() => navigate(-1)}>
                 Cancel
               </button>
               <button

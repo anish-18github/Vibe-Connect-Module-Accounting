@@ -257,22 +257,34 @@ export default function AddCreditNote() {
                   </select>
                 </div>
 
-                <div className="so-form-group mb-4 position-relative">
+                <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Credit Note No:
                   </label>
-                  <input
-                    type="text"
-                    name="creditNoteNo"
-                    className="form-control so-control"
-                    value={formData.credit.creditNoteNo}
-                    onChange={handleChange}
-                    style={{ paddingRight: '35px' }}
-                    placeholder="Auto-generated"
-                  />
-                  <span className="so-settings-icon" onClick={() => setShowSettings(true)}>
-                    <Settings size={16} />
-                  </span>
+
+                  <div style={{ position: 'relative', width: '100%' }}>
+
+                    <input
+                      type="text"
+                      name="creditNoteNo"
+                      className="form-control so-control"
+                      value={formData.credit.creditNoteNo}
+                      onChange={handleChange}
+                      style={{ paddingRight: '35px' }}
+                      placeholder="Auto-generated"
+                    />
+                    <span style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      cursor: 'pointer',
+                      color: '#6c757d',
+                    }} onClick={() => setShowSettings(true)}>
+                      <Settings size={16} />
+                    </span>
+
+                  </div>
                 </div>
 
                 <div className="so-form-group mb-4">

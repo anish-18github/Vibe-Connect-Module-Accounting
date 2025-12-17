@@ -232,7 +232,7 @@ const Add = () => {
         msg = 'Company Name is required.';
       } else if (trimmed.length < 3) {
         msg = 'Company Name must be at least 3 characters.';
-    }
+      }
 
       setErrors((prev) => ({ ...prev, companyName: msg }));
     }
@@ -240,11 +240,11 @@ const Add = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-        // Validation
-        if (!formData.customer.displayName || !formData.customer.displayName.trim()) {
-          showToast('Please fill required field: Display Name', 'error');
-          return;
-        }
+    // Validation
+    if (!formData.customer.displayName || !formData.customer.displayName.trim()) {
+      showToast('Please fill required field: Display Name', 'error');
+      return;
+    }
 
     const customerId = Math.floor(100000 + Math.random() * 900000);
     const createdOn = new Date().toISOString().split('T')[0];
@@ -508,8 +508,9 @@ const Add = () => {
         {/* Phone - Combined as one field with horizontal layout */}
         <div className="so-form-group mb-4">
           <label className="so-label text-sm text-muted-foreground fw-bold">Phone:</label>
-          <div className="row g-2">
-            <div className="col-2 ms-2">
+          <div className="row g-2" style={{ paddingLeft: "0px" }}
+          >
+            <div className="col-3">
               <input
                 type="text"
                 name="address.countryCode"
@@ -519,7 +520,6 @@ const Add = () => {
                 onChange={handleChange}
                 inputMode="numeric"
                 pattern="[0-9]*"
-                // style={{ marginLeft: "5px" }}
               />
             </div>
             <div className="col-9">
@@ -554,18 +554,18 @@ const Add = () => {
   );
 
   const renderContactPersons = () => (
-    <div className="item-card">
+    <div className="item-card mb-4">
       <div className="item-card-header">
         <span className="item-card-title">Contact Persons</span>
       </div>
 
       <div className="item-card-body">
-        <div className="row">
+        <div className="table-responsive">
           <div className="col-md-12">
             <table className="table table-sm align-middle item-table-inner">
               <thead>
                 <tr>
-                  <th className="fw-medium text-dark" style={{ width: '125px' }}>
+                  <th style={{ width: 125 }} className="fw-medium text-dark">
                     Salutation
                   </th>
                   <th className="fw-medium text-dark">First Name</th>
@@ -602,6 +602,7 @@ const Add = () => {
                       <input
                         type="text"
                         className="form-control form-control-sm border-0 item-input"
+                        style={{ height: 30 }}
                         value={person.firstName}
                         onChange={(e) => handleContactChange(index, 'firstName', e.target.value)}
                       />
@@ -611,6 +612,7 @@ const Add = () => {
                       <input
                         type="text"
                         className="form-control form-control-sm border-0 item-input"
+                        style={{ height: 30 }}
                         value={person.lastName}
                         onChange={(e) => handleContactChange(index, 'lastName', e.target.value)}
                       />
@@ -620,6 +622,7 @@ const Add = () => {
                       <input
                         type="email"
                         className="form-control form-control-sm border-0 item-input"
+                        style={{ height: 30 }}
                         value={person.email}
                         onChange={(e) => handleContactChange(index, 'email', e.target.value)}
                       />
@@ -629,6 +632,7 @@ const Add = () => {
                       <input
                         type="number"
                         className="form-control form-control-sm border-0 item-input"
+                        style={{ height: 30 }}
                         value={person.phone}
                         onChange={(e) => handleContactChange(index, 'phone', e.target.value)}
                       />
@@ -638,6 +642,7 @@ const Add = () => {
                       <input
                         type="text"
                         className="form-control form-control-sm border-0 item-input"
+                        style={{ height: 30 }}
                         value={person.designation}
                         onChange={(e) => handleContactChange(index, 'designation', e.target.value)}
                       />
@@ -647,6 +652,7 @@ const Add = () => {
                       <input
                         type="text"
                         className="form-control form-control-sm border-0 item-input"
+                        style={{ height: 30 }}
                         value={person.department}
                         onChange={(e) => handleContactChange(index, 'department', e.target.value)}
                       />
@@ -718,7 +724,7 @@ const Add = () => {
   return (
     <>
       <Header />
-        <Toast toast={toast} setToast={setToast} />
+      <Toast toast={toast} setToast={setToast} />
       <div className="sales-orders-page">
         <form onSubmit={handleSubmit} className="sales-order-form">
           {/* Top details card (like Sales Order) */}
@@ -813,36 +819,6 @@ const Add = () => {
                   </div>
                 </div>
 
-                {/* Phone */}
-                <div className="so-form-group mb-4">
-                  <label className="so-label text-sm text-muted-foreground fw-bold">Phone:</label>
-                  <div className="row g-2">
-                    <div className="col-2">
-                      <input
-                        type="text"
-                        name="customer.countryCode"
-                        placeholder="+91"
-                        className="form-control so-control"
-                        value={formData.customer.countryCode}
-                        onChange={handleChange}
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                      />
-                    </div>
-                    <div className="col-10">
-                      <input
-                        type="text"
-                        name="customer.phoneNumber"
-                        className="form-control so-control"
-                        value={formData.customer.phoneNumber}
-                        onChange={handleChange}
-                        placeholder="Enter phone"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                      />
-                    </div>
-                  </div>
-                </div>
               </div>
 
               {/* COLUMN 2 - Company Name + Display Name */}
@@ -894,8 +870,37 @@ const Add = () => {
                     className="form-control so-control"
                   />
                 </div>
-                {/* Empty space to match Sales Order's 3rd column height */}
-              </div>
+
+                {/* Phone */}
+                <div className="so-form-group mb-4">
+                  <label className="so-label text-sm text-muted-foreground fw-bold">Phone:</label>
+                  <div className="row g-2">
+                    <div className="col-2">
+                      <input
+                        type="text"
+                        name="customer.countryCode"
+                        placeholder="+91"
+                        className="form-control so-control"
+                        value={formData.customer.countryCode}
+                        onChange={handleChange}
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                      />
+                    </div>
+                    <div className="col-10">
+                      <input
+                        type="text"
+                        name="customer.phoneNumber"
+                        className="form-control so-control"
+                        value={formData.customer.phoneNumber}
+                        onChange={handleChange}
+                        placeholder="Enter phone"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                      />
+                    </div>
+                  </div>
+                </div>              </div>
             </div>
           </div>
 

@@ -29,3 +29,11 @@
     padding-top: 0.35rem;
     padding-bottom: 0.35rem;
 }
+
+/* Narrow numeric inputs inside asset table */
+.item-table-body .item-input-narrow {
+    max-width: 110px;
+    /* adjust as needed */
+    margin-left: auto;
+    /* pushes input to the right inside the cell */
+}

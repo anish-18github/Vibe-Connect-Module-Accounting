@@ -276,24 +276,36 @@ export default function AddPurchaseOrder() {
 
                 {/* Purchase Order# */}
                 {/* Purchase Order No (same as Sales Order No) */}
-                <div className="so-form-group position-relative mb-4">
+                <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Sales Order No:
                   </label>
 
-                  <input
-                    type="text"
-                    name="purchaseOrderNo"
-                    className="form-control so-control"
-                    value={formData.purchaseOrder.purchaseOrderNo}
-                    onChange={handleChange}
-                    placeholder="Auto-generated"
-                  />
+                  <div style={{ position: 'relative', width: '100%' }}>
 
-                  {/* Settings icon INSIDE the input field on the right */}
-                  <span className="so-settings-icon" onClick={() => setShowSettings(true)}>
-                    <Settings size={16} />
-                  </span>
+
+                    <input
+                      type="text"
+                      name="purchaseOrderNo"
+                      className="form-control so-control"
+                      value={formData.purchaseOrder.purchaseOrderNo}
+                      onChange={handleChange}
+                      placeholder="Auto-generated"
+                    />
+
+                    {/* Settings icon INSIDE the input field on the right */}
+                    <span style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      cursor: 'pointer',
+                      color: '#6c757d',
+                    }} onClick={() => setShowSettings(true)}>
+                      <Settings size={16} />
+                    </span>
+                  </div>
+
                 </div>
 
                 {/* Delivery Address */}
@@ -301,7 +313,7 @@ export default function AddPurchaseOrder() {
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Delivery Address<span className="text-danger">*</span>:
                   </label>
-                  <div className="radio-row">
+                  <div className="radio-row" style={{ fontSize: 13 }}>
                     <div className="form-check">
                       <input
                         className="form-check-input"
@@ -348,6 +360,7 @@ export default function AddPurchaseOrder() {
                   <button
                     type="button"
                     className="btn btn-link p-0 text-sm"
+                    style={{ fontSize: 12, marginLeft: -160, textDecoration: "none" }}
                     onClick={handleOpenAddress}
                   >
                     Change destination to deliver

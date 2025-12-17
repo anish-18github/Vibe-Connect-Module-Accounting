@@ -208,7 +208,7 @@ export default function AddJournal() {
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Journal Type:
                   </label>
-                  <label className="form-check-label d-flex align-items-center">
+                  <label className="form-check-label d-flex align-items-center" style={{ fontSize: 13 }}>
                     <input
                       type="checkbox"
                       className="form-check-input me-2"
@@ -250,6 +250,7 @@ export default function AddJournal() {
                               <select
                                 name="account"
                                 className="form-select form-control-sm border-0"
+                                style={{ fontSize: 12 }}
                                 value={row.account}
                                 onChange={(e) => handleRowChange(index, e as any)}
                               >
@@ -273,6 +274,7 @@ export default function AddJournal() {
                               <select
                                 name="contact"
                                 className="form-select form-control-sm border-0"
+                                style={{ fontSize: 12 }}
                                 value={row.contact}
                                 onChange={(e) => handleRowChange(index, e as any)}
                               >
@@ -362,8 +364,10 @@ export default function AddJournal() {
                   className="total-box p-3 w-100"
                   style={{
                     minWidth: '260px',
+                    minHeight: 35,
                     backgroundColor: '#F8F8F8',
                     borderRadius: '12px',
+                    fontSize: 13
                   }}
                 >
                   <div className="d-flex justify-content-between mb-2">

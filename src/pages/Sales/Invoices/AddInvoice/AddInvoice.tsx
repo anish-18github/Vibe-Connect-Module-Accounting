@@ -299,22 +299,33 @@ export default function AddInvoice() {
                   </select>
                 </div>
 
-                <div className="so-form-group mb-4 position-relative">
+                <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Invoice No:
                   </label>
-                  <input
-                    type="text"
-                    name="invoiceNo"
-                    className="form-control so-control"
-                    value={formData.invoice.invoiceNo}
-                    onChange={handleChange}
-                    style={{ paddingRight: '35px' }}
-                    placeholder="Auto-generated"
-                  />
-                  <span className="so-settings-icon" onClick={() => setShowSettings(true)}>
-                    <Settings size={16} />
-                  </span>
+
+                  <div style={{ position: 'relative', width: '100%' }}>
+
+                    <input
+                      type="text"
+                      name="invoiceNo"
+                      className="form-control so-control"
+                      value={formData.invoice.invoiceNo}
+                      onChange={handleChange}
+                      style={{ paddingRight: '35px' }}
+                      placeholder="Auto-generated"
+                    />
+                    <span style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      cursor: 'pointer',
+                      color: '#6c757d',
+                    }} onClick={() => setShowSettings(true)}>
+                      <Settings size={16} />
+                    </span>
+                  </div>
                 </div>
               </div>
 

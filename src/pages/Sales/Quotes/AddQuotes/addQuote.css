@@ -138,6 +138,7 @@
 .settings-modal.closing {
   animation: popupClose 0.25s ease-in;
 }
+  
 
 @keyframes popupOpen {
   from {

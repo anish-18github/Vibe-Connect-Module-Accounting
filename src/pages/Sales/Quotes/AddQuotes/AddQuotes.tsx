@@ -277,21 +277,39 @@ export default function AddQuotes() {
                   </select>
                 </div>
 
-                <div className="so-form-group mb-4 position-relative">
-                  <label className="so-label text-sm text-muted-foreground fw-bold">Quote #:</label>
-                  <input
-                    type="text"
-                    name="quote"
-                    className="form-control so-control"
-                    value={formData.quote.quote}
-                    onChange={handleQuoteChange}
-                    placeholder="Auto-generated"
-                    style={{ paddingRight: '35px' }}
-                  />
-                  <span className="so-settings-icon" onClick={() => setShowSettings(true)}>
-                    <Settings size={16} />
-                  </span>
+                <div className="so-form-group mb-4">
+                  <label
+                    className="so-label text-sm text-muted-foreground fw-bold mb-1">
+                    Quote #:
+                  </label>
+
+                  <div style={{ position: 'relative', width: '100%' }}>
+                    <input
+                      type="text"
+                      name="quote"
+                      className="form-control so-control"
+                      value={formData.quote.quote}
+                      onChange={handleQuoteChange}
+                      placeholder="Auto-generated"
+                      style={{ paddingRight: '32px' }}
+                    />
+
+                    <span
+                      onClick={() => setShowSettings(true)}
+                      style={{
+                        position: 'absolute',
+                        right: '10px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        cursor: 'pointer',
+                        color: '#6c757d',
+                      }}
+                    >
+                      <Settings size={16} />
+                    </span>
+                  </div>
                 </div>
+
               </div>
 
               {/* COLUMN 2 */}

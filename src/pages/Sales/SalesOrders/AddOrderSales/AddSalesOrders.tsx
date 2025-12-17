@@ -351,21 +351,33 @@ export default function AddSalesOrder() {
                 </div>
 
                 {/* Sales Order No */}
-                <div className="so-form-group position-relative mb-4">
+                <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Sales Order No:
                   </label>
-                  <input
-                    type="text"
-                    name="salesOrderNo"
-                    className="form-control so-control"
-                    value={formData.salesOrder.salesOrderNo}
-                    onChange={handleChange}
-                    placeholder="Auto-generated"
-                  />
-                  <span className="so-settings-icon" onClick={() => setShowSettings(true)}>
-                    <Settings size={16} />
-                  </span>
+
+                  <div style={{ position: 'relative', width: '100%' }}>
+
+                    <input
+                      type="text"
+                      name="salesOrderNo"
+                      className="form-control so-control"
+                      value={formData.salesOrder.salesOrderNo}
+                      onChange={handleChange}
+                      placeholder="Auto-generated"
+                    />
+                    <span style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      cursor: 'pointer',
+                      color: '#6c757d',
+                    }} onClick={() => setShowSettings(true)}>
+                      <Settings size={16} />
+                    </span>
+
+                  </div>
                 </div>
               </div>
 

@@ -54,6 +54,7 @@ function ItemTable({ rows, onRowChange, onAddRow, onRemoveRow }: ItemTableProps)
                         name="itemDetails"
                         className="form-control form-control-sm border-0"
                         placeholder="Type item details..."
+                        style={{ height: 30 }}
                         value={row.itemDetails}
                         onChange={(e) => onRowChange(index, e)}
                       />
@@ -65,6 +66,7 @@ function ItemTable({ rows, onRowChange, onAddRow, onRemoveRow }: ItemTableProps)
                         name="quantity"
                         className="form-control form-control-sm no-spinner border-0"
                         placeholder="00.00"
+                        style={{ height: 30 }}   
                         value={row.quantity}
                         onChange={(e) => onRowChange(index, e)}
                       />
@@ -76,27 +78,38 @@ function ItemTable({ rows, onRowChange, onAddRow, onRemoveRow }: ItemTableProps)
                         name="rate"
                         className="form-control form-control-sm no-spinner border-0"
                         placeholder="00.00"
+                        style={{ height: 30 }}
                         value={row.rate}
                         onChange={(e) => onRowChange(index, e)}
                       />
                     </td>
 
-                    <td className="d-flex align-items-center">
-                      <input
-                        type="number"
-                        name="discount"
-                        className="form-control form-control-sm no-spinner border-0"
-                        placeholder="00"
-                        value={row.discount}
-                        onChange={(e) => onRowChange(index, e)}
-                      />
-                      <span className="ms-1">%</span>
+                    <td>
+                      <div className="position-relative">
+                        <input
+                          type="number"
+                          name="discount"
+                          className="form-control form-control-sm no-spinner border-0 pe-4"
+                          placeholder="00"
+                          value={row.discount}
+                          style={{ height: 30 }}
+                          onChange={(e) => onRowChange(index, e)}
+                        />
+                        <span
+                          className="position-absolute top-50 end-0 translate-middle-y me-2 text-muted"
+                          style={{ pointerEvents: 'none', fontSize: 12 }}
+                        >
+                          %
+                        </span>
+                      </div>
                     </td>
+
 
                     <td>
                       <input
                         type="text"
                         className="form-control form-control-sm border-0"
+                        style={{ height: 30 }}
                         value={row.amount}
                         disabled
                       />
@@ -199,16 +212,16 @@ export function SummaryBox({
   return (
     <>
       <div className="summary-box fw-normal text-dark">
-        <div className="total-box p-3" style={{ backgroundColor: '#F1F0F0', borderRadius: 6 }}>
-          <div className="d-flex justify-content-between mb-2">
+        <div className="total-box p-3" style={{ backgroundColor: '#F1F0F0', borderRadius: 6, fontSize: 14 }}>
+          <div className="d-flex justify-content-between mb-2" >
             <span>Sub Total</span>
             <span>{totals.subtotal.toFixed(2)}</span>
           </div>
 
           <div className="mt-3 mb-2">
-            <label className="form-label fw-bold mb-1">Tax Type</label>
+            <label className="form-label fw-bold mb-1" >Tax Type</label>
 
-            <div className="d-flex align-items-center gap-3">
+            <div className="d-flex align-items-center gap-3" style={{ fontSize: 12 }}>
               <label className="d-flex align-items-center gap-1">
                 <input
                   type="radio"
@@ -261,7 +274,7 @@ export function SummaryBox({
                     className="form-select form-select-sm"
                     value={taxInfo.selectedTax}
                     onChange={(e) => onTaxChange('selectedTax', e.target.value)}
-                    style={{ minWidth: 100, background: '#F1F0F0' }}
+                    style={{ minWidth: 100, background: '#F1F0F0', fontSize: 12 }}
                   >
                     <option value="">Select TCS</option>
                     {tcsOptions.map((opt) => (

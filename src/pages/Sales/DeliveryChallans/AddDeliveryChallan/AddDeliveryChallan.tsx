@@ -308,22 +308,33 @@ export default function AddDeliveryChallan() {
                   </select>
                 </div>
 
-                <div className="so-form-group mb-4 position-relative">
+                <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Challan No:
                   </label>
-                  <input
-                    type="text"
-                    name="challanNo"
-                    className="form-control so-control"
-                    value={formData.challan.challanNo}
-                    onChange={handleChange}
-                    placeholder="Auto-generated"
-                    style={{ paddingRight: '35px' }}
-                  />
-                  <span className="so-settings-icon" onClick={() => setShowSettings(true)}>
-                    <Settings size={16} />
-                  </span>
+
+                  <div style={{ position: 'relative', width: '100%' }}>
+
+                    <input
+                      type="text"
+                      name="challanNo"
+                      className="form-control so-control"
+                      value={formData.challan.challanNo}
+                      onChange={handleChange}
+                      placeholder="Auto-generated"
+                      style={{ paddingRight: '32px' }}
+                    />
+                    <span style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      cursor: 'pointer',
+                      color: '#6c757d',
+                    }} onClick={() => setShowSettings(true)}>
+                      <Settings size={16} />
+                    </span>
+                  </div>
                 </div>
               </div>
 

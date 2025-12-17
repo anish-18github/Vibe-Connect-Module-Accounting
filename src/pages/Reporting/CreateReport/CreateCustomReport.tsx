@@ -193,14 +193,6 @@ const CreateCustomReport: React.FC = () => {
 
                     {/* Buttons - CONDITIONAL TEXT & HANDLER */}
                     <div className="d-flex justify-content-center gap-3 mt-5 mb-5">
-                        <button
-                            type="button"
-                            className="btn px-5"
-                            style={{ background: activeStep === 4 ? "#7991BB" : "#7991BB", color: "#FFF" }}
-                            onClick={activeStep === 4 ? handleSaveReport : handleNext}
-                        >
-                            {activeStep === 4 ? "Save Custom Report" : "Update"}
-                        </button>
 
                         <button
                             type="button"
@@ -210,6 +202,16 @@ const CreateCustomReport: React.FC = () => {
                         >
                             Cancel
                         </button>
+
+                        <button
+                            type="button"
+                            className="btn px-4"
+                            style={{ background: activeStep === 4 ? "#7991BB" : "#7991BB", color: "#FFF" }}
+                            onClick={activeStep === 4 ? handleSaveReport : handleNext}
+                        >
+                            {activeStep === 4 ? "Save Custom Report" : "Update"}
+                        </button>
+
                     </div>
                 </div>
 
@@ -547,9 +549,9 @@ const ReportLayoutStep: React.FC<ReportLayoutProps> = ({
                 <div className="col-lg-7">
                     <h6 className="mb-3">Choose Details to Display</h6>
 
-                    <div className="row mb-3">
-                        <div className="col-md-4">
-                            <div className="form-check mb-2">
+                    <div className="row mb-3" style={{ fontSize: 13 }}>
+                        <div className="col-md-4" >
+                            <div className="form-check mb-2" >
                                 <input
                                     className="form-check-input"
                                     type="checkbox"
@@ -648,7 +650,7 @@ const ReportLayoutStep: React.FC<ReportLayoutProps> = ({
                     </div>
 
 
-                    <div className="form-check mb-4">
+                    <div className="form-check mb-4" style={{ fontSize: 13 }}>
                         <input
                             className="form-check-input"
                             type="checkbox"
@@ -656,7 +658,7 @@ const ReportLayoutStep: React.FC<ReportLayoutProps> = ({
                             checked={layout.autoResize}
                             onChange={handleAutoResizeChange}
                         />
-                        <label className="form-check-label" htmlFor="autoResize">
+                        <label className="form-check-label" htmlFor="autoResize" >
                             Re-size the table and its font automatically to fit the content
                             within the table.
                         </label>
@@ -665,7 +667,7 @@ const ReportLayoutStep: React.FC<ReportLayoutProps> = ({
                     {/* Paper size */}
                     <div className="mb-3">
                         <div className="mb-1 fw-semibold text-muted">Paper Size</div>
-                        <div className="d-flex align-items-center gap-4">
+                        <div className="d-flex align-items-center gap-4" style={{ fontSize: 13 }}>
                             <label className="d-flex align-items-center gap-2">
                                 <input
                                     type="radio"
@@ -704,63 +706,62 @@ const ReportLayoutStep: React.FC<ReportLayoutProps> = ({
                                 <option value="Roboto">Roboto</option>
                                 <option value="System">System Default</option>
                             </select>
-                            <small className="text-muted d-block mt-1">
+                            <small className="text-muted d-block mt-1" style={{ fontSize: 12 }}>
                                 Supports English and European languages. This font can also
                                 render Indian Rupees symbol.
                             </small>
                         </div>
-
                         <div className="col-md-6 mb-3">
                             <label className="so-label text-sm text-muted-foreground fw-bold d-block">
                                 Margins
                             </label>
-                            <div className="d-flex flex-wrap gap-2">
+
+                            <div
+                                className="d-flex"
+                                style={{ gap: '8px', flexWrap: 'nowrap' }}  // <- keep on one row
+                            >
                                 <div style={{ width: 70 }}>
                                     <input
                                         type="text"
                                         className="form-control so-control"
                                         value={layout.margins.top}
-                                        onChange={(e) =>
-                                            handleMarginChange("top", e.target.value)
-                                        }
+                                        onChange={(e) => handleMarginChange('top', e.target.value)}
                                     />
                                     <small className="text-muted">Top</small>
                                 </div>
+
                                 <div style={{ width: 70 }}>
                                     <input
                                         type="text"
                                         className="form-control so-control"
                                         value={layout.margins.bottom}
-                                        onChange={(e) =>
-                                            handleMarginChange("bottom", e.target.value)
-                                        }
+                                        onChange={(e) => handleMarginChange('bottom', e.target.value)}
                                     />
                                     <small className="text-muted">Bottom</small>
                                 </div>
+
                                 <div style={{ width: 70 }}>
                                     <input
                                         type="text"
                                         className="form-control so-control"
                                         value={layout.margins.left}
-                                        onChange={(e) =>
-                                            handleMarginChange("left", e.target.value)
-                                        }
+                                        onChange={(e) => handleMarginChange('left', e.target.value)}
                                     />
                                     <small className="text-muted">Left</small>
                                 </div>
+
                                 <div style={{ width: 70 }}>
                                     <input
                                         type="text"
                                         className="form-control so-control"
                                         value={layout.margins.right}
-                                        onChange={(e) =>
-                                            handleMarginChange("right", e.target.value)
-                                        }
+                                        onChange={(e) => handleMarginChange('right', e.target.value)}
                                     />
                                     <small className="text-muted">Right</small>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
 
@@ -1036,7 +1037,7 @@ const ReportPreferencesStep: React.FC<ReportPreferencesProps> = ({
                                 type="button"
                                 className={`d-flex align-items-center justify-content-center  ${radioBtnClass("me")}`}
                                 onClick={() => setShareWith("me")}
-                                style={radioBtnStyle("me")}
+                                style={{ ...radioBtnStyle("me"), fontSize: '13px' }}
                             >
                                 <Lock size={14} className="me-2 flex-shrink-0" />
                                 Only me
@@ -1048,7 +1049,7 @@ const ReportPreferencesStep: React.FC<ReportPreferencesProps> = ({
                                 type="button"
                                 className={`d-flex align-items-center justify-content-center  ${radioBtnClass("selected")}`}
                                 onClick={() => setShareWith("selected")}
-                                style={radioBtnStyle("selected")}
+                                style={{ ...radioBtnStyle("selected"), fontSize: 13 }}
                             >
                                 <User size={14} className="me-2 flex-shrink-0" />
                                 Selected Users & Roles
@@ -1060,7 +1061,7 @@ const ReportPreferencesStep: React.FC<ReportPreferencesProps> = ({
                                 type="button"
                                 className={`d-flex align-items-center justify-content-center  ${radioBtnClass("everyone")}`}
                                 onClick={() => setShareWith("everyone")}
-                                style={radioBtnStyle("everyone")}
+                                style={{ ...radioBtnStyle("everyone"), fontSize: 13 }}
                             >
                                 <Globe size={14} className="me-2 flex-shrink-0" />
                                 Everyone
