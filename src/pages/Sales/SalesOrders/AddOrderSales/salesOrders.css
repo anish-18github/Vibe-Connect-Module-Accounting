@@ -333,18 +333,35 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 20px;
+  padding: 16px 20px;
   border-bottom: 1px solid #e5e7eb;
 }
 
-.settings-modal .custom-header h4 {
-  font-size: 16px;
-  margin: 0;
+.custom-header {
+  display: flex;
+  align-items: center;
+  /* vertical alignment */
+  justify-content: space-between;
+  /* title left, X right */
+  padding-right: 15px;
+}
+
+
+.custom-header h4 {
+  font-size: 17px;
+  /* margin: 0; */
+}
+
+.i-btn {
+  display: inline;
+  color: #555;
+  gap: 6px;
+  cursor: pointer;
 }
 
 /* body spacing */
 .settings-modal .modal-body {
-  padding: 16px 20px 20px;
+  padding: 0px 20px 20px;
 }
 
 /* top description paragraph */

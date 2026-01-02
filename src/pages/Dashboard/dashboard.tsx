@@ -1,36 +1,14 @@
-// ✅ FIXED: Complete Dashboard with TypeScript errors resolved
-
 import Header from '../../components/Header/Header';
 import Navbar from '../../components/Navbar/NavBar';
 import Card from '../../components/Cards/Card';
 import './dashboard.css';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  LineElement,
-  PointElement,
-} from 'chart.js';
+
 import { Bar, Line } from 'react-chartjs-2';
 
 import chartData from '../../data/incomeExpense.json';
 import topExpenses from '../../data/topExpenses.json';
 import cashFlow from '../../data/cashFlow.json';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  LineElement,
-  PointElement,
-);
 
 export const dashboardTabs = [
   { label: 'Dashboard', path: '/' },
@@ -79,16 +57,32 @@ function Dashboard() {
     ],
   };
 
+  // const formattedTopExpenses = {
+  //   labels: topExpensesTyped.map((item) => item.Category),
+  //   datasets: [
+  //     {
+  //       label: 'Top Expenses',
+  //       data: topExpensesTyped.map((item) => item.Amount),
+  //       backgroundColor: 'rgba(255, 159, 64, 0.6)',
+  //     },
+  //   ],
+  // };
+
   const formattedTopExpenses = {
-    labels: topExpensesTyped.map((item) => item.Category),
+    labels: topExpensesTyped.map(item =>
+      item.Category.length > 12
+        ? item.Category.slice(0, 12) + '…'
+        : item.Category
+    ),
     datasets: [
       {
         label: 'Top Expenses',
-        data: topExpensesTyped.map((item) => item.Amount),
-        backgroundColor: 'rgba(255, 159, 64, 0.6)',
+        data: topExpensesTyped.map(item => item.Amount),
       },
     ],
   };
+
+
 
   const formattedCashFlow = {
     labels: cashFlowTyped.map((i) => i.month),
@@ -116,6 +110,7 @@ function Dashboard() {
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: { padding: { bottom: 35 } },
     plugins: {
       legend: {
         position: 'top' as const,
@@ -123,24 +118,31 @@ function Dashboard() {
           padding: 20,
           usePointStyle: true,
           pointStyle: 'circle' as const,
-          font: {
-            size: 14,
-            weight: 'bold' as const, // ✅ FIXED: Use 'bold' instead of '500'
-          } as const,
+          font: { size: 14, weight: 'bold' as const } as const,
         } as const,
       } as const,
     } as const,
     scales: {
       x: {
         grid: { display: false },
-        ticks: { maxRotation: 0 },
+        ticks: {
+          align: 'inner',
+          callback: function (value: any) {
+            if (typeof value === 'number') {
+              return chartDataTyped[value]?.Income.Label || '';
+            }
+            const parts = String(value).split(' ');
+            return parts.length === 2 ? `${parts[0]}\n${parts[1]}` : value;
+          },
+          maxRotation: 0,
+          minRotation: 0,
+          autoSkip: true,
+          padding: 12,
+          font: { size: 10 },
+        } as any,
       },
       y: {
-        grid: {
-          color: 'rgba(0,0,0,0.05)',
-          lineWidth: 1,
-          drawBorder: false,
-        },
+        grid: { color: 'rgba(0,0,0,0.05)', lineWidth: 1, drawBorder: false },
         ticks: {
           callback: function (value: any) {
             return '₹' + Number(value).toLocaleString();
@@ -149,6 +151,8 @@ function Dashboard() {
       } as any,
     } as const,
   } as const;
+
+
 
   // Bright styled charts
   // ✅ UPDATED: Income/Expense colors + reduced border radius
@@ -225,6 +229,18 @@ function Dashboard() {
     ],
   };
 
+  const receivableActions = [
+    { label: 'New Invoice', path: '/sales/add-invoice' },
+    { label: 'New Recurring Invoice', path: '/sales/add-recurringInvoice' },
+    { label: 'New Customer Payment', path: '/sales/record-payment' },
+  ];
+
+  const payableActions = [
+    { label: 'New Bill', path: '/purchases/add-bill' },
+    { label: 'New Vendor Payment', path: '/purchases/add-paymentMade' },
+    { label: 'New Recurring Bill', path: '/purchases/add-recurringBill' },
+  ];
+
   return (
     <>
       <Header />
@@ -233,7 +249,7 @@ function Dashboard() {
 
         <div className="dashboard-container">
           {/* Total Receivables */}
-          <Card title="Total Receivables" actions>
+          <Card title="Total Receivables" actionMenu={receivableActions}>
             <p>
               Total Unpaid Invoice <span>₹ 0.00</span>
             </p>
@@ -249,7 +265,7 @@ function Dashboard() {
           </Card>
 
           {/* Total Payables */}
-          <Card title="Total Payables" actions>
+          <Card title="Total Payables" actionMenu={payableActions}>
             <p>
               Total Unpaid Invoice <span>₹ 0.00</span>
             </p>

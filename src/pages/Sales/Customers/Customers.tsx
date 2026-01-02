@@ -3,12 +3,13 @@ import Header from '../../../components/Header/Header';
 import Navbar from '../../../components/Navbar/NavBar';
 import DynamicTable from '../../../components/Table/DynamicTable';
 import { dashboardTabs } from '../../Dashboard/dashboard';
-import useFormSuccess from '../../../components/Toast/useFormSuccess';
 import { Toast } from '../../../components/Toast/Toast';
 import { useGlobalToast } from '../../../components/Toast/ToastContext';
+import { useNavigate } from 'react-router-dom';
 
 import './customers.css';
-import { useNavigate } from 'react-router-dom';
+import type { Customer } from '../../../types/customer';
+import api from '../../../services/api/apiConfig';
 
 export const salesTabs = [
   { label: 'Customers', path: '/sales/customers' },
@@ -17,7 +18,7 @@ export const salesTabs = [
   { label: 'Delivery Challans', path: '/sales/delivery-challans' },
   { label: 'Invoices', path: '/sales/invoices' },
   { label: 'Payment Received', path: '/sales/payment-received' },
-  { label: 'Payment Invoices', path: '/sales/payment-invoices' },
+  { label: 'Recurring Invoices', path: '/sales/payment-invoices' },
   { label: 'Credit Notes', path: '/sales/credit-notes' },
 ];
 
@@ -29,17 +30,40 @@ const columns = [
   { key: 'createdBy', label: 'Created By' },
 ];
 
-function Customer() {
+function Customers() {
   const navigate = useNavigate();
-  const [customers, setCustomers] = useState<any[]>([]);
   const { toast, setToast } = useGlobalToast();
-  useFormSuccess();
 
-  // INFUTURE HERE'S GET API CALL
-  // Load from localStorage
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // ✅ View handler (IMPORTANT)
+  const handleViewCustomer = (row: Customer) => {
+    navigate(`/sales/view-customer/${row.customerId}`, {
+      state: {
+        customerName: row.name,
+      },
+    });
+  };
+
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('customers') || '[]');
-    setCustomers(stored);
+    const fetchCustomers = async () => {
+      try {
+        const response = await api.get<Customer[]>('sales/customers/');
+        setCustomers(response.data);
+      } catch (error: any) {
+        setToast({
+          stage: 'enter',
+          type: 'error',
+          message:
+            error.response?.data?.detail || 'Unable to load customers',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCustomers();
   }, []);
 
   return (
@@ -51,14 +75,15 @@ function Customer() {
         <Navbar tabs={dashboardTabs} />
         <Navbar tabs={salesTabs} />
 
-        <div className=" mt-3">
+        <div className="mt-3">
           <DynamicTable
             columns={columns}
             data={customers}
-            actions={true}
+            loading={loading}
+            actions
             rowsPerPage={10}
-            onAdd={() => navigate('/sales/add-customer')} //May be change it latter. "/add-customer"
-            onView={(row) => navigate(`/sales/view-customer/${row.customerId}`)}
+            onAdd={() => navigate('/sales/add-customer')}
+            onView={handleViewCustomer}
           />
         </div>
       </div>
@@ -66,4 +91,4 @@ function Customer() {
   );
 }
 
-export default Customer;
+export default Customers;

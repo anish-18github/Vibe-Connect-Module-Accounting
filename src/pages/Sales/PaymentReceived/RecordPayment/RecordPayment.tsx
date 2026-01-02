@@ -8,25 +8,45 @@ import { Info, Settings, X } from 'react-feather';
 // ------------------- Interfaces -------------------
 
 export interface PaymentFormData {
-  customerName: string;
-  amountReceived: string;
-  paymentDate: string;
-  paymentId: string;
-  paymentMode: string;
-  reference: string;
-  taxDeducted: 'no' | 'yes';
-  tdsRate: string;
-  customerNotes: string;
+
+  paymentRecord: {
+    customerName: string;
+    amountReceived: string;
+    paymentDate: string;
+    paymentId: string;
+    paymentMode: string;
+    reference: string;
+    taxDeducted: 'no' | 'yes';
+    tdsRate: string;
+    customerNotes: string;
+  };
+
+  paymentSummary: {
+    amountReceived: number;
+    amountUsed: number;
+    amountRefunded: number;
+    amountExcess: number;
+  };
+
+  paymentUsageRow: {
+    date: string;
+    invoiceNumber: string;
+    invoiceAmount: number;
+    amountDue: number;
+    paymentReceivedOn: string;
+    paymentUsed: number;
+  }
+
 }
 
-export interface PaymentSummary {
+interface PaymentSummary {
   amountReceived: number;
   amountUsed: number;
   amountRefunded: number;
   amountExcess: number;
 }
 
-export interface PaymentUsageRow {
+interface PaymentUsageRow {
   date: string;
   invoiceNumber: string;
   invoiceAmount: number;
@@ -34,6 +54,22 @@ export interface PaymentUsageRow {
   paymentReceivedOn: string;
   paymentUsed: number;
 }
+
+// export interface PaymentSummary {
+//   amountReceived: number;
+//   amountUsed: number;
+//   amountRefunded: number;
+//   amountExcess: number;
+// }
+
+// export interface PaymentUsageRow {
+//   date: string;
+//   invoiceNumber: string;
+//   invoiceAmount: number;
+//   amountDue: number;
+//   paymentReceivedOn: string;
+//   paymentUsed: number;
+// }
 
 // ------------------- Component -------------------
 
@@ -43,10 +79,32 @@ export default function AddPayment() {
 
   const [showSettings, setShowSettings] = useState(false);
   const [mode, setMode] = useState<'auto' | 'manual'>('auto');
-  const [prefix, setPrefix] = useState('');
+  // const [prefix, setPrefix] = useState('');
   const [nextNumber, setNextNumber] = useState('');
   const [restartYear, setRestartYear] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [prefixPattern, setPrefixPattern] = useState<string>('CUSTOM');
+
+
+  const buildPrefixFromPattern = (pattern: string) => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    switch (pattern) {
+      case 'YEAR':
+        return `PID-${year}-`;
+      case 'YEAR_MONTH':
+        return `PID-${year}${month}-`;
+      case 'DATE_DDMMYYYY':
+        return `PID-${day}${month}${year}-`;
+      case 'YEAR_SLASH_MONTH':
+        return `PID-${year}/${month}-`;
+      default:
+        return 'PID-';
+    }
+  };
 
   const closePopup = () => {
     setClosing(true);
@@ -64,53 +122,18 @@ export default function AddPayment() {
   }, [showSettings]);
 
   // ---------------- Form State ----------------
-  const [formData, setFormData] = useState<PaymentFormData>({
-    customerName: '',
-    amountReceived: '',
-    paymentDate: '',
-    paymentId: '',
-    paymentMode: '',
-    reference: '',
-    taxDeducted: 'no',
-    tdsRate: '',
-    customerNotes: '',
-  });
-
+  // ✅ FIXED: Added missing states with proper types
   const [usageRows, setUsageRows] = useState<PaymentUsageRow[]>([
     {
-      date: '2025-01-01',
-      invoiceNumber: 'INV-001',
-      invoiceAmount: 5000,
-      amountDue: 2000,
+      date: '',
+      invoiceNumber: '',
+      invoiceAmount: 0,
+      amountDue: 0,
       paymentReceivedOn: '',
       paymentUsed: 0,
     },
   ]);
 
-  // ---------------- Auto fill today's date ----------------
-  useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
-    setFormData((prev) => ({ ...prev, paymentDate: today }));
-  }, []);
-
-  useEffect(() => {
-    setUsageRows((prev) =>
-      prev.map((row) => ({
-        ...row,
-        paymentReceivedOn: formData.paymentDate,
-      })),
-    );
-  }, [formData.paymentDate]);
-
-  // ---------------- Handle Input Change ----------------
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // ---------------- Summary Logic ----------------
   const [summary, setSummary] = useState<PaymentSummary>({
     amountReceived: 0,
     amountUsed: 0,
@@ -118,43 +141,132 @@ export default function AddPayment() {
     amountExcess: 0,
   });
 
+  const [formData, setFormData] = useState<PaymentFormData>({
+    paymentRecord: {
+      customerName: '',
+      amountReceived: '',
+      paymentDate: new Date().toISOString().split('T')[0],
+      paymentId: '',
+      paymentMode: '',
+      reference: '',
+      taxDeducted: 'no',
+      tdsRate: '',
+      customerNotes: '',
+    },
+    paymentSummary: {
+      amountReceived: 0,
+      amountUsed: 0,
+      amountRefunded: 0,
+      amountExcess: 0,
+    },
+    paymentUsageRow: {
+      date: '',
+      invoiceNumber: '',
+      invoiceAmount: 0,
+      amountDue: 0,
+      paymentReceivedOn: '',
+      paymentUsed: 0,
+    },
+  });
+
+
+
+  // ---------------- Auto fill today's date ----------------
   useEffect(() => {
-    const rcv = Number(formData.amountReceived || 0);
+    const today = new Date().toISOString().split('T')[0];
+    setFormData(prev => ({
+      ...prev,
+      paymentRecord: { ...prev.paymentRecord, paymentDate: today }
+    }));
+  }, []);
+
+  useEffect(() => {
+    setUsageRows(prev =>
+      prev.map((row: PaymentUsageRow) => ({
+        ...row,
+        paymentReceivedOn: formData.paymentRecord.paymentDate,
+      }))
+    );
+  }, [formData.paymentRecord.paymentDate]);
+
+  // ---------------- Handle Input Change ----------------
+  // ✅ FIXED: Proper typed handleChange
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target as { name: string; value: string };
+
+    if (name.includes('paymentRecord.')) {
+      const field = name.replace('paymentRecord.', '') as keyof typeof formData.paymentRecord;
+      setFormData(prev => ({
+        ...prev,
+        paymentRecord: { ...prev.paymentRecord, [field]: value }
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value } as PaymentFormData));
+    }
+  };
+
+  // ---------------- Summary Logic ----------------
+  // const [summary, setSummary] = useState<PaymentSummary>({
+  //   amountReceived: 0,
+  //   amountUsed: 0,
+  //   amountRefunded: 0,
+  //   amountExcess: 0,
+  // });
+
+
+  useEffect(() => {
+    const rcv = Number(formData.paymentRecord.amountReceived || 0);
     const used = summary.amountUsed;
     const refund = summary.amountRefunded;
-
-    setSummary((prev) => ({
+    setSummary(prev => ({
       ...prev,
       amountReceived: rcv,
       amountExcess: rcv - used - refund,
     }));
-  }, [formData.amountReceived, summary.amountUsed, summary.amountRefunded]);
+  }, [formData.paymentRecord.amountReceived, summary.amountUsed, summary.amountRefunded]);
+
 
   // ---------------- Submit ----------------
-  const handleSubmit = (e: React.FormEvent) => {
+  // ✅ FIXED: Proper handleSubmit
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log('Payment Saved:', formData, usageRows, summary);
+    // ✅ FIXED: Build finalPayload
+    const finalPayload = {
+      ...formData.paymentRecord,
+      amountReceived: Number(formData.paymentRecord.amountReceived),
+      usageRows,
+      summary,
+    };
 
+    console.log('Payment Saved:', finalPayload);
     alert('Payment Saved Successfully!');
+
     const existing = JSON.parse(localStorage.getItem('payments') || '[]');
     existing.push(finalPayload);
     localStorage.setItem('payments', JSON.stringify(existing));
-    sessionStorage.setItem('formSuccess', 'Payment recorded');
-    setTimeout(() => navigate('/sales/payment-received'), 400);
+
+    navigate('/sales/payment-received');
   };
 
   // ---------------- Apply Auto Payment ID ----------------
   const applyAutoSO = () => {
     if (mode === 'auto') {
+      const prefix = buildPrefixFromPattern(prefixPattern);
+      const fullNumber = `${prefix}${nextNumber || '001'}`;
+
       setFormData((prev) => ({
         ...prev,
-        paymentId: prefix + nextNumber,
+        paymentRecord: {
+          ...prev.paymentRecord,
+          paymentId: fullNumber, // ✅ matches the input binding
+        },
       }));
     }
     closePopup();
   };
-
   // ---------------- REMOVE SPINNERS FOR NUMBER INPUT ----------------
   const noSpinnerStyle = {
     MozAppearance: 'textfield' as const,
@@ -179,9 +291,9 @@ export default function AddPayment() {
                     Customer:
                   </label>
                   <select
-                    name="customerName"
+                    name="paymentRecord.customerName"
                     className="form-select so-control"
-                    value={formData.customerName}
+                    value={formData.paymentRecord.customerName}
                     onChange={handleChange}
                   >
                     <option value="">Select Customer</option>
@@ -195,9 +307,9 @@ export default function AddPayment() {
                     Payment Mode:
                   </label>
                   <select
-                    name="paymentMode"
+                    name="paymentRecord.paymentMode"
                     className="form-select so-control"
-                    value={formData.paymentMode}
+                    value={formData.paymentRecord.paymentMode}
                     onChange={handleChange}
                   >
                     <option value="">Select Mode</option>
@@ -214,10 +326,10 @@ export default function AddPayment() {
                   </label>
                   <input
                     type="number"
-                    name="amountReceived"
+                    name="paymentRecord.amountReceived"
                     className="form-control so-control mb-2"
                     style={noSpinnerStyle}
-                    value={formData.amountReceived}
+                    value={formData.paymentRecord.amountReceived}
                     onChange={handleChange}
                   />
                   <div className="form-check" style={{ fontSize: 12 }}>
@@ -238,9 +350,9 @@ export default function AddPayment() {
                   </label>
                   <input
                     type="date"
-                    name="paymentDate"
+                    name="paymentRecord.paymentDate"
                     className="form-control so-control"
-                    value={formData.paymentDate}
+                    value={formData.paymentRecord.paymentDate}
                     onChange={handleChange}
                   />
                 </div>
@@ -254,16 +366,16 @@ export default function AddPayment() {
 
                     <input
                       type="text"
-                      name="paymentId"
+                      name="paymentRecord.paymentId"
                       className="form-control so-control"
-                      value={formData.paymentId}
+                      value={formData.paymentRecord.paymentId}
                       onChange={handleChange}
                       style={{ paddingRight: '35px' }}
                     />
                     <span style={{
                       position: 'absolute',
                       right: '10px',
-                      top: '50%',
+                      top: '45%',
                       transform: 'translateY(-50%)',
                       cursor: 'pointer',
                       color: '#6c757d',
@@ -280,9 +392,9 @@ export default function AddPayment() {
                   </label>
                   <input
                     type="text"
-                    name="reference"
+                    name="paymentRecord.reference"
                     className="form-control so-control"
-                    value={formData.reference}
+                    value={formData.paymentRecord.reference}
                     onChange={handleChange}
                   />
                 </div>
@@ -302,9 +414,9 @@ export default function AddPayment() {
                         type="radio"
                         id="taxNo"
                         className="form-check-input me-2"
-                        name="taxDeducted"
+                        name="paymentRecord.taxDeducted"
                         value="no"
-                        checked={formData.taxDeducted === 'no'}
+                        checked={formData.paymentRecord.taxDeducted === 'no'}
                         onChange={handleChange}
                       />
                       <label htmlFor="taxNo" className="form-check-label small">
@@ -316,9 +428,9 @@ export default function AddPayment() {
                         type="radio"
                         id="taxYes"
                         className="form-check-input me-2"
-                        name="taxDeducted"
+                        name="paymentRecord.taxDeducted"
                         value="yes"
-                        checked={formData.taxDeducted === 'yes'}
+                        checked={formData.paymentRecord.taxDeducted === 'yes'}
                         onChange={handleChange}
                       />
                       <label htmlFor="taxYes" className="form-check-label small">
@@ -328,15 +440,15 @@ export default function AddPayment() {
                   </div>
                 </div>
 
-                {formData.taxDeducted === 'yes' && (
+                {formData.paymentRecord.taxDeducted === 'yes' && (
                   <div className="so-form-group mb-4">
                     <label className="so-label text-sm text-muted-foreground fw-bold">
                       TDS Amount (%):
                     </label>
                     <select
-                      name="tdsRate"
+                      name="paymentRecord.tdsRate"
                       className="form-select so-control"
-                      value={formData.tdsRate}
+                      value={formData.paymentRecord.tdsRate}
                       onChange={handleChange}
                     >
                       <option value="">Select TDS Rate</option>
@@ -373,7 +485,7 @@ export default function AddPayment() {
                   <tbody>
                     {usageRows.map((row, index) => (
                       <tr key={index} style={{ fontSize: 12 }}>
-                        <td >{row.date}</td>
+                        <td >{formData.paymentRecord.paymentDate}</td>
                         <td>{row.invoiceNumber}</td>
                         <td>₹ {row.invoiceAmount}</td>
                         <td>₹ {row.amountDue}</td>
@@ -384,15 +496,12 @@ export default function AddPayment() {
                             style={noSpinnerStyle}
                             className="form-control form-control-sm border-0 item-input"
                             value={row.paymentUsed}
-                            onChange={(e) => {
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                               const updated = [...usageRows];
                               updated[index].paymentUsed = Number(e.target.value);
                               setUsageRows(updated);
-                              const totalUsed = updated.reduce((sum, r) => sum + r.paymentUsed, 0);
-                              setSummary((prev) => ({
-                                ...prev,
-                                amountUsed: totalUsed,
-                              }));
+                              const totalUsed = updated.reduce((sum: number, r: PaymentUsageRow) => sum + r.paymentUsed, 0);
+                              setSummary(prev => ({ ...prev, amountUsed: totalUsed }));
                             }}
                           />
                         </td>
@@ -412,8 +521,8 @@ export default function AddPayment() {
                   </label>
                   <textarea
                     className="form-control so-control textarea"
-                    name="customerNotes"
-                    value={formData.customerNotes}
+                    name="paymentRecord.customerNotes"
+                    value={formData.paymentRecord.customerNotes}
                     onChange={handleChange}
                     placeholder="Add note for customer..."
                   />
@@ -471,17 +580,17 @@ export default function AddPayment() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header custom-header">
-              <h4 className="mb-0 p-4">Configure Sales Order Number Preferences</h4>
+              <h4 className="mb-0" style={{ fontSize: 17 }}>Configure Sales Order Number Preferences</h4>
               <X
                 size={20}
-                style={{ cursor: 'pointer', marginRight: '15px' }}
+                style={{ cursor: 'pointer', color: '#fc0404ff' }}
                 onClick={closePopup}
               />
             </div>
 
             <div className="modal-body mt-3">
-              <p style={{ fontSize: '14px', color: '#555' }}>
-                Your Sales Orders are currently set to auto-generate numbers. Change settings if
+              <p style={{ fontSize: 13, color: '#555' }}>
+                Your payment Id are currently set to auto-generate numbers. Change settings if
                 needed.
               </p>
 
@@ -494,43 +603,61 @@ export default function AddPayment() {
                   checked={mode === 'auto'}
                   onChange={() => setMode('auto')}
                 />
-                <label className="form-check-label" style={{ fontWeight: 500 }}>
-                  Continue auto-generating Sales Order Numbers
+                <label className="form-check-label fw-normal" >
+                  Continue auto-generating Payment Id Numbers
                 </label>
-                <span style={{ marginLeft: '6px', cursor: 'pointer' }}>
-                  <Info size={18} />
+                <span className='i-btn'>
+                  <Info size={13} />
                 </span>
               </div>
 
               {mode === 'auto' && (
-                <div style={{ marginLeft: 25 }}>
-                  <div style={{ display: 'flex', gap: 20 }}>
-                    <div style={{ flex: 1 }}>
-                      <label className="form-label">Prefix</label>
-                      <input
-                        value={prefix}
-                        onChange={(e) => setPrefix(e.target.value)}
-                        className="form-control"
-                        placeholder="PID-"
-                      />
+                <div className="auto-settings">
+                  <div className="auto-settings-row">
+                    {/* PREFIX PATTERN SELECT */}
+                    <div style={{ flex: 1, fontSize: 13 }}>
+                      <label className="so-label text-sm text-muted-foreground fw-bold">Prefix pattern</label>
+                      <select
+                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                        value={prefixPattern}
+                        onChange={(e) => setPrefixPattern(e.target.value)}
+                      >
+                        <option value="" disabled>
+                          -- Select prefix --
+                        </option>
+                        <option value="YEAR">Current year (YYYY-)</option>
+                        <option value="YEAR_MONTH">Current year + month (YYYYMM-)</option>
+                        <option value="DATE_DDMMYYYY">Current date (DDMMYYYY-)</option>
+                        <option value="YEAR_SLASH_MONTH">Year/Month (YYYY/MM-)</option>
+                      </select>
+                      <small className="text-muted d-block mt-1">
+                        Example prefix: {buildPrefixFromPattern(prefixPattern)}
+                      </small>
                     </div>
 
-                    <div style={{ flex: 1 }}>
-                      <label className="form-label">Next Number</label>
+                    {/* NEXT NUMBER */}
+                    <div style={{ flex: 1, fontSize: 13 }} className="so-form-group mb-4">
+                      <label className="so-label text-sm text-muted-foreground fw-bold">Next Number</label>
                       <input
                         value={nextNumber}
                         onChange={(e) => setNextNumber(e.target.value)}
-                        className="form-control"
+                        className="form-control so-control border"
+                        placeholder="001"
                       />
+                      <small className="text-muted d-block mt-1">
+                        Full example: {buildPrefixFromPattern(prefixPattern)}
+                        {nextNumber || '001'}
+                      </small>
                     </div>
                   </div>
 
                   <div className="mt-3">
-                    <label>
+                    <label style={{ fontSize: 13 }}>
                       <input
                         type="checkbox"
                         checked={restartYear}
                         onChange={(e) => setRestartYear(e.target.checked)}
+                        // style={{ fontSize: 12 }}
                         className="me-2"
                       />
                       Restart numbering every fiscal year.
@@ -548,16 +675,17 @@ export default function AddPayment() {
                   checked={mode === 'manual'}
                   onChange={() => setMode('manual')}
                 />
-                <label className="form-check-label" style={{ fontWeight: 500 }}>
+                <label className="form-check-label fw-normal" >
                   Enter Sales Order Numbers manually
                 </label>
               </div>
 
-              <div className="d-flex justify-content-end mt-4" style={{ gap: 10 }}>
-                <button className="btn btn-outline-secondary" onClick={closePopup}>
+              <div className="d-flex justify-content-center mt-4" style={{ gap: 10 }}>
+                <button className="btn border me-3 px-4" onClick={closePopup}>
                   Cancel
                 </button>
-                <button className="btn btn-primary px-4" onClick={applyAutoSO}>
+                <button className="btn me-2 px-4"
+                  style={{ background: '#7991BB', color: '#FFF' }} onClick={applyAutoSO}>
                   Save
                 </button>
               </div>

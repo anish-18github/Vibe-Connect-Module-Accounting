@@ -210,7 +210,7 @@ const CommentBox: React.FC = () => {
                 </div>
 
                 {/* Comment Text */}
-                <div dangerouslySetInnerHTML={{ __html: c.html }} />
+                <div style={{ overflowX: 'hidden', textWrap: "auto" }} dangerouslySetInnerHTML={{ __html: c.html }} />
 
                 {/* Separator */}
                 {index !== comments.length - 1 && (

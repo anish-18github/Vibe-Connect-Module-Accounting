@@ -12,7 +12,7 @@ const MailSystem = () => {
 
   const options = [
     { label: 'Outlook', value: 'outlook' },
-    { label: 'Zoho Mail', value: 'zoho' },
+    { label: 'VC Mail', value: 'vc mail' },
     { label: 'Link with work account', value: 'work' },
   ];
 

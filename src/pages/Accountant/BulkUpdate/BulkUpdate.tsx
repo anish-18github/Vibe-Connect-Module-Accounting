@@ -278,7 +278,7 @@ const BulkUpdate = () => {
                       </label>
                       <select
                         name="account"
-                        className="form-control so-control border"
+                        className="form-select so-control border"
                         value={form.account}
                         style={{ fontSize: 12 }}
                         onChange={handleChange}
@@ -297,7 +297,7 @@ const BulkUpdate = () => {
                       </label>
                       <select
                         name="contact"
-                        className="form-control so-control border"
+                        className="form-select so-control border"
                         style={{ fontSize: 12 }}
                         value={form.contact}
                         onChange={handleChange}

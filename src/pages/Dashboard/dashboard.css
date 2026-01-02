@@ -1,270 +1,314 @@
-/* MAIN DASHBOARD CONTAINER */
-.dashboard-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  padding: 1.8rem 1.8rem;
-  min-height: calc(100vh - 120px);
-  /* margin-left: 55px; */
-}
-
-/* CARD BASE STYLING */
-.card {
-  background: white;
-  border-radius: 16px;
-  border: 1px solid #e5e7eb;
-  padding: 0px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* CARD TITLE */
-.card h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  color: #000000;
-  font-weight: 400;
-}
-
-/* PROGRESS BARS */
-.bar {
-  width: 100%;
-  height: 6px;
-  background: linear-gradient(to right, #19376d, #a5d7e8);
-  border-radius: 8px;
-  margin: 8px 0;
-}
-
-/* CONTENT TEXT STYLING */
-.card p {
-  margin: 0;
-  font-size: 13px;
-  color: #555;
-}
-
-.card span {
-  font-weight: 600;
-  color: #19376d;
-}
-
-/* HEADINGS INSIDE CARD */
-.card h2 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 4px 0;
-}
-
-.card h2 span {
-  font-size: 0.9rem;
-}
-
-.row-values {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 10px;
-}
-
-.row-values h2 {
-  display: flex;
-  flex-direction: column;
-  font-size: 1rem;
-  margin: 0;
-}
-
-.row-values h2 span {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #19376d;
-}
-
-/* PLACEHOLDER BOX WHEN NO CHART */
-.placeholder {
-  width: 100%;
-  height: 180px;
-  border: 1px dashed #bbb;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #777;
-  background: #fafafa;
-}
-
-/* FIX CHART CARD HEIGHTS */
-.card .recharts-wrapper {
-  width: 100% !important;
-}
-
-.chart-toggle {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 10px;
-}
-
-.toggle-btn {
-  padding: 3px 10px;
-  border: 1px solid #ccc;
-  cursor: pointer;
-  font-size: 12px;
-  color: #352f2f;
-}
-
-.toggle-btn.accrual {
-  border-radius: 5px 0px 0px 5px;
-}
-
-.toggle-btn.cash {
-  border-radius: 0px 5px 5px 0px;
-}
-
-.toggle-btn.active {
-  background: #c1c8d4;
-  color: #5e5e5e;
-  border-color: #c9cfda;
-}
-
-/* Summary */
-.chart-summary {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #eee;
-}
-
-.summary-item {
-  text-align: left;
-}
-
-.summary-item h3 {
-  font-size: 14px;
-  margin: 4px 0 2px;
-  font-size: 200;
-}
-
-.summary-item h2 {
-  margin: 0;
-  font-size: 22px;
-}
-
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 5px;
-}
-
-.dot.income {
-  background-color: #2b59ff;
-}
-
-.dot.expense {
-  background-color: #ff5757;
-}
-
-/* Note */
-.chart-note {
-  font-size: 12px;
-  margin-top: 8px;
-  color: #777;
-}
-
-.wide-card {
-  grid-column: span 2;
-}
-
-/* --------- CASH FLOW CARD FIX --------- */
-
-.cashflow-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-/* Right-side summary layout */
-.cashflow-summary {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  width: 180px;
-  gap: 20px;
-  padding-left: 15px;
-  border-left: 1px solid #eee;
-}
-
-/* Each item stacked vertically */
-.cashflow-summary .summary-item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-/* Label styling */
-.cashflow-summary .summary-item h3 {
-  margin: 0;
-  font-size: 13px;
-  font-weight: 500;
-  color: #555;
-}
-
-/* Rupee value below label */
-.cashflow-summary .summary-item h2 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  text-align: right;
-}
-
-/* Ensure chart takes remaining space */
-.cashflow-content .recharts-wrapper {
-  flex: 1;
-}
-
-/* RESPONSIVE */
-@media (max-width: 600px) {
+  /* MAIN DASHBOARD CONTAINER */
   .dashboard-container {
-    padding: 10px;
-    grid-template-columns: 1fr;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 1.8rem 1.8rem;
+    min-height: calc(100vh - 120px);
+    z-index: 100;
+    /* margin-left: 55px; */
   }
-}
 
-/* Chart js */
+  .dashboard-container .dropdown-menu {
+    position: fixed !important;
+    /* Changed from absolute */
+    z-index: 10000 !important;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    border: 1px solid #e5e7eb;
+  }
 
-.App {
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  align-content: center;
-  gap: 2vw;
-  flex-wrap: wrap;
-  background-color: #ddd;
-}
+  .dashboard-container .card-body {
+    padding: 20px;
+  }
 
-.dataCard {
-  background-color: #efefef;
-  border-radius: 0.5em;
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-  padding: 1em;
-}
 
-.revenueCard {
-  width: 92%;
-  height: 20rem;
-}
+  /* CARD BASE STYLING */
+  .card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    padding: 0px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
 
-.customerCard {
-  width: 100%;
-  height: 20rem;
-}
+  /* CARD TITLE */
+  .card h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #000000;
+    font-weight: 400;
+  }
 
-.categoryCard {
-  width: 40%;
-  height: 20rem;
-}
+  /* PROGRESS BARS */
+  .bar {
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(to right, #19376d, #a5d7e8);
+    border-radius: 8px;
+    margin: 8px 0;
+  }
+
+  /* CONTENT TEXT STYLING */
+  .card p {
+    margin: 0;
+    font-size: 13px;
+    color: #555;
+  }
+
+  .card span {
+    font-weight: 600;
+    color: #19376d;
+  }
+
+  /* HEADINGS INSIDE CARD */
+  .card h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 4px 0;
+  }
+
+  .card h2 span {
+    font-size: 0.9rem;
+  }
+
+  .row-values {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .row-values h2 {
+    display: flex;
+    flex-direction: column;
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  .row-values h2 span {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #19376d;
+  }
+
+  /* PLACEHOLDER BOX WHEN NO CHART */
+  .placeholder {
+    width: 100%;
+    height: 180px;
+    border: 1px dashed #bbb;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777;
+    background: #fafafa;
+  }
+
+  /* FIX CHART CARD HEIGHTS */
+  .card .recharts-wrapper {
+    width: 100% !important;
+  }
+
+  .chart-toggle {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+
+  .toggle-btn {
+    padding: 3px 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    font-size: 12px;
+    color: #352f2f;
+  }
+
+  .toggle-btn.accrual {
+    border-radius: 5px 0px 0px 5px;
+  }
+
+  .toggle-btn.cash {
+    border-radius: 0px 5px 5px 0px;
+  }
+
+  .toggle-btn.active {
+    background: #c1c8d4;
+    color: #5e5e5e;
+    border-color: #c9cfda;
+  }
+
+  /* Summary */
+  .chart-summary {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+  }
+
+  .summary-item {
+    text-align: left;
+  }
+
+  .summary-item h3 {
+    font-size: 14px;
+    margin: 4px 0 2px;
+    font-size: 200;
+  }
+
+  .summary-item h2 {
+    margin: 0;
+    font-size: 22px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+  }
+
+  .dot.income {
+    background-color: #2b59ff;
+  }
+
+  .dot.expense {
+    background-color: #ff5757;
+  }
+
+  /* Note */
+  .chart-note {
+    font-size: 12px;
+    margin-top: 8px;
+    color: #777;
+  }
+
+  .wide-card {
+    grid-column: span 2;
+  }
+
+  /* --------- CASH FLOW CARD FIX --------- */
+
+  .cashflow-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  /* Right-side summary layout */
+  .cashflow-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 180px;
+    gap: 20px;
+    padding-left: 15px;
+    border-left: 1px solid #eee;
+  }
+
+  /* Each item stacked vertically */
+  .cashflow-summary .summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  /* Label styling */
+  .cashflow-summary .summary-item h3 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+  }
+
+  /* Rupee value below label */
+  .cashflow-summary .summary-item h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  /* Ensure chart takes remaining space */
+  .cashflow-content .recharts-wrapper {
+    flex: 1;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .dashboard-container {
+      padding: 10px;
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Chart js */
+
+  .App {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    gap: 2vw;
+    flex-wrap: wrap;
+    background-color: #ddd;
+  }
+
+  .dataCard {
+    background-color: #efefef;
+    border-radius: 0.5em;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    padding: 1em;
+  }
+
+  .revenueCard {
+    width: 92%;
+    height: 20rem;
+  }
+
+  .customerCard {
+    width: 100%;
+    height: 20rem;
+  }
+
+  .categoryCard {
+    width: 40%;
+    height: 20rem;
+  }
+
+  .dataCard.customerCard {
+    min-height: 380px !important;
+    /* Increased from 350px */
+    width: 100%;
+    position: relative;
+  }
+
+  /* Target Recharts SVG + groups */
+  .dataCard svg,
+  .dataCard .recharts-wrapper,
+  .dataCard g,
+  .dataCard rect,
+  .dataCard path {
+    z-index: 1 !important;
+  }
+
+  .dataCard canvas,
+  .customerCard canvas {
+    z-index: 1 !important;
+    position: relative !important;
+  }
+
+  .chart-toggle {
+    margin-bottom: 15px;
+  }

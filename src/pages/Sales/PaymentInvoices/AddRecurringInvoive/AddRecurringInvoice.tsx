@@ -44,6 +44,7 @@ export default function AddRecurringInvoices() {
   const { toast, setToast } = useToast();
 
   // ---------------- Modal + Small UI State ----------------
+  
   // const [showSettings, setShowSettings] = useState(false);
   // const [prefix, setPrefix] = useState("");
   // const [nextNumber, setNextNumber] = useState("");
@@ -152,6 +153,21 @@ export default function AddRecurringInvoices() {
       grandTotal: grand,
     });
   }, [formData.itemTable, taxInfo.type, taxInfo.selectedTax, taxInfo.adjustment, tcsOptions]);
+
+
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+
+    setFormData((prev) => ({
+      ...prev,
+      invoice: {
+        ...prev.invoice,
+        startOn: today,  
+      },
+    }));
+  }, []);
+
+
 
   // ---------------- Handlers ----------------
   const handleTaxChange = (field: any, value: any) => {

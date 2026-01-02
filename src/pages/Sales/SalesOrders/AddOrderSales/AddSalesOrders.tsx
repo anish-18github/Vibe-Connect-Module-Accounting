@@ -10,17 +10,27 @@ import ItemTable, {
   SummaryBox,
   type ItemRow,
   type TcsOption,
+  type TdsOption,
 } from '../../../../components/Table/ItemTable/ItemTable';
 import { FeatherUpload } from '../../Customers/AddCustomer/Add';
+import api from '../../../../services/api/apiConfig';
+import SalesPersonSelect from '../../../../components/SalesPersonSelect/SalesPersonSelect';
+import { createTCS, getTCS, getTDS } from '../../../../services/api/taxService';
+
+interface Customer {
+  customerId: number;
+  name: string;
+}
 
 interface SalesOrdersForm {
   salesOrder: {
-    customerName: string;
+    customerId: string;
     salesOrderNo: string;
+    referenceNumber: string;
     salesOrderDate: string;
     expectedShipmentDate: string;
     paymentTerms: string;
-    salesperson: string;
+    salesPerson: string;
     deliveryMethod: string;
     customerNotes: string;
     termsAndConditions: string;
@@ -30,9 +40,13 @@ interface SalesOrdersForm {
 
 type TaxType = 'TDS' | 'TCS' | '';
 
+type SubmitType = 'draft' | 'sent';
+
+
+
 export default function AddSalesOrder() {
   const navigate = useNavigate();
-  const { toast, setToast } = useToast();
+  const { toast, setToast, showToast } = useToast();
 
   const [showSettings, setShowSettings] = useState(false);
   const [mode, setMode] = useState<'auto' | 'manual'>('auto');
@@ -41,30 +55,58 @@ export default function AddSalesOrder() {
   const [closing, setClosing] = useState(false);
   const [prefixPattern, setPrefixPattern] = useState<string>('CUSTOM');
 
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loadingCustomers, setLoadingCustomers] = useState(true);
+
+  /* ---------------- TAX STATE ---------------- */
+  const [tdsOptions, setTdsOptions] = useState<TdsOption[]>([]);
+  const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([]);
+  const [loadingTax, setLoadingTax] = useState(false);
+
+  /* ---------------- SUBMIT WITH STATUS ---------------- */  
+  const [submitType, setSubmitType] = useState<SubmitType>('draft');
+
+  // TCS HANDLER
+  const handleAddTcs = async (data: { name: string; rate: number }) => {
+    const created = await createTCS(data);
+
+    setTcsOptions((prev) => [...prev, created]);
+
+    setTaxInfo((prev) => ({
+      ...prev,
+      type: 'TCS',
+      selectedTax: String(created.id),
+    }));
+  };
+
+
   // helper: build prefix string from pattern
   const buildPrefixFromPattern = (pattern: string) => {
     const now = new Date();
-    const yyyy = now.getFullYear().toString();
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const dd = String(now.getDate()).padStart(2, '0');
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
 
     switch (pattern) {
       case 'YEAR':
-        return `${yyyy}-`; // 2025-
+        return `SO-${year}-`;
       case 'YEAR_MONTH':
-        return `${yyyy}${mm}-`; // 202512-
+        return `SO-${year}${month}-`;
       case 'DATE_DDMMYYYY':
-        return `${dd}${mm}${yyyy}-`; // 13122025-
+        return `SO-${day}${month}${year}-`;
       case 'YEAR_SLASH_MONTH':
-        return `${yyyy}/${mm}-`; // 2025/12-
+        return `SO-${year}/${month}-`;
       default:
-        return '';
+        return 'SO-';
     }
   };
+
+
+
   const applyAutoSO = () => {
     if (mode === 'auto') {
       const prefix = buildPrefixFromPattern(prefixPattern);
-      const fullNumber = `${prefix}${nextNumber}`;
+      const fullNumber = `${prefix}${nextNumber || '001'}`;
 
       setFormData((prev) => ({
         ...prev,
@@ -92,14 +134,60 @@ export default function AddSalesOrder() {
     };
   }, [showSettings]);
 
+
+  /* ---------------- LOAD TAX ---------------- */
+  useEffect(() => {
+    const loadTaxes = async () => {
+      try {
+        setLoadingTax(true);
+
+        const [tdsRes, tcsRes] = await Promise.all([
+          getTDS(),
+          getTCS(),
+        ]);
+
+        // ✅ TDS (read-only)
+        setTdsOptions(
+          tdsRes.map((t) => ({
+            id: Number(t.id),   // TDS → number
+            name: t.name,
+            rate: Number(t.rate),
+          }))
+        );
+
+        // ✅ TCS (editable)
+        setTcsOptions(
+          tcsRes.map((t) => ({
+            id: String(t.id),   // TCS → string
+            name: t.name,
+            rate: Number(t.rate),
+          }))
+        );
+      } catch {
+        showToast('Failed to load tax options', 'error');
+      } finally {
+        setLoadingTax(false);
+      }
+    };
+
+    loadTaxes();
+  }, []);
+
+
+
+
+
+  // FORM STATE
+
   const [formData, setFormData] = useState<SalesOrdersForm>({
     salesOrder: {
-      customerName: '',
+      customerId: '',
       salesOrderNo: '',
+      referenceNumber: '',
       salesOrderDate: '',
       expectedShipmentDate: '',
       paymentTerms: '',
-      salesperson: '',
+      salesPerson: '',
       deliveryMethod: '',
       customerNotes: '',
       termsAndConditions: '',
@@ -115,11 +203,13 @@ export default function AddSalesOrder() {
     ],
   });
 
-  const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([
-    { id: 'tcs_5', name: 'TCS Standard', rate: 5 },
-    { id: 'tcs_12', name: 'TCS Standard', rate: 12 },
-    { id: 'tcs_18', name: 'TCS Standard', rate: 18 },
-  ]);
+  // const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([
+  //   { id: 'tcs_5', name: 'TCS Standard', rate: 5 },
+  //   { id: 'tcs_12', name: 'TCS Standard', rate: 12 },
+  //   { id: 'tcs_18', name: 'TCS Standard', rate: 18 },
+  // ]);
+
+  // TAX STATE
 
   const [taxInfo, setTaxInfo] = useState({
     type: '' as TaxType,
@@ -137,12 +227,11 @@ export default function AddSalesOrder() {
     grandTotal: 0,
   });
 
-  const computeSubtotal = (items: ItemRow[]) => {
-    return items.reduce((acc, r) => {
-      const amt = parseFloat(String(r.amount || '0')) || 0;
-      return acc + amt;
-    }, 0);
-  };
+  /* ---------------- TAX CALCULATION ---------------- */
+
+
+  const computeSubtotal = (items: ItemRow[]) =>
+    items.reduce((acc, r) => acc + Number(r.amount || 0), 0);
 
   useEffect(() => {
     const subtotal = computeSubtotal(formData.itemTable);
@@ -151,38 +240,69 @@ export default function AddSalesOrder() {
     if (taxInfo.type === 'TDS') {
       rate = Number(taxInfo.selectedTax || 0);
     } else if (taxInfo.type === 'TCS') {
-      const opt = tcsOptions.find((o) => o.id === taxInfo.selectedTax);
+      const opt = tcsOptions.find(
+        (o) => String(o.id) === taxInfo.selectedTax,
+      );
       rate = opt ? opt.rate : 0;
     }
 
-    const taxAmount = +(subtotal * (rate / 100));
+    const taxAmount = subtotal * (rate / 100);
     const grand =
       taxInfo.type === 'TDS'
-        ? subtotal - taxAmount + Number(taxInfo.adjustment || 0)
-        : subtotal + taxAmount + Number(taxInfo.adjustment || 0);
+        ? subtotal - taxAmount + taxInfo.adjustment
+        : subtotal + taxAmount + taxInfo.adjustment;
 
-    setTaxInfo((prev) => ({
-      ...prev,
+    setTaxInfo((p) => ({
+      ...p,
       taxRate: rate,
       taxAmount,
       total: grand,
     }));
+
     setTotals({
       subtotal,
       tax: taxAmount,
       total: grand,
       grandTotal: grand,
     });
-  }, [formData.itemTable, taxInfo.type, taxInfo.selectedTax, taxInfo.adjustment, tcsOptions]);
+  }, [
+    formData.itemTable,
+    taxInfo.type,
+    taxInfo.selectedTax,
+    taxInfo.adjustment,
+    tcsOptions,
+  ]);
 
-  const handleTaxChange = (field: any, value: any) => {
-    setTaxInfo((prev) => ({ ...prev, [field]: value }));
-  };
+  // ---------------- Load customers ----------------
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const res = await api.get<Customer[]>('sales/customers/');
+        setCustomers(res.data);
+      } catch {
+        showToast('Failed to load customers', 'error');
+      } finally {
+        setLoadingCustomers(false);
+      }
+    };
+    fetchCustomers();
+  }, [showToast]);
 
-  const handleAddTcs = (opt: TcsOption) => {
-    setTcsOptions((prev) => [...prev, opt]);
-  };
 
+  // CURRENT DATE
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    setFormData((prev) => ({
+      ...prev,
+      salesOrder: {
+        ...prev.salesOrder,
+        salesOrderDate: today,
+      },
+    }));
+  }, []);
+
+
+  /* ---------------- HANDLERS ---------------- */
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
@@ -191,6 +311,10 @@ export default function AddSalesOrder() {
       ...prev,
       salesOrder: { ...prev.salesOrder, [name]: value },
     }));
+  };
+
+  const handleTaxChange = (field: any, value: any) => {
+    setTaxInfo((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleAddRow = () => {
@@ -240,25 +364,93 @@ export default function AddSalesOrder() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+
+
+
+
+  const validateForm = () => {
+    if (!formData.salesOrder.customerId)
+      return showToast('Select a customer', 'warning'), false;
+
+    if (!formData.salesOrder.salesOrderNo)
+      return showToast('Sales Order number required', 'warning'), false;
+
+    if (!formData.salesOrder.salesOrderDate)
+      return showToast('Sales Order date required', 'warning'), false;
+
+    if (!formData.itemTable.length)
+      return showToast('Add at least one item', 'warning'), false;
+
+    return true;
+  };
+
+  const round2 = (value: number) =>
+    Number(Number(value).toFixed(2));
+
+
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const finalPayload = {
-      ...formData,
-      totals,
-      taxInfo,
-      orderId: Math.floor(100000 + Math.random() * 900000),
-      createdOn: new Date().toISOString().split('T')[0],
-      createdBy: 'Admin',
+    if (!validateForm()) return;
+
+    const payload = {
+      customer: Number(formData.salesOrder.customerId),
+
+      sales_order_number: formData.salesOrder.salesOrderNo,
+      sales_order_date: formData.salesOrder.salesOrderDate,
+      expected_shipment_date: formData.salesOrder.expectedShipmentDate,
+
+      payment_terms: formData.salesOrder.paymentTerms,
+      delivery_method: formData.salesOrder.deliveryMethod,
+      salesperson: formData.salesOrder.salesPerson,
+      reference_number: formData.salesOrder.referenceNumber || "",
+
+      customer_notes: formData.salesOrder.customerNotes,
+      terms_and_conditions: formData.salesOrder.termsAndConditions,
+
+      status: submitType,
+
+      // 🔥 totals
+      subtotal: round2(totals.subtotal),
+      adjustment: round2(taxInfo.adjustment),
+      grand_total: round2(totals.grandTotal),
+
+      items: formData.itemTable.map((row: any, index: number) => ({
+        item_details: row.itemDetails,
+        quantity: Number(row.quantity),
+        rate: round2(Number(row.rate)),
+        discount: round2(Number(row.discount) || 0),
+        amount: round2(Number(row.amount)),
+        line_order: index,
+      })),
     };
 
-    const existing = JSON.parse(localStorage.getItem('salesOrders') || '[]');
-    existing.push(finalPayload);
-    localStorage.setItem('salesOrders', JSON.stringify(existing));
+    try {
+      console.log('FINAL SALES ORDER PAYLOAD', payload);
 
-    sessionStorage.setItem('formSuccess', 'Sales order created');
-    navigate('/sales/sales-orders');
+      await api.post('sales/sales-orders/create/', payload);
+
+      showToast('Sales Order created successfully', 'success');
+
+      setTimeout(() => {
+        navigate('/sales/sales-orders');
+      }, 800);
+
+    } catch (error: any) {
+      console.error(error);
+
+      const message =
+        error.response?.data?.detail ||
+        error.response?.data?.non_field_errors?.[0] ||
+        'Failed to create sales order';
+
+      showToast(message, 'error');
+    }
   };
+
+
 
   return (
     <>
@@ -281,14 +473,21 @@ export default function AddSalesOrder() {
                     Customer Name:
                   </label>
                   <select
-                    name="customerName"
+                    name="customerId"
                     className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
-                    value={formData.salesOrder.customerName}
+                    value={formData.salesOrder.customerId}
                     onChange={handleChange}
+                    disabled={loadingCustomers}
                   >
-                    <option value="">Select Customer</option>
-                    <option value="Customer A">Customer A</option>
-                    <option value="Customer B">Customer B</option>
+                    <option value="" >
+                      {loadingCustomers ? "Loading customers..." : "Select Customer"}
+                    </option>
+
+                    {customers.map((customer) => (
+                      <option key={customer.customerId} value={customer.customerId}>
+                        {customer.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -369,7 +568,7 @@ export default function AddSalesOrder() {
                     <span style={{
                       position: 'absolute',
                       right: '10px',
-                      top: '50%',
+                      top: '45%',
                       transform: 'translateY(-50%)',
                       cursor: 'pointer',
                       color: '#6c757d',
@@ -378,6 +577,23 @@ export default function AddSalesOrder() {
                     </span>
 
                   </div>
+
+                </div>
+
+
+                {/* Reference Number */}
+                <div className="so-form-group mb-4">
+                  <label className="so-label text-sm text-muted-foreground fw-bold">
+                    Reference Number:
+                  </label>
+                  <input
+                    type="text"
+                    name="referenceNumber"
+                    value={formData.salesOrder.referenceNumber}
+                    onChange={handleChange}
+                    className="form-control so-control"
+                    placeholder='Enter reference number'
+                  />
                 </div>
               </div>
 
@@ -402,18 +618,13 @@ export default function AddSalesOrder() {
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Salesperson:
                   </label>
-                  <select
-                    name="salesperson"
-                    className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
-                    value={formData.salesOrder.salesperson}
+                  <SalesPersonSelect
+                    name="salesPerson"
+                    value={formData.salesOrder.salesPerson}
                     onChange={handleChange}
-                  >
-                    <option value="" disabled>
-                      Select Salesperson
-                    </option>
-                    <option value="John">John</option>
-                    <option value="Maria">Maria</option>
-                  </select>
+                  />
+
+
                 </div>
               </div>
             </div>
@@ -465,6 +676,8 @@ export default function AddSalesOrder() {
                   taxInfo={taxInfo}
                   onTaxChange={handleTaxChange}
                   tcsOptions={tcsOptions}
+                  tdsOptions={tdsOptions}
+                  loadingTax={loadingTax}
                   onAddTcs={handleAddTcs}
                 />
               </div>
@@ -503,6 +716,7 @@ export default function AddSalesOrder() {
               <button
                 type="button"
                 className="btn border me-3 px-4"
+                style={{ fontSize: 14 }}
                 onClick={() => navigate(-1)}
               >
                 Cancel
@@ -510,10 +724,19 @@ export default function AddSalesOrder() {
 
               <button
                 type="submit"
-                className="btn px-4"
-                style={{ background: '#7991BB', color: '#FFF' }}
+                className="btn me-3 px-4"
+                style={{ background: '#7991BB', color: '#FFF', fontSize: 14 }}
+                onClick={() => setSubmitType('sent')}
               >
-                Save
+                Save and send
+              </button>
+              <button
+                type="submit"
+                className="btn border me-3 px-4"
+                style={{ fontSize: 14 }}
+                onClick={() => setSubmitType('draft')}
+              >
+                Save and draft
               </button>
             </div>
           </div>
@@ -528,16 +751,16 @@ export default function AddSalesOrder() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header custom-header">
-              <h4 className="mb-0 p-4">Configure Sales Order Number Preferences</h4>
+              <h4 className="mb-0" style={{ fontSize: 17 }}>Configure Sales Order Number Preferences</h4>
               <X
                 size={20}
-                style={{ cursor: 'pointer', marginRight: '15px' }}
+                style={{ cursor: 'pointer', color: '#fc0404ff' }}
                 onClick={closePopup}
               />
             </div>
 
             <div className="modal-body mt-3">
-              <p style={{ fontSize: '14px', color: '#555' }}>
+              <p style={{ fontSize: 13, color: '#555' }}>
                 Your Sales Orders are currently set to auto-generate numbers. Change settings if
                 needed.
               </p>
@@ -550,11 +773,11 @@ export default function AddSalesOrder() {
                   checked={mode === 'auto'}
                   onChange={() => setMode('auto')}
                 />
-                <label className="form-check-label" style={{ fontWeight: 500 }}>
+                <label className="form-check-label fw-normal">
                   Continue auto-generating Sales Order Numbers
                 </label>
-                <span style={{ marginLeft: '6px', cursor: 'pointer' }}>
-                  <Info size={18} />
+                <span className='i-btn' >
+                  <Info size={13} />
                 </span>
               </div>
 
@@ -562,10 +785,10 @@ export default function AddSalesOrder() {
                 <div className="auto-settings">
                   <div className="auto-settings-row">
                     {/* PREFIX PATTERN SELECT */}
-                    <div style={{ flex: 1 }}>
-                      <label className="form-label">Prefix pattern</label>
+                    <div style={{ flex: 1, fontSize: 13 }}>
+                      <label className="so-label text-sm text-muted-foreground fw-bold">Prefix pattern</label>
                       <select
-                        className="form-select"
+                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                         value={prefixPattern}
                         onChange={(e) => setPrefixPattern(e.target.value)}
                       >
@@ -583,12 +806,12 @@ export default function AddSalesOrder() {
                     </div>
 
                     {/* NEXT NUMBER */}
-                    <div style={{ flex: 1 }}>
-                      <label className="form-label">Next Number</label>
+                    <div style={{ flex: 1, fontSize: 13 }} className="so-form-group mb-4">
+                      <label className="so-label text-sm text-muted-foreground fw-bold">Next Number</label>
                       <input
                         value={nextNumber}
                         onChange={(e) => setNextNumber(e.target.value)}
-                        className="form-control"
+                        className="form-control so-control border"
                         placeholder="001"
                       />
                       <small className="text-muted d-block mt-1">
@@ -599,11 +822,12 @@ export default function AddSalesOrder() {
                   </div>
 
                   <div className="mt-3">
-                    <label>
+                    <label style={{ fontSize: 13 }}>
                       <input
                         type="checkbox"
                         checked={restartYear}
                         onChange={(e) => setRestartYear(e.target.checked)}
+                        // style={{ fontSize: 12 }}
                         className="me-2"
                       />
                       Restart numbering every fiscal year.
@@ -620,16 +844,17 @@ export default function AddSalesOrder() {
                   checked={mode === 'manual'}
                   onChange={() => setMode('manual')}
                 />
-                <label className="form-check-label" style={{ fontWeight: 500 }}>
+                <label className="form-check-label" style={{ fontWeight: 0 }}>
                   Enter Sales Order Numbers manually
                 </label>
               </div>
 
-              <div className="footer-actions" style={{ gap: 10 }}>
-                <button className="btn btn-outline-secondary" onClick={closePopup}>
+              <div className="d-flex justify-content-center mt-4 gap-0" style={{ gap: 10 }}>
+                <button className="btn border me-3 px-4" onClick={closePopup}>
                   Cancel
                 </button>
-                <button className="btn btn-primary px-4" onClick={applyAutoSO}>
+                <button className="btn me-2 px-4"
+                  style={{ background: '#7991BB', color: '#FFF' }} onClick={applyAutoSO}>
                   Save
                 </button>
               </div>

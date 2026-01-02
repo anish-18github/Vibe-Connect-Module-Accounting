@@ -111,7 +111,7 @@ const AddExpense: React.FC = () => {
 
   const [bulkRows, setBulkRows] = useState([
     {
-      date: '',
+      date: new Date().toISOString().split('T')[0],
       account: '',
       amount: '',
       paidThrough: '',
@@ -126,7 +126,7 @@ const AddExpense: React.FC = () => {
     setBulkRows((prev) => [
       ...prev,
       {
-        date: '',
+        date: new Date().toISOString().split('T')[0],
         account: '',
         amount: '',
         paidThrough: '',

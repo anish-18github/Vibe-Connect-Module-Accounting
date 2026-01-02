@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import './addCustomer.css';
 import { Plus, X } from 'react-feather';
 import Toast, { useToast } from '../../../../components/Toast/Toast';
+import api from '../../../../services/api/apiConfig';
+// import Customers from '../Customers';
+
 
 // Interface Definitions
 interface ContactPerson {
@@ -25,8 +28,8 @@ interface FormData {
     companyName: string;
     displayName: string;
     emailAddress: string;
-    countryCode: string; // ✅ Fixed: Added missing field
-    phoneNumber: string; // ✅ Fixed: Added missing field
+    countryCode: string;
+    phoneNumber: string;
   };
   otherDetails: {
     pan: string;
@@ -51,8 +54,8 @@ interface FormData {
 }
 
 // Dropdown Data
-const salutations = ['Mr.', 'Ms.', 'Mrs.', 'Dr.', 'Sir', 'Madam'];
-const currencies = ['USD - US Dollar', 'EUR - Euro', 'INR - Indian Rupee'];
+// const salutations = ['Mr.', 'Ms.', 'Mrs.', 'Dr.', 'Sir', 'Madam'];
+// const currencies = ['USD - US Dollar', 'EUR - Euro', 'INR - Indian Rupee'];
 const paymentTerms = ['Net 15', 'Net 30', 'Due on Receipt', 'Custom'];
 const languages = ['English', 'Spanish', 'French', 'German'];
 const countries = ['India', 'United States', 'United Kingdom', 'Canada', 'Australia'];
@@ -83,8 +86,30 @@ export const FeatherUpload = ({
   </svg>
 );
 
+
+const getDisplayNameSuggestions = (
+  salutation?: string,
+  firstName?: string,
+  lastName?: string
+) => {
+  if (!firstName && !lastName) return [];
+
+  return [
+    [salutation, firstName, lastName].filter(Boolean).join(' '),
+    [firstName, lastName].filter(Boolean).join(' '),
+    [lastName, firstName].filter(Boolean).join(', '),
+  ].filter(Boolean);
+};
+
+
+
+
+
 const Add = () => {
   const { toast, setToast, showToast } = useToast();
+
+  // const [showDisplayNameOptions, setShowDisplayNameOptions] = useState(false);
+
 
   const [formData, setFormData] = useState<FormData>({
     customer: {
@@ -136,10 +161,92 @@ const Add = () => {
   const [activeTab, setActiveTab] = useState('Other Details');
   const [indicatorStyle, setIndicatorStyle] = useState({});
   const [errors, setErrors] = useState({
+    companyName: '',
     displayName: '',
   });
+  // const [showDisplaySuggestions, setShowDisplaySuggestions] = useState(false);
+
+
+  const validateForm = () => {
+    const { customer, otherDetails, address } = formData;
+
+    // ---------- Customer ----------
+    if (!customer.customerType)
+      return showToast('Customer type is required', 'warning'), false;
+
+    if (!customer.companyName.trim())
+      return showToast('Company name is required', 'warning'), false;
+
+    if (customer.companyName.trim().length < 3)
+      return showToast('Company name must be at least 3 characters', 'warning'), false;
+
+    if (!customer.displayName.trim())
+      return showToast('Display name is required', 'warning'), false;
+
+    if (!customer.emailAddress.trim())
+      return showToast('Customer email address is required', 'warning'), false;
+
+    if (!/^\S+@\S+\.\S+$/.test(customer.emailAddress))
+      return showToast('Invalid email address', 'warning'), false;
+
+    // ---------- Other Details ----------
+    if (!otherDetails.currency) {
+      setActiveTab('Other Details');
+      return showToast('Currency is required', 'warning'), false;
+    }
+
+    // ---------- Address (THIS TAB) ----------
+    if (!address.country) {
+      setActiveTab('Address');
+      return showToast('Country is required', 'warning'), false;
+    }
+
+    if (!address.state) {
+      setActiveTab('Address');
+      return showToast('State is required', 'warning'), false;
+    }
+
+    if (!address.city.trim()) {
+      setActiveTab('Address');
+      return showToast('City is required', 'warning'), false;
+    }
+
+    if (!address.address1.trim()) {
+      setActiveTab('Address');
+      return showToast('Address Line 1 is required', 'warning'), false;
+    }
+
+    if (!address.zip.trim()) {
+      setActiveTab('Address');
+      return showToast('ZIP / Postal Code is required', 'warning'), false;
+    }
+    if (!/^\d{6}$/.test(address.zip)) {
+      setActiveTab('Address');
+      return showToast('ZIP / Postal Code must be 6 digits', 'warning'), false;
+    }
+
+    return true;
+  };
+
+  // const displayNameOptions = [
+  //   [formData.customer.salutation, formData.customer.firstName, formData.customer.lastName]
+  //     .filter(Boolean)
+  //     .join(' '),
+
+  //   [formData.customer.firstName, formData.customer.lastName]
+  //     .filter(Boolean)
+  //     .join(' '),
+
+  //   [formData.customer.lastName, formData.customer.firstName]
+  //     .filter(Boolean)
+  //     .join(', ')
+  // ].filter(option => option.trim().length > 0);
+
+
+
 
   // Contact Persons handlers
+
   const addContactPerson = () => {
     setFormData({
       ...formData,
@@ -238,34 +345,76 @@ const Add = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Validation
-    if (!formData.customer.displayName || !formData.customer.displayName.trim()) {
-      showToast('Please fill required field: Display Name', 'error');
-      return;
-    }
 
-    const customerId = Math.floor(100000 + Math.random() * 900000);
-    const createdOn = new Date().toISOString().split('T')[0];
+    if (!validateForm()) return;
 
-    const finalPayload = {
-      customerId,
-      name: `${formData.customer.firstName} ${formData.customer.lastName}`.trim(),
-      customerType: formData.customer.customerType,
-      createdOn,
-      createdBy: 'Admin',
-      ...formData,
+
+    // Transform nested formData into serializer-friendly payload
+    const payload = {
+      customer_type: formData.customer.customerType,
+      salutation: formData.customer.salutation,
+      first_name: formData.customer.firstName,
+      last_name: formData.customer.lastName,
+      company_name: formData.customer.companyName,
+      display_name: formData.customer.displayName,
+      email: formData.customer.emailAddress,
+      phone_country_code: formData.customer.countryCode,
+      phone_number: formData.customer.phoneNumber,
+      pan: formData.otherDetails.pan,
+      currency: formData.otherDetails.currency,
+      payment_terms: formData.otherDetails.paymentTerms,
+      portal_language: formData.otherDetails.portalLanguage,
+      remarks: formData.remarks || "",
+      addresses: [
+        {
+          attention: formData.address.attention,
+          address1: formData.address.address1,
+          address2: formData.address.address2,
+          city: formData.address.city,
+          state: formData.address.state,
+          country: formData.address.country,
+          zip_code: formData.address.zip,
+          phone_country_code: formData.address.countryCode,
+          phone_number: formData.address.phoneNumber,
+          fax: formData.address.fax,
+        },
+      ],
+      contacts: formData.contactPersons.map((c) => ({
+        salutation: c.salutation,
+        first_name: c.firstName,
+        last_name: c.lastName,
+        email: c.email,
+        phone: c.phone,
+        designation: c.designation,
+        department: c.department,
+        is_primary: false, // or true if you want the first contact as primary
+      })),
     };
 
-    const existing = JSON.parse(localStorage.getItem('customers') || '[]');
-    existing.push(finalPayload);
-    localStorage.setItem('customers', JSON.stringify(existing));
+    try {
+      const response = await api.post('sales/customers/create/', payload);
+      console.log('Customer created:', response.data);
 
-    console.log('Customer saved:', finalPayload);
-    sessionStorage.setItem('formSuccess', 'Customer created successfully');
-    navigate('/sales/customers');
+      showToast('Customer created successfully', 'success');
+
+      setTimeout(() => {
+        navigate('/sales/customers');
+      }, 800);
+    } catch (error: any) {
+      const message =
+        error.response?.data?.detail ||
+        error.response?.data?.non_field_errors?.[0] ||
+        'Failed to create customer';
+
+      showToast(message, 'error');
+    }
+
   };
+
+
+
 
   // Render functions (unchanged but consolidated)
   const renderOtherDetailsTab = () => (
@@ -287,23 +436,28 @@ const Add = () => {
 
         {/* Currency */}
         <div className="so-form-group mb-4">
-          <label className="so-label text-sm text-muted-foreground fw-bold">Currency:</label>
+          <label className="so-label text-sm text-muted-foreground fw-bold">Currency:<span className='text-danger'>*</span></label>
           <select
-            name="otherDetails.currency"
             value={formData.otherDetails.currency}
-            onChange={handleChange}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                otherDetails: { ...formData.otherDetails, currency: e.target.value },
+              })
+            }
+            // onChange={handleChange}
             className="form-select so-control"
-            style={{ color: formData.otherDetails.currency ? '#000' : '#9b9b9b' }}
+            style={{
+              color: formData.otherDetails.currency ? '#000' : '#9b9b9b', // ✅ fixed: check salutation instead of currency
+            }}
           >
-            <option value="" disabled hidden>
-              -- Select Currency --
-            </option>
-            {currencies.map((c, i) => (
-              <option key={i} value={c}>
-                {c}
-              </option>
-            ))}
+            <option value="">Select Currency</option>
+            <option value="INR">INR</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
           </select>
+
         </div>
       </div>
 
@@ -399,22 +553,9 @@ const Add = () => {
           />
         </div>
 
-        {/* Address Line 1 */}
-        <div className="so-form-group mb-4">
-          <label className="so-label text-sm text-muted-foreground fw-bold">Address Line 1:</label>
-          <input
-            type="text"
-            name="address.address1"
-            value={formData.address.address1}
-            onChange={handleChange}
-            className="form-control so-control"
-            placeholder="Enter address line 1"
-          />
-        </div>
-
         {/* City */}
         <div className="so-form-group mb-4">
-          <label className="so-label text-sm text-muted-foreground fw-bold">City:</label>
+          <label className="so-label text-sm text-muted-foreground fw-bold">City:<span className='text-danger'>*</span></label>
           <input
             type="text"
             name="address.city"
@@ -424,6 +565,25 @@ const Add = () => {
             placeholder="Enter city"
           />
         </div>
+
+
+
+        {/* ZIP */}
+        <div className="so-form-group mb-4">
+          <label className="so-label text-sm text-muted-foreground fw-bold">
+            ZIP / Postal Code:<span className='text-danger'>*</span>
+          </label>
+          <input
+            type="text"
+            name="address.zip"
+            value={formData.address.zip}
+            onChange={handleChange}
+            className="form-control so-control"
+            placeholder="Enter ZIP / Postal Code"
+          />
+        </div>
+
+
       </div>
 
       {/* COLUMN 2 */}
@@ -431,7 +591,7 @@ const Add = () => {
         {/* Country */}
         <div className="so-form-group mb-4">
           <label className="so-label text-sm text-muted-foreground fw-bold">
-            Country / Region:
+            Country / Region:<span className='text-danger'>*</span>
           </label>
           <select
             name="address.country"
@@ -451,23 +611,61 @@ const Add = () => {
           </select>
         </div>
 
-        {/* Address Line 2 */}
+        {/* Address Line 1 */}
         <div className="so-form-group mb-4">
-          <label className="so-label text-sm text-muted-foreground fw-bold">Address Line 2:</label>
+          <label className="so-label text-sm text-muted-foreground fw-bold">Address Line 1:<span className='text-danger'>*</span></label>
           <input
             type="text"
-            name="address.address2"
-            value={formData.address.address2}
+            name="address.address1"
+            value={formData.address.address1}
             onChange={handleChange}
             className="form-control so-control"
-            placeholder="Enter address line 2"
+            placeholder="Enter address line 1"
           />
         </div>
+
+
+        {/* Phone - Combined as one field with horizontal layout */}
+        <div className="so-form-group mb-4">
+          <label className="so-label text-sm text-muted-foreground fw-bold">Phone:</label>
+          <div className="row g-2" style={{ paddingLeft: "0px" }}
+          >
+            <div className="col-2">
+              <input
+                type="text"
+                name="address.countryCode"
+                placeholder="+91"
+                className="form-control so-control"
+                value={formData.address.countryCode}
+                onChange={handleChange}
+                inputMode="numeric"
+                pattern="[0-9]*"
+              />
+            </div>
+            <div className="col-10">
+              <input
+                type="text"
+                name="address.phoneNumber"
+                className="form-control so-control"
+                value={formData.address.phoneNumber}
+                onChange={handleChange}
+                placeholder="Enter phone"
+                inputMode="numeric"
+                pattern="[0-9]*"
+              />
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* COLUMN 3 */}
+      <div className="col-lg-4">
 
         {/* State */}
         <div className="so-form-group mb-4">
           <label className="so-label text-sm text-muted-foreground fw-bold">
-            State / Province:
+            State / Province:<span className='text-danger'>*</span>
           </label>
           <select
             name="address.state"
@@ -486,55 +684,18 @@ const Add = () => {
             ))}
           </select>
         </div>
-      </div>
 
-      {/* COLUMN 3 */}
-      <div className="col-lg-4">
-        {/* ZIP */}
+        {/* Address Line 2 */}
         <div className="so-form-group mb-4">
-          <label className="so-label text-sm text-muted-foreground fw-bold">
-            ZIP / Postal Code:
-          </label>
+          <label className="so-label text-sm text-muted-foreground fw-bold">Address Line 2:</label>
           <input
             type="text"
-            name="address.zip"
-            value={formData.address.zip}
+            name="address.address2"
+            value={formData.address.address2}
             onChange={handleChange}
             className="form-control so-control"
-            placeholder="Enter ZIP / Postal Code"
+            placeholder="Enter address line 2"
           />
-        </div>
-
-        {/* Phone - Combined as one field with horizontal layout */}
-        <div className="so-form-group mb-4">
-          <label className="so-label text-sm text-muted-foreground fw-bold">Phone:</label>
-          <div className="row g-2" style={{ paddingLeft: "0px" }}
-          >
-            <div className="col-3">
-              <input
-                type="text"
-                name="address.countryCode"
-                placeholder="+91"
-                className="form-control so-control"
-                value={formData.address.countryCode}
-                onChange={handleChange}
-                inputMode="numeric"
-                pattern="[0-9]*"
-              />
-            </div>
-            <div className="col-9">
-              <input
-                type="text"
-                name="address.phoneNumber"
-                className="form-control so-control"
-                value={formData.address.phoneNumber}
-                onChange={handleChange}
-                placeholder="Enter phone"
-                inputMode="numeric"
-                pattern="[0-9]*"
-              />
-            </div>
-          </div>
         </div>
 
         {/* Fax */}
@@ -583,19 +744,30 @@ const Add = () => {
                   <tr key={index}>
                     <td>
                       <select
-                        className="form-select form-control-sm border-0 item-input"
-                        value={person.salutation}
-                        onChange={(e) => handleContactChange(index, 'salutation', e.target.value)}
+                        value={formData.contactPersons[0].salutation}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            contactPersons: formData.contactPersons.map((contact, i) =>
+                              i === 0 ? { ...contact, salutation: e.target.value } : contact
+                            ),
+                          })
+                        }
+                        className="form-select so-control"
+                        style={{
+                          color: formData.contactPersons[0].salutation ? '#000' : '#9b9b9b',
+                        }}
                       >
-                        <option value="" disabled>
+                        <option value="" disabled hidden>
                           Select
                         </option>
-                        {salutations.map((s) => (
-                          <option key={s} value={s}>
-                            {s}
-                          </option>
-                        ))}
+                        <option value="Mr">Mr</option>
+                        <option value="Mrs">Mrs</option>
+                        <option value="Ms">Ms</option>
+                        <option value="Dr">Dr</option>
+                        <option value="Company">Company</option>
                       </select>
+
                     </td>
 
                     <td>
@@ -736,9 +908,9 @@ const Add = () => {
               {/* COLUMN 1 - Customer Type + Primary Contact + Phone */}
               <div className="col-lg-4">
                 {/* Customer Type */}
-                <div className="so-form-group mb-4">
+                <div className="so-form-group" style={{ marginBottom: 30 }}>
                   <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Customer Type:
+                    Customer Type:<span className='text-danger'>*</span>
                   </label>
                   <div className="radio-row">
                     <div className="form-check">
@@ -777,25 +949,33 @@ const Add = () => {
                   <label className="so-label text-sm text-muted-foreground fw-bold mb-2">
                     Primary Contact:
                   </label>
+
                   <div className="row g-2">
+
                     <div className="col-4">
                       <select
-                        name="customer.salutation"
                         value={formData.customer.salutation}
-                        onChange={handleChange}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            customer: { ...formData.customer, salutation: e.target.value },
+                          })
+                        }
                         className="form-select so-control"
-                        style={{ color: formData.customer.salutation ? '#000' : '#9b9b9b' }}
+                        style={{
+                          color: formData.customer.salutation ? '#000' : '#9b9b9b', // ✅ fixed: check salutation instead of currency
+                        }}
                       >
-                        <option value="" disabled hidden>
-                          Mr/Ms
-                        </option>
-                        {salutations.map((s, i) => (
-                          <option key={i} value={s}>
-                            {s}
-                          </option>
-                        ))}
+                        <option value="">Select</option>
+                        <option value="Mr">Mr</option>
+                        <option value="Mrs">Mrs</option>
+                        <option value="Ms">Ms</option>
+                        <option value="Dr">Dr</option>
+                        <option value="Company">Company</option>
                       </select>
+
                     </div>
+
                     <div className="col-4">
                       <input
                         type="text"
@@ -806,6 +986,7 @@ const Add = () => {
                         placeholder="First Name"
                       />
                     </div>
+
                     <div className="col-4">
                       <input
                         type="text"
@@ -816,6 +997,7 @@ const Add = () => {
                         placeholder="Last Name"
                       />
                     </div>
+
                   </div>
                 </div>
 
@@ -825,7 +1007,7 @@ const Add = () => {
               <div className="col-lg-4">
                 <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Company Name:*
+                    Company Name:<span className='text-danger'>*</span>
                   </label>
                   <input
                     type="text"
@@ -841,25 +1023,41 @@ const Add = () => {
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Display Name:<span className="text-danger">*</span>
                   </label>
+
                   <input
                     type="text"
                     name="customer.displayName"
                     value={formData.customer.displayName}
                     onChange={handleChange}
+                    list="displayNameOptions"
                     placeholder="Enter Display name"
                     className={`form-control so-control ${errors.displayName ? 'is-invalid' : ''}`}
                   />
+
+                  <datalist id="displayNameOptions">
+                    {getDisplayNameSuggestions(
+                      formData.customer.salutation,
+                      formData.customer.firstName,
+                      formData.customer.lastName
+                    ).map((option, index) => (
+                      <option key={index} value={option} />
+                    ))}
+                  </datalist>
+
                   {errors.displayName && (
-                    <div className="invalid-feedback d-block">{errors.displayName}</div>
+                    <div className="invalid-feedback d-block">
+                      {errors.displayName}
+                    </div>
                   )}
                 </div>
+
               </div>
 
               {/* COLUMN 3 - Email + Spacer */}
               <div className="col-lg-4">
                 <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Email Address:
+                    Email Address:<span className='text-danger'>*</span>
                   </label>
                   <input
                     type="email"
@@ -900,7 +1098,8 @@ const Add = () => {
                       />
                     </div>
                   </div>
-                </div>              </div>
+                </div>
+              </div>
             </div>
           </div>
 

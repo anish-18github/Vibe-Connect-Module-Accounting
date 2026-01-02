@@ -1,27 +1,70 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../../../../components/Header/Header';
 import Toast, { useToast } from '../../../../components/Toast/Toast';
 import { useNavigate } from 'react-router-dom';
 
+
+interface RecurringExpenseForm {
+
+  recurringExpense: {
+    profileName: string;
+    repeatEvery: string;
+    startDate: string;
+    endsOn: string;
+    neverExpires: boolean;
+    expenseAccount: string;
+    currency: string;
+    amount: string;
+    paidThrough: string;
+    vendor: string;
+    notes: string;
+    customerName: string;
+  }
+
+}
+
+
+
+
 const AddRecurringExpense: React.FC = () => {
-  
+
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    profileName: '',
-    repeatEvery: '',
-    startDate: '',
-    endsOn: '',
-    neverExpires: false,
-    expenseAccount: '',
-    currency: 'INR',
-    amount: '',
-    paidThrough: '',
-    vendor: '',
-    notes: '',
-    customerName: '',
+  const [formData, setFormData] = useState<RecurringExpenseForm>({
+
+    recurringExpense: {
+
+      profileName: '',
+      repeatEvery: '',
+      startDate: '',
+      endsOn: '',
+      neverExpires: false,
+      expenseAccount: '',
+      currency: 'INR',
+      amount: '',
+      paidThrough: '',
+      vendor: '',
+      notes: '',
+      customerName: '',
+
+    }
+
+
   });
   const { toast, setToast, showToast } = useToast();
+
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+
+    setFormData((prev) => ({
+      ...prev,
+      recurringExpense: {
+        ...prev.recurringExpense,
+        startDate: today,   // ✅ default current date
+      },
+    }));
+  }, []);
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
@@ -77,7 +120,7 @@ const AddRecurringExpense: React.FC = () => {
                     type="text"
                     name="profileName"
                     className="form-control so-control"
-                    value={formData.profileName}
+                    value={formData.recurringExpense.profileName}
                     onChange={handleChange}
                   />
                 </div>
@@ -90,7 +133,7 @@ const AddRecurringExpense: React.FC = () => {
                   <select
                     name="repeatEvery"
                     className="form-select so-control"
-                    value={formData.repeatEvery}
+                    value={formData.recurringExpense.repeatEvery}
                     onChange={handleChange}
                   >
                     <option value="" disabled hidden>
@@ -113,11 +156,11 @@ const AddRecurringExpense: React.FC = () => {
                         type="date"
                         name="startDate"
                         className="form-control so-control mb-1"
-                        value={formData.startDate}
+                        value={formData.recurringExpense.startDate}
                         onChange={handleChange}
                       />
                       <small className="text-muted d-block" style={{ fontSize: '11px' }}>
-                        Starts on {formData.startDate || '--/--/----'}
+                        Starts on {formData.recurringExpense.startDate || '--/--/----'}
                       </small>
                     </div>
                     <div className="col-6">
@@ -125,8 +168,8 @@ const AddRecurringExpense: React.FC = () => {
                         type="date"
                         name="endsOn"
                         className="form-control so-control"
-                        disabled={formData.neverExpires}
-                        value={formData.endsOn}
+                        disabled={formData.recurringExpense.neverExpires}
+                        value={formData.recurringExpense.endsOn}
                         onChange={handleChange}
                       />
                       <div className="form-check mt-1">
@@ -134,7 +177,7 @@ const AddRecurringExpense: React.FC = () => {
                           type="checkbox"
                           className="form-check-input me-1"
                           name="neverExpires"
-                          checked={formData.neverExpires}
+                          checked={formData.recurringExpense.neverExpires}
                           onChange={handleChange}
                         />
                         <label className="form-check-label radio-row" style={{ fontSize: '11px' }}>
@@ -156,7 +199,7 @@ const AddRecurringExpense: React.FC = () => {
                   <select
                     name="expenseAccount"
                     className="form-select so-control"
-                    value={formData.expenseAccount}
+                    value={formData.recurringExpense.expenseAccount}
                     onChange={handleChange}
                   >
                     <option value="" disabled hidden>
@@ -174,7 +217,7 @@ const AddRecurringExpense: React.FC = () => {
                   <select
                     name="vendor"
                     className="form-select so-control"
-                    value={formData.vendor}
+                    value={formData.recurringExpense.vendor}
                     onChange={handleChange}
                   >
                     <option value="" disabled hidden>
@@ -195,7 +238,7 @@ const AddRecurringExpense: React.FC = () => {
                       name="currency"
                       className="form-select so-control"
                       style={{ maxWidth: '70px' }}
-                      value={formData.currency}
+                      value={formData.recurringExpense.currency}
                       onChange={handleChange}
                     >
                       <option value="INR">INR</option>
@@ -206,7 +249,7 @@ const AddRecurringExpense: React.FC = () => {
                       type="number"
                       name="amount"
                       className="form-control so-control text-end"
-                      value={formData.amount}
+                      value={formData.recurringExpense.amount}
                       onChange={handleChange}
                     />
                   </div>
@@ -223,7 +266,7 @@ const AddRecurringExpense: React.FC = () => {
                   <select
                     name="paidThrough"
                     className="form-select so-control"
-                    value={formData.paidThrough}
+                    value={formData.recurringExpense.paidThrough}
                     onChange={handleChange}
                   >
                     <option value="" disabled hidden>
@@ -243,7 +286,7 @@ const AddRecurringExpense: React.FC = () => {
                   <select
                     name="customerName"
                     className="form-select so-control"
-                    value={formData.customerName}
+                    value={formData.recurringExpense.customerName}
                     onChange={handleChange}
                   >
                     <option value="" disabled hidden>
@@ -262,7 +305,7 @@ const AddRecurringExpense: React.FC = () => {
                     className="form-control so-control"
                     maxLength={500}
                     placeholder="Max. 500 characters"
-                    value={formData.notes}
+                    value={formData.recurringExpense.notes}
                     onChange={handleChange}
                     rows={3}
                   />

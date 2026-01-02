@@ -1,22 +1,17 @@
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useGlobalToast } from './ToastContext';
 
-/**
- * useFormSuccess Hook
- * Checks sessionStorage for a success message from form submission
- * Displays toast if found, then clears the flag
- * Usage: useFormSuccess() in your list/destination page component
- */
-export const useFormSuccess = () => {
+const useFormSuccess = () => {
+  const location = useLocation();
   const { showToast } = useGlobalToast();
 
   useEffect(() => {
-    const successMessage = sessionStorage.getItem('formSuccess');
-    if (successMessage) {
-      showToast(successMessage, 'success');
-      sessionStorage.removeItem('formSuccess');
+    if (location.state?.successMessage) {
+      showToast(location.state.successMessage, 'success');
+      window.history.replaceState({}, document.title);
     }
-  }, [showToast]);
+  }, [location.state, showToast]);
 };
 
 export default useFormSuccess;

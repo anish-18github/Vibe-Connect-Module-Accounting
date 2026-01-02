@@ -26,10 +26,10 @@ const PaymentInvoices = () => {
 
   // INFUTURE HERE'S GET API CALL
   // Load from localStorage
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('customers') || '[]');
-    setCustomers(stored);
-  }, []);
+  // useEffect(() => {
+  //   const stored = JSON.parse(localStorage.getItem('customers') || '[]');
+  //   setCustomers(stored);
+  // }, []);
 
   return (
     <>

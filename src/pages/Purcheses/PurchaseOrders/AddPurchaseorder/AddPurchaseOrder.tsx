@@ -360,7 +360,7 @@ export default function AddPurchaseOrder() {
                   <button
                     type="button"
                     className="btn btn-link p-0 text-sm"
-                    style={{ fontSize: 12, marginLeft: -160, textDecoration: "none" }}
+                    style={{ fontSize: 12 , marginRight: 90, textDecoration: "none" }}
                     onClick={handleOpenAddress}
                   >
                     Change destination to deliver

@@ -13,11 +13,12 @@ const Invoices = () => {
   const { toast, setToast } = useGlobalToast();
   useFormSuccess();
   const columns = [
-    { key: 'name', label: 'Name' },
-    { key: 'deliveryChallanNo', label: 'Delivery Challan No.' },
-    { key: 'type', label: 'Type' },
-    { key: 'date', label: 'Date' },
-    { key: 'reference', label: 'Reference' },
+    { key: 'invoice', label: 'Invoice' },
+    { key: 'orderNumber', label: 'Order Number' },
+    { key: 'customerName', label: 'Customer Name' },
+    { key: 'status', label: 'Status' },
+    { key: 'amount', label: 'Amount' },
+    { key: 'balanceDue', label: 'Balance Due' },
   ];
 
   const navigate = useNavigate();
@@ -25,10 +26,10 @@ const Invoices = () => {
 
   // INFUTURE HERE'S GET API CALL
   // Load from localStorage
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('customers') || '[]');
-    setCustomers(stored);
-  }, []);
+  // useEffect(() => {
+  //   const stored = JSON.parse(localStorage.getItem('customers') || '[]');
+  //   setCustomers(stored);
+  // }, []);
 
   return (
     <>

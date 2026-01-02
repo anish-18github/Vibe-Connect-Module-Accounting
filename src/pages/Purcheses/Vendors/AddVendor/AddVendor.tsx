@@ -835,21 +835,57 @@ const AddVendor = () => {
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Primary Contact:
                   </label>
-                  <select
-                    name="vendor.salutation"
-                    className="form-select so-control"
-                    value={formData.vendor.salutation}
-                    onChange={handleChange}
-                    style={{ color: formData.vendor.salutation ? '#000' : '#9b9b9b' }}
-                  >
-                    <option value="">Select Salutation</option>
-                    {salutations.map((s, i) => (
-                      <option key={i} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
+
+                  <div className="row g-2">
+
+                    <div className="col-4">
+
+                      <select
+                        name="vendor.salutation"
+                        className="form-select so-control"
+                        value={formData.vendor.salutation}
+                        onChange={handleChange}
+                        style={{ color: formData.vendor.salutation ? '#000' : '#9b9b9b' }}
+                      >
+                        <option value="">Select</option>
+                        {salutations.map((s, i) => (
+                          <option key={i} value={s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
+
+
+                    </div>
+                    
+                    <div className="col-4">
+                      <input
+                        type="text"
+                        name="customer.firstName"
+                        value={formData.vendor.firstName}
+                        onChange={handleChange}
+                        className="form-control so-control"
+                        placeholder="First Name"
+                      />
+                    </div>
+
+                    <div className="col-4">
+                      <input
+                        type="text"
+                        name="customer.lastName"
+                        value={formData.vendor.lastName}
+                        onChange={handleChange}
+                        className="form-control so-control"
+                        placeholder="Last Name"
+                      />
+                    </div>
+
+                  </div>
+
+
                 </div>
+
+
 
                 <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">

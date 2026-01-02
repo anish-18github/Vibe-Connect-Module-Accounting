@@ -2,8 +2,11 @@
 
 import { Plus, X } from 'react-feather';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+// import { TaxOption } from '../../../../services/api/taxService';
+
 import './itemTable.css';
+// import type { TaxOption } from '../../../services/api/taxService';
 
 export interface ItemRow {
   itemDetails: string;
@@ -66,7 +69,7 @@ function ItemTable({ rows, onRowChange, onAddRow, onRemoveRow }: ItemTableProps)
                         name="quantity"
                         className="form-control form-control-sm no-spinner border-0"
                         placeholder="00.00"
-                        style={{ height: 30 }}   
+                        style={{ height: 30 }}
                         value={row.quantity}
                         onChange={(e) => onRowChange(index, e)}
                       />
@@ -145,9 +148,8 @@ function ItemTable({ rows, onRowChange, onAddRow, onRemoveRow }: ItemTableProps)
 
 export default ItemTable;
 
-// ---------------------------------------
-// SEPARATE SUMMARY BOX COMPONENT
-// ---------------------------------------
+/* ================= INTERFACES ================= */
+
 export interface TotalsBox {
   subtotal: number;
   tax: number;
@@ -157,69 +159,119 @@ export interface TotalsBox {
 
 export interface TaxInfo {
   type: 'TDS' | 'TCS' | '';
-  selectedTax: string; // string representation of rate or custom id
+  selectedTax: string;
   adjustment: number;
-  taxRate: number; // computed numeric rate
+  taxRate: number;
   taxAmount: number;
   total: number;
 }
 
+export interface TdsOption {
+  id: number;
+  name: string;
+  rate: number;
+}
+
 export interface TcsOption {
-  id: string; // unique id (uuid or simple timestamp)
-  name: string; // display name
-  rate: number; // numeric percent
+  id: string;
+  name: string;
+  rate: number;
 }
 
 export interface SummaryBoxProps {
   totals: TotalsBox;
   taxInfo: TaxInfo;
   onTaxChange: (field: keyof TaxInfo | 'type', value: any) => void;
+
   tcsOptions: TcsOption[];
-  onAddTcs: (opt: TcsOption) => void; // parent will add to state
+  tdsOptions: TdsOption[];
+  loadingTax: boolean;
+
+  onAddTcs: (data: { name: string; rate: number }) => void;
+
+  // ✅ optional for now
+  onEditTcs?: (id: string, data: { name: string; rate: number }) => void;
+  onDeleteTcs?: (id: string) => void;
 }
+
+
+/* ================= COMPONENT ================= */
 
 export function SummaryBox({
   totals,
   taxInfo,
   onTaxChange,
+  tdsOptions,
   tcsOptions,
+  loadingTax,
   onAddTcs,
+  onEditTcs,
+  onDeleteTcs,
 }: SummaryBoxProps) {
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [newRate, setNewRate] = useState<number | ''>('');
+  const [showModal, setShowModal] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [name, setName] = useState('');
+  const [rate, setRate] = useState<number | ''>('');
 
-  const TDS_FIXED = [
-    { label: '0.1%', value: '0.1' },
-    { label: '1%', value: '1' },
-    { label: '5%', value: '5' },
-    { label: '10%', value: '10' },
-  ];
-
-  const handleSaveNewTcs = () => {
-    if (!newName.trim() || newRate === '' || Number(newRate) <= 0) return;
-    const id = Date.now().toString();
-    const option = { id, name: newName.trim(), rate: Number(newRate) };
-    onAddTcs(option);
-    // auto-select newly created TCS
-    onTaxChange('type', 'TCS');
-    onTaxChange('selectedTax', option.id);
-    setNewName('');
-    setNewRate('');
-    setShowAddModal(false);
+  /* ---------- OPEN ADD MODAL ---------- */
+  const openAddModal = () => {
+    setEditId(null);
+    setName('');
+    setRate('');
+    setShowModal(true);
   };
+
+  /* ---------- OPEN EDIT MODAL ---------- */
+  // const openEditModal = (opt: TcsOption) => {
+  //   setEditId(opt.id);
+  //   setName(opt.name);
+  //   setRate(opt.rate);
+  //   setShowModal(true);
+  // };
+
+  /* ---------- SAVE TCS ---------- */
+  const handleSave = () => {
+    if (!name.trim() || rate === '' || rate <= 0) return;
+
+    const payload = {
+      name: name.trim(),
+      rate: Number(rate),
+    };
+
+    if (editId) {
+      // ✅ safe optional call + correct arguments
+      onEditTcs?.(editId, payload);
+    } else {
+      onAddTcs(payload);
+    }
+
+    setShowModal(false);
+  };
+
+
+  /* ---------- WATCH "+ ADD NEW" ---------- */
+  useEffect(() => {
+    if (taxInfo.type === 'TCS' && taxInfo.selectedTax === '_add_new') {
+      openAddModal();
+      onTaxChange('selectedTax', '');
+    }
+  }, [taxInfo.selectedTax, taxInfo.type]);
+
+  /* ================= JSX ================= */
 
   return (
     <>
-      <div className="summary-box fw-normal text-dark">
-        <div className="total-box p-3" style={{ backgroundColor: '#F1F0F0', borderRadius: 6, fontSize: 14 }}>
-          <div className="d-flex justify-content-between mb-2" >
+      <div className="summary-box">
+        <div className="total-box p-3" style={{ background: '#F1F0F0', borderRadius: 6, fontSize: 14 }}>
+          {/* Subtotal */}
+          <div className="d-flex justify-content-between mb-2">
             <span>Sub Total</span>
             <span>{totals.subtotal.toFixed(2)}</span>
           </div>
 
+          {/* Tax Type */}
           <div className="mt-3 mb-2">
-            <label className="form-label fw-bold mb-1" >Tax Type</label>
+            <label className="form-label fw-bold mb-1">Tax Type</label>
 
             <div className="d-flex align-items-center gap-3" style={{ fontSize: 12 }}>
               <label className="d-flex align-items-center gap-1">
@@ -227,12 +279,8 @@ export function SummaryBox({
                   type="radio"
                   name="taxType"
                   checked={taxInfo.type === 'TDS'}
-                  onChange={() => {
-                    onTaxChange('type', 'TDS');
-                    // default select first TDS fixed
-                    onTaxChange('selectedTax', TDS_FIXED[0].value);
-                  }}
-                />
+                  onChange={() => onTaxChange('type', 'TDS')}
+                />{' '}
                 TDS
               </label>
 
@@ -241,35 +289,35 @@ export function SummaryBox({
                   type="radio"
                   name="taxType"
                   checked={taxInfo.type === 'TCS'}
-                  onChange={() => {
-                    onTaxChange('type', 'TCS');
-                    // default select first TCS option if any
-                    if (tcsOptions.length) onTaxChange('selectedTax', tcsOptions[0].id);
-                  }}
-                />
+                  onChange={() => onTaxChange('type', 'TCS')}
+                />{' '}
                 TCS
               </label>
 
-              {/* Depending on selected type show appropriate control */}
+              {/* ---------- TDS (READ ONLY) ---------- */}
               {taxInfo.type === 'TDS' && (
                 <select
                   className="form-select form-select-sm w-50"
+                  disabled={loadingTax}
                   value={taxInfo.selectedTax}
                   style={{
                     background: '#F1F0F0',
                   }}
                   onChange={(e) => onTaxChange('selectedTax', e.target.value)}
                 >
-                  {TDS_FIXED.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
+                  <option value="">Select TDS</option>
+                  {tdsOptions.map((t) => (
+                    <option key={t.id} value={t.rate}>
+                      {t.name} – {t.rate}%
                     </option>
                   ))}
                 </select>
               )}
 
+              {/* ---------- TCS (CRUD) ---------- */}
               {taxInfo.type === 'TCS' && (
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+
                   <select
                     className="form-select form-select-sm"
                     value={taxInfo.selectedTax}
@@ -279,7 +327,7 @@ export function SummaryBox({
                     <option value="">Select TCS</option>
                     {tcsOptions.map((opt) => (
                       <option key={opt.id} value={opt.id}>
-                        {opt.name} - {opt.rate}%
+                        {opt.name} – {opt.rate}%
                       </option>
                     ))}
                     <option value="_add_new">+ Add New</option>
@@ -289,20 +337,22 @@ export function SummaryBox({
             </div>
           </div>
 
+          {/* Adjustment */}
           <div className="mt-3 d-flex align-items-center">
             <label className="form-label me-3">Adjustment</label>
             <input
               type="number"
               className="form-control form-control-sm no-spinner border-0"
-              placeholder="0"
+              placeholder='0'
               style={{ width: 120, background: '#D9D9D9' }}
-              value={taxInfo.adjustment === 0 ? '' : taxInfo.adjustment}
+              value={taxInfo.adjustment || ''}
               onChange={(e) => onTaxChange('adjustment', Number(e.target.value))}
             />
           </div>
 
           <hr />
 
+          {/* Total */}
           <div className="d-flex justify-content-between mt-3">
             <strong>Total (₹)</strong>
             <strong>{totals.grandTotal.toFixed(2)}</strong>
@@ -310,74 +360,63 @@ export function SummaryBox({
         </div>
       </div>
 
-      {/* Add New TCS modal (temporary local modal) */}
-      {showAddModal && (
+      {/* ================= MODAL ================= */}
+      {showModal && (
         <div className="tcs-modal-backdrop">
           <div className="tcs-modal">
-            <h5>Add new TCS</h5>
+            <h5 style={{ fontSize: 15 }}>{editId ? 'Edit TCS' : 'Add TCS'}</h5>
 
-            <div className="mb-2">
-              <label className="form-label">Tax Name</label>
-              <input
-                className="form-control form-control-sm"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-              />
+
+            <div style={{ fontSize: 13 }}>
+
+              <div className="mb-2">
+                <label className="form-label">Tax Name</label>
+                <input
+                  className="form-control mb-2"
+                  placeholder="e.g. Service tax"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Rate %</label>
+                <input
+                  className="form-control mb-3"
+                  type="number"
+                  placeholder="e.g. 1.8 %"
+                  value={rate}
+                  onChange={(e) => setRate(e.target.value === '' ? '' : Number(e.target.value))}
+                />
+              </div>
             </div>
 
-            <div className="mb-3">
-              <label className="form-label">Rate %</label>
-              <input
-                className="form-control form-control-sm"
-                type="number"
-                value={newRate as any}
-                onChange={(e) => setNewRate(e.target.value === '' ? '' : Number(e.target.value))}
-              />
-            </div>
+            <div className="d-flex justify-content-between">
+              {editId && (
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={() => {
+                    onDeleteTcs?.(editId);
+                    setShowModal(false);
+                  }}
+                >
+                  Delete
+                </button>
+              )}
 
-            <div className="d-flex justify-content-end gap-2">
-              <button
-                className="btn btn-sm btn-outline-secondary"
-                onClick={() => setShowAddModal(false)}
-              >
-                Cancel
-              </button>
-              <button className="btn btn-sm btn-primary" onClick={handleSaveNewTcs}>
-                Save
-              </button>
+              <div className="ms-auto">
+                <button className="btn border me-3 px-3" onClick={() => setShowModal(false)}>
+                  Cancel
+                </button>
+                <button className="btn px-4"
+                  style={{ background: '#7991BB', color: '#FFF' }} onClick={handleSave}>
+                  Save
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
-
-      {/* Watch for user selecting "+ Add New" in TCS select */}
-      {/* We use a tiny effect: when selectedTax equals special value "_add_new", open modal.
-          Parent triggers selectedTax update; the parent should forward selectedTax changes.
-          To keep component self-contained, detect here by reading taxInfo.selectedTax. */}
-      {taxInfo.type === 'TCS' && taxInfo.selectedTax === '_add_new' && (
-        // open modal (one-time effect)
-        <AddNewTrigger
-          openModal={() => setShowAddModal(true)}
-          clearTrigger={() => onTaxChange('selectedTax', '')}
-        />
-      )}
     </>
   );
-}
-
-/**
- * tiny helper component: when mounted it opens modal (calls openModal) then clears the special selection
- */
-function AddNewTrigger({
-  openModal,
-  clearTrigger,
-}: {
-  openModal: () => void;
-  clearTrigger: () => void;
-}) {
-  React.useEffect(() => {
-    openModal();
-    clearTrigger();
-  }, [openModal, clearTrigger]);
-  return null;
 }

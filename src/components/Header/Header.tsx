@@ -9,20 +9,36 @@ import {
   ChevronLeft,
 } from 'react-feather';
 import './header.css';
+import { getBreadcrumbLabel } from '../../utils/getBreadcrumbLabel';
 
 function Header() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const state = location.state as { customerName?: string };
+
+
+
   const pathParts = location.pathname.split('/').filter(Boolean);
 
-  const formatLabel = (part: string) =>
-    part.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  // const isId = (value: string) => /^\d+$/.test(value);
+
+
+  // const formatLabel = (part: string) =>
+  //   part.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
   // Build cumulative paths for each segment: ["sales","sales-orders"] → ["/sales","/sales/sales-orders"]
-  const segments = pathParts.map((part, index) => {
-    const to = '/' + pathParts.slice(0, index + 1).join('/');
-    return { part, to };
+  // const segments = pathParts.map((part, index) => {
+  //   const to = '/' + pathParts.slice(0, index + 1).join('/');
+  //   return { part, to };
+  // });
+
+  const crumbs = pathParts.map((_, index) => {
+    const path = '/' + pathParts.slice(0, index + 1).join('/');
+    return {
+      path,
+      label: getBreadcrumbLabel(path, state),
+    };
   });
 
   return (
@@ -53,25 +69,25 @@ function Header() {
         </nav>
       </header>
 
-      <div className="breadcrumb mt-3 fw-normal">
-        {/* Root dashboard link */}
+      {/* <div className="breadcrumb mt-3 fw-normal">
         <Link to="/" className="breadcrumb-link">
           Dashboard
         </Link>
 
         {segments.map((seg, index) => {
-          const label = formatLabel(seg.part);
-          const isLast = index === segments.length - 1;
+          const label =
+            isId(seg.part) && state?.customerName
+              ? state.customerName
+              : formatLabel(seg.part);
 
-          // Parent path for "one step back"
-          const parentPath = index > 0 ? '/' + pathParts.slice(0, index).join('/') : '/';
+
+          const isLast = index === segments.length - 1;
 
           return (
             <div key={seg.to} className="breadcrumb-item-flex">
               <ChevronLeft size={20} />
 
               {isLast ? (
-                // LAST item: go ONE LEVEL UP when clicked
                 <button
                   type="button"
                   className="breadcrumb-link btn-reset"
@@ -80,7 +96,6 @@ function Header() {
                   {label}
                 </button>
               ) : (
-                // INTERMEDIATE items: real links to their exact route
                 <Link to={seg.to} className="breadcrumb-link">
                   {label}
                 </Link>
@@ -88,7 +103,38 @@ function Header() {
             </div>
           );
         })}
+      </div> */}
+
+      <div className="breadcrumb mt-3 fw-normal">
+        <Link to="/" className="breadcrumb-link">
+          Dashboard
+        </Link>
+
+        {crumbs.map((crumb, index) => {
+          const isLast = index === crumbs.length - 1;
+
+          return (
+            <div key={crumb.path} className="breadcrumb-item-flex">
+              <ChevronLeft size={20} />
+
+              {isLast ? (
+                <button
+                  type="button"
+                  className="breadcrumb-link btn-reset"
+                  onClick={() => navigate(-1)}
+                >
+                  {crumb.label}
+                </button>
+              ) : (
+                <Link to={crumb.path} className="breadcrumb-link">
+                  {crumb.label}
+                </Link>
+              )}
+            </div>
+          );
+        })}
       </div>
+
     </div>
   );
 }

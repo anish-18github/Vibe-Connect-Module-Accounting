@@ -5,12 +5,14 @@ import { Edit, Eye, ChevronLeft, ChevronRight, Search } from 'react-feather';
 interface Column {
   key: string;
   label: string;
+  render?: (value: any, row: any) => React.ReactNode;
 }
 
 interface DynamicTableProps {
   columns: Column[];
   data: any[];
   actions?: boolean;
+  loading?: boolean;
   rowsPerPage?: number;
   onAdd?: () => void; /* For Navigation */
   onView?: (row: any) => void;
@@ -21,6 +23,7 @@ function DynamicTable({
   data,
   actions = false,
   rowsPerPage = 10,
+  loading = false,
   onAdd,
   onView,
 }: DynamicTableProps) {
@@ -113,7 +116,7 @@ function DynamicTable({
       {/* table-striped */}
 
       <div className="table-wrapper">
-        <table className="table custom-table table-bordered ">
+        <table className="table custom-table table-bordered" style={{ fontSize: 14 }}>
           <thead className="fw-normal">
             <tr>
               {actions && <th>Action</th>}
@@ -124,30 +127,54 @@ function DynamicTable({
           </thead>
 
           <tbody>
-            {currentData.length > 0 ? (
+            {loading ? (
+              <tr>
+                <td
+                  colSpan={columns.length + (actions ? 1 : 0)}
+                  className="text-center"
+                >
+                  Loading...
+                </td>
+              </tr>
+            ) : currentData.length > 0 ? (
               currentData.map((row, i) => (
                 <tr key={i}>
                   {actions && (
                     <td>
-                      <span style={{ marginRight: '10px', cursor: 'pointer', color: '#555' }}>
+                      <span
+                        style={{
+                          marginRight: '10px',
+                          cursor: 'pointer',
+                          color: '#555',
+                        }}
+                      >
                         <Edit size={16} />
                       </span>
                       <span
                         style={{ cursor: 'pointer', color: '#555' }}
-                        onClick={() => onView?.(row)} // Pass entire row
+                        onClick={() => onView?.(row)}
                       >
                         <Eye size={16} />
                       </span>
                     </td>
                   )}
                   {columns.map((col) => (
-                    <td key={col.key}>{row[col.key]}</td>
+                    <td key={col.key}>
+                      {col.render
+                        ? col.render(row[col.key], row)
+                      :col.key === 'createdOn'
+                      ? new Date(row[col.key]).toLocaleDateString('en-GB') // dd/mm/yyyy
+                        : row[col.key]}
+                    </td>
                   ))}
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length + (actions ? 1 : 0)} className="text-center">
+                <td
+                  colSpan={columns.length + (actions ? 1 : 0)}
+                  className="text-center"
+                >
                   No Data Found
                 </td>
               </tr>
@@ -155,6 +182,7 @@ function DynamicTable({
           </tbody>
         </table>
       </div>
+
     </div>
   );
 }

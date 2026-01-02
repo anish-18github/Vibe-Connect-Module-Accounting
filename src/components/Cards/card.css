@@ -1,22 +1,37 @@
 .card {
+  position: relative;
   background: white;
   border-radius: 12px;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  overflow: visible;
   height: 100%;
   display: flex;
+  z-index: 200;
   flex-direction: column;
 }
 
 /* ------------------ HEADER ------------------ */
-.card-header {
+/* .card-header {
+  position: relative;
   background: #f7f9fc;
   padding: 12px 16px;
   border-bottom: 1px solid #e5e8ed;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  z-index: 10;
+} */
+
+.card-header {
+  position: relative;
+  z-index: 10; /* Add this */
 }
+
+.add svg.rotate-180 {
+  transform: rotate(180deg);
+  transition: transform 0.2s ease;
+}
+
 
 .card-header h3 {
   color: #19376d;
@@ -47,10 +62,10 @@
   font-weight: 350;
 }
 
-.add svg {
+/* .add svg {
   width: 15px;
   height: 15px;
-}
+} */
 
 /* ------------------ SELECT ------------------ */
 .card-header select {
@@ -67,5 +82,37 @@
 /* ------------------ BODY ------------------ */
 .card-body {
   flex: 1;
+  overflow: hidden;
   padding: 12px;
+}
+
+
+/* Card.css */
+.dropdown-wrapper {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 110%;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  min-width: 160px;
+  z-index: 9999;
+  border: 1px solid #e5e7eb;
+}
+
+.dropdown-item {
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #f5f7fa;
 }

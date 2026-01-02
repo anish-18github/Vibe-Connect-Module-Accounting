@@ -1,13 +1,16 @@
 import AppRouter from "./router/AppRouter";
 import { Toast } from "./components/Toast/Toast";
-import { useGlobalToast } from "./components/Toast/ToastContext";
+import { ToastProvider, useGlobalToast } from "./components/Toast/ToastContext";
 
 function App() {
   const { toast, setToast } = useGlobalToast();
   return (
     <>
       <Toast toast={toast} setToast={setToast} />
-      <AppRouter />
+      <ToastProvider>
+
+        <AppRouter />
+      </ToastProvider>
     </>
   );
 }

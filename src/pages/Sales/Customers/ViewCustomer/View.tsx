@@ -12,7 +12,16 @@ import MailSystem from '../../../../components/ViewComponents/MailSystem';
 
 import customerIncomeData from '../../../../data/customerIncomes.json';
 import Chart from 'chart.js/auto';
+import api from '../../../../services/api/apiConfig';
+import { Mail, Phone } from 'react-feather';
 // import Card from "../../../../components/Cards/Card";
+
+interface Customer {
+  id: number;
+  name: string;
+  email: string;
+}
+
 
 interface IncomeData {
   month: string;
@@ -24,6 +33,9 @@ const ViewCustomer: React.FC = () => {
   const [activeKey, setActiveKey] = React.useState('overview');
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstanceRef = useRef<Chart | null>(null);
+  const [customer, setCustomer] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+
 
   const IncomeData: IncomeData[] = customerIncomeData as IncomeData[];
 
@@ -91,6 +103,22 @@ const ViewCustomer: React.FC = () => {
       }
     };
   }, [IncomeData]);
+
+  useEffect(() => {
+    const fetchCustomer = async () => {
+      try {
+        const res = await api.get<Customer>(`sales/customers/${id}/`);
+        setCustomer(res.data);
+      } catch (error) {
+        console.error('Failed to fetch customer', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) fetchCustomer();
+  }, [id]);
+
 
   // ---------------- TAB CONTENT -----------------
 
@@ -331,12 +359,31 @@ const ViewCustomer: React.FC = () => {
 
   const activeContent = tabs.find((t) => t.key === activeKey)?.content;
 
+  // const billingAddress = customer?.addresses?.find(
+  //   (a: any) => a.address_type === 'billing'
+  // );
+
+  // const shippingAddress = customer?.addresses?.find(
+  //   (a: any) => a.address_type === 'shipping'
+  // );
+
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <div className="container-fluid p-4">Loading customer details…</div>
+      </>
+    );
+  }
+
+
   return (
     <>
       <Header />
 
       <div className="container-fluid ">
-        <div style={{ padding: '0 1rem' }}>
+        <div className="sales-orders-page" style={{ paddingTop: 39 }}>
           {/* Tabs Header */}
           <Tabs tabs={tabs} defaultActiveKey="overview" onChange={(key) => setActiveKey(key)} />
 
@@ -344,57 +391,105 @@ const ViewCustomer: React.FC = () => {
             {/* LEFT STATIC CARD */}
             <div className="col-md-3 pe-0">
               <div className="customer-card shadow-sm p-3">
+
+                {/* ================= Profile ================= */}
                 <div className="text-center mb-3">
                   <div
                     className="rounded-circle bg-secondary"
-                    style={{ width: 70, height: 70, margin: 'auto' }}
+                    style={{ width: 70, height: 70, margin: "auto" }}
                   ></div>
-                  <h5 className="mt-2 fw-semibold">Mr. Ram</h5>
+
+                  <h5 className="mt-2 fw-normal" style={{ fontSize: 16 }}>
+                    {customer?.salutation} {customer?.first_name} {customer?.last_name}
+                  </h5>
                 </div>
 
+                {/* ================= Address ================= */}
                 <div className="mb-3">
-                  <div className="section-title">Address</div>
+                  <div className="section-title">Billing Address</div>
 
                   <div className="section-box">
                     <p>
-                      Billing Address: <span className="text-primary">New Address</span>
+                      Address:{' '}
+                      <span className="text-primary">
+                        {customer?.address
+                          ? `${customer.address.address1}, ${customer.address.city}, ${customer.address.state} - ${customer.address.zip_code}`
+                          : "—"}
+                      </span>
                     </p>
+
                     <p>
-                      Shipping Address: <span className="text-primary">New Address</span>
+                      Country:{' '}
+                      <span className="text-primary">
+                        {customer?.address?.country || "—"}
+                      </span>
+                    </p>
+
+                    <p>
+                      Phone:{' '}
+                      <span className="text-primary">
+                        {customer?.address?.phone_number || "—"}
+                      </span>
                     </p>
                   </div>
                 </div>
 
+                {/* ================= Other Details ================= */}
                 <div className="mb-3">
                   <div className="section-title">Other Details</div>
 
                   <div className="section-box">
-                    <p>Customer Type: Individual</p>
-                    <p>Default Currency: INR</p>
-                    <p>Portal Status: Disabled</p>
-                    <p>Portal Language: English</p>
+                    <p>Customer Type: {customer?.customer_type}</p>
+                    <p>Default Currency: {customer?.currency}</p>
+                    <p>Portal Language: {customer?.portal_language}</p>
                   </div>
                 </div>
 
+                {/* ================= Contacts ================= */}
                 <div className="mb-3">
-                  <div className="section-title">Contact</div>
+                  <div className="section-title">Contact Persons</div>
 
                   <div className="section-box">
-                    <p className="text-muted">No contact details</p>
+                    {customer?.contacts?.length ? (
+                      customer.contacts.map((c: any, index: number) => (
+                        <div key={index} className="mb-2">
+                          <strong>
+                            {c.salutation} {c.first_name} {c.last_name}
+                          </strong>
+                          <div className="text-muted ">
+                            {c.designation || "—"} • {c.department || "—"}
+                          </div>
+                          <div className="contact-rows">
+                            <Phone size={ 14 } /> {c.phone || "—"} <br />
+                            <Mail size={ 14 }/> {c.email || "—"}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-muted mb-0">No contact details</p>
+                    )}
                   </div>
                 </div>
 
+                {/* ================= Record Info ================= */}
                 <div className="mb-3">
                   <div className="section-title">Record Info</div>
 
                   <div className="section-box">
-                    <p>Customer ID: {id}</p>
-                    <p>Created On: 23/06/2025</p>
-                    <p>Created By: Admin</p>
+                    <p>Customer ID: {customer?.id}</p>
+                    <p>
+                      Created On:{" "}
+                      {customer?.created_on
+                        ? new Date(customer.created_on).toLocaleDateString()
+                        : "—"}
+                    </p>
+                    <p>Created By: {customer?.created_by_name || "System"}</p>
                   </div>
                 </div>
+
               </div>
             </div>
+
 
             {/* RIGHT DYNAMIC CARD */}
             <div className="col-md-9">

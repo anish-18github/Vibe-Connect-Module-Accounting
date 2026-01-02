@@ -15,7 +15,7 @@
 /* Section titles (floating above box) */
 .section-title {
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
   margin-bottom: 6px;
   margin-left: 4px;
 }
@@ -24,9 +24,24 @@
   background: #f4f4f4;
   /* same as outer card */
   border: 1px solid #d0d0d0;
+  font-size: 14px;
   border-radius: 8px;
   padding: 10px;
 }
+
+.section-box p{
+  font-size: 12px;
+}
+
+.section-box p span{
+  font-size: 12px;
+}
+
+.section-box div {
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+
 
 /* Rounded table */
 .rounded-table {

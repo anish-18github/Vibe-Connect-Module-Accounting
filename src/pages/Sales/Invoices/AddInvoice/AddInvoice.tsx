@@ -42,9 +42,32 @@ export default function AddInvoice() {
   const [showSettings, setShowSettings] = useState(false);
   const [closing, setClosing] = useState(false);
   const [mode, setMode] = useState<'auto' | 'manual'>('auto');
-  const [prefix, setPrefix] = useState('');
+  // const [prefix, setPrefix] = useState('');
   const [nextNumber, setNextNumber] = useState('');
   const [restartYear, setRestartYear] = useState(false);
+  const [prefixPattern, setPrefixPattern] = useState<string>('CUSTOM');
+
+
+  const buildPrefixFromPattern = (pattern: string) => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    switch (pattern) {
+      case 'YEAR':
+        return `INV-${year}-`;
+      case 'YEAR_MONTH':
+        return `INV-${year}${month}-`;
+      case 'DATE_DDMMYYYY':
+        return `INV-${day}${month}${year}-`;
+      case 'YEAR_SLASH_MONTH':
+        return `INV-${year}/${month}-`;
+      default:
+        return 'INV-';
+    }
+  };
+
 
   const closePopup = () => {
     setClosing(true);
@@ -149,6 +172,20 @@ export default function AddInvoice() {
     });
   }, [formData.itemTable, taxInfo.type, taxInfo.selectedTax, taxInfo.adjustment, tcsOptions]);
 
+
+  // CURRENT DATE
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    setFormData((prev) => ({
+      ...prev,
+      invoice: {
+        ...prev.invoice,
+        invoiceDate: today,
+      },
+    }));
+  }, []);
+
+
   // ---------------- Handlers ----------------
   const handleTaxChange = (field: any, value: any) => {
     setTaxInfo((prev) => ({ ...prev, [field]: value }));
@@ -226,11 +263,17 @@ export default function AddInvoice() {
     navigate('/sales/invoices');
   };
 
-  const applyAutoInvoice = () => {
+  const applyAutoSO = () => {
     if (mode === 'auto') {
+      const prefix = buildPrefixFromPattern(prefixPattern);
+      const fullNumber = `${prefix}${nextNumber || '001'}`;
+
       setFormData((prev) => ({
         ...prev,
-        invoice: { ...prev.invoice, invoiceNo: prefix + nextNumber },
+        invoice: {
+          ...prev.invoice,
+          invoiceNo: fullNumber, // ✅ matches the input binding
+        },
       }));
     }
     closePopup();
@@ -318,7 +361,7 @@ export default function AddInvoice() {
                     <span style={{
                       position: 'absolute',
                       right: '10px',
-                      top: '50%',
+                      top: '45%',
                       transform: 'translateY(-50%)',
                       cursor: 'pointer',
                       color: '#6c757d',
@@ -461,16 +504,16 @@ export default function AddInvoice() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header custom-header">
-              <h4 className="mb-0 p-4">Configure Invoice Number Preferences</h4>
+              <h4 className="mb-0" style={{ fontSize: 17 }}>Configure Invoice Number Preferences</h4>
               <X
                 size={20}
-                style={{ cursor: 'pointer', marginRight: '15px' }}
+                style={{ cursor: 'pointer', color: '#fc0404ff' }}
                 onClick={closePopup}
               />
             </div>
 
             <div className="modal-body mt-3">
-              <p style={{ fontSize: '14px', color: '#555' }}>
+              <p style={{ fontSize: 13, color: '#555' }}>
                 Your Invoices are currently set to auto-generate numbers. Change settings if needed.
               </p>
 
@@ -483,39 +526,57 @@ export default function AddInvoice() {
                   checked={mode === 'auto'}
                   onChange={() => setMode('auto')}
                 />
-                <label className="form-check-label">Continue auto-generating Invoice Numbers</label>
-                <Info size={18} className="ms-2" />
+                <label className="form-check-label fw-normal">Continue auto-generating Invoice Numbers</label>
+                <Info size={13} />
               </div>
 
               {mode === 'auto' && (
-                <div style={{ marginLeft: 25 }}>
-                  <div style={{ display: 'flex', gap: 20 }}>
-                    <div style={{ flex: 1 }}>
-                      <label className="form-label">Prefix</label>
-                      <input
-                        value={prefix}
-                        onChange={(e) => setPrefix(e.target.value)}
-                        className="form-control"
-                        placeholder="INV-"
-                      />
+                <div className="auto-settings">
+                  <div className="auto-settings-row">
+                    {/* PREFIX PATTERN SELECT */}
+                    <div style={{ flex: 1, fontSize: 13 }}>
+                      <label className="so-label text-sm text-muted-foreground fw-bold">Prefix pattern</label>
+                      <select
+                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                        value={prefixPattern}
+                        onChange={(e) => setPrefixPattern(e.target.value)}
+                      >
+                        <option value="" disabled>
+                          -- Select prefix --
+                        </option>
+                        <option value="YEAR">Current year (YYYY-)</option>
+                        <option value="YEAR_MONTH">Current year + month (YYYYMM-)</option>
+                        <option value="DATE_DDMMYYYY">Current date (DDMMYYYY-)</option>
+                        <option value="YEAR_SLASH_MONTH">Year/Month (YYYY/MM-)</option>
+                      </select>
+                      <small className="text-muted d-block mt-1">
+                        Example prefix: {buildPrefixFromPattern(prefixPattern)}
+                      </small>
                     </div>
 
-                    <div style={{ flex: 1 }}>
-                      <label className="form-label">Next Number</label>
+                    {/* NEXT NUMBER */}
+                    <div style={{ flex: 1, fontSize: 13 }} className="so-form-group mb-4">
+                      <label className="so-label text-sm text-muted-foreground fw-bold">Next Number</label>
                       <input
                         value={nextNumber}
                         onChange={(e) => setNextNumber(e.target.value)}
-                        className="form-control"
+                        className="form-control so-control border"
+                        placeholder="001"
                       />
+                      <small className="text-muted d-block mt-1">
+                        Full example: {buildPrefixFromPattern(prefixPattern)}
+                        {nextNumber || '001'}
+                      </small>
                     </div>
                   </div>
 
                   <div className="mt-3">
-                    <label>
+                    <label style={{ fontSize: 13 }}>
                       <input
                         type="checkbox"
                         checked={restartYear}
                         onChange={(e) => setRestartYear(e.target.checked)}
+                        // style={{ fontSize: 12 }}
                         className="me-2"
                       />
                       Restart numbering every fiscal year.
@@ -536,11 +597,11 @@ export default function AddInvoice() {
                 <label className="form-check-label">Enter Invoice Numbers manually</label>
               </div>
 
-              <div className="d-flex justify-content-end mt-4" style={{ gap: 10 }}>
-                <button className="btn btn-outline-secondary" onClick={closePopup}>
+              <div className="d-flex justify-content-center mt-4" style={{ gap: 10 }}>
+                <button className="btn border me-3 px-4" onClick={closePopup}>
                   Cancel
                 </button>
-                <button className="btn btn-primary px-4" onClick={applyAutoInvoice}>
+                <button className="btn me-2 px-4" style={{ background: '#7991BB', color: '#FFF' }} onClick={applyAutoSO}>
                   Save
                 </button>
               </div>

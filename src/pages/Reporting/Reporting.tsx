@@ -143,18 +143,19 @@ const Reporting = () => {
                             {/* Footer */}
                             <div className="modal-footer-custom">
                                 <button
-                                    type="submit"
-                                    className="btn px-4"
-                                    style={{ background: '#7991BB', color: '#FFF' }}
-                                >
-                                    Proceed
-                                </button>
-                                <button
                                     type="button"
                                     className="btn border me-3 px-4"
                                     onClick={handleCancel}
                                 >
                                     Cancel
+                                </button>
+
+                                <button
+                                    type="submit"
+                                    className="btn px-4"
+                                    style={{ background: '#7991BB', color: '#FFF' }}
+                                >
+                                    Proceed
                                 </button>
                             </div>
                         </form>

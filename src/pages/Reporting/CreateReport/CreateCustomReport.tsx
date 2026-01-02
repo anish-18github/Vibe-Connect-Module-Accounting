@@ -1092,7 +1092,7 @@ const createPdfStyles = (layout: LayoutState) =>
             fontSize:
                 layout.tableDensity === "Compact"
                     ? 9
-                    : layout.tableDensity === "Comfortable"
+                    : layout.tableDensity === "Classic"
                         ? 11
                         : 10,
         },

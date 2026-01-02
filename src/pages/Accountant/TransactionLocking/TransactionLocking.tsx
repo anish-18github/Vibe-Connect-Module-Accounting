@@ -268,7 +268,7 @@ const TransactionLocking: React.FC = () => {
                 </label>
                 <input
                   type="date"
-                  className="form-control form-control-sm"
+                  className="form-control form-control-sm border"
                   style={{ maxWidth: 220 }}
                   value={lockDate}
                   onChange={(e) => setLockDate(e.target.value)}
@@ -284,7 +284,7 @@ const TransactionLocking: React.FC = () => {
                   Reason:
                 </label>
                 <textarea
-                  className="form-control form-control-sm"
+                  className="form-control form-control-sm border"
                   style={{ minHeight: 70 }}
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
@@ -297,15 +297,15 @@ const TransactionLocking: React.FC = () => {
             <div className="d-flex justify-content-start gap-2 px-3 py-2 border-top">
               <button
                 type="button"
-                className="btn btn-sm"
-                style={{ backgroundColor: '#4a7cc2', color: '#fff' }}
+                className="btn border me-2 px-3"
+                style={{ background: '#7991BB', color: '#FFF' }}
                 onClick={handleConfirmLock}
               >
                 Lock
               </button>
               <button
                 type="button"
-                className="btn btn-sm btn-outline-secondary"
+                className="btn border me-3 px-2"
                 onClick={closeLockModal}
               >
                 Cancel
@@ -340,7 +340,7 @@ const TransactionLocking: React.FC = () => {
               className="d-flex justify-content-between align-items-center px-3 py-2 border-bottom"
               style={{ backgroundColor: '#f5f5f5' }}
             >
-              <h6 className="mb-0">Unlock - {unlockModule.name}</h6>
+              <h6 className="mb-0" style={{ fontSize: 15 }}>Unlock - {unlockModule.name}</h6>
               <button
                 type="button"
                 className="btn btn-sm border-0 text-danger"
@@ -360,7 +360,7 @@ const TransactionLocking: React.FC = () => {
                   Reason:<span className="text-danger"> *</span>
                 </label>
                 <textarea
-                  className="form-control form-control-sm"
+                  className="form-control form-control-sm border"
                   style={{ minHeight: 70 }}
                   value={unlockReason}
                   onChange={(e) => setUnlockReason(e.target.value)}
@@ -373,8 +373,8 @@ const TransactionLocking: React.FC = () => {
             <div className="d-flex justify-content-start gap-2 px-3 py-2 border-top">
               <button
                 type="button"
-                className="btn btn-sm"
-                style={{ backgroundColor: '#4a7cc2', color: '#fff' }}
+                className="btn px-2"
+                style={{ backgroundColor: '#4a7cc2', color: '#fff', fontSize: 12 }}
                 disabled={!unlockReason.trim()}
                 onClick={handleConfirmUnlock}
               >
@@ -382,7 +382,8 @@ const TransactionLocking: React.FC = () => {
               </button>
               <button
                 type="button"
-                className="btn btn-sm btn-outline-secondary"
+                className="btn border me-3 px-2"
+                style={{ fontSize: 12 }}
                 onClick={closeUnlockModal}
               >
                 Cancel
