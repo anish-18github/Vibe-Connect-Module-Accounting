@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../../../../components/Header/Header';
 import Tabs from '../../../../components/Tab/Tabs';
@@ -10,11 +10,15 @@ import CommentBox from '../../../../components/ViewComponents/CommentBox';
 import Transactions from '../../../../components/ViewComponents/Transactions';
 import MailSystem from '../../../../components/ViewComponents/MailSystem';
 
-import customerIncomeData from '../../../../data/customerIncomes.json';
-import Chart from 'chart.js/auto';
+// import customerIncomeData from '../../../../data/customerIncomes.json';
 import api from '../../../../services/api/apiConfig';
 import { Mail, Phone } from 'react-feather';
-// import Card from "../../../../components/Cards/Card";
+// import Card from '../../../../components/Cards/Card';
+import { Bar } from 'react-chartjs-2';
+import Card from '../../../../components/Cards/Card';
+import { incomeByFY } from '../../../../data/incomeData';
+import { getCurrentFY } from '../../../../utils/financialYear';
+import StatementPreview from '../../../../components/Statements/StatementPreview';
 
 interface Customer {
   id: number;
@@ -22,87 +26,144 @@ interface Customer {
   email: string;
 }
 
+type RangeType = '6M' | '12M' | 'THIS_YEAR' | 'LAST_YEAR';
 
-interface IncomeData {
-  month: string;
-  income: number;
-}
+
+
 
 const ViewCustomer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [activeKey, setActiveKey] = React.useState('overview');
-  const chartRef = useRef<HTMLCanvasElement>(null);
-  const chartInstanceRef = useRef<Chart | null>(null);
+  // const chartRef = useRef<HTMLCanvasElement>(null);
+  // const chartInstanceRef = useRef<Chart | null>(null);
   const [customer, setCustomer] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
 
 
-  const IncomeData: IncomeData[] = customerIncomeData as IncomeData[];
+  // const fyOptions = getLastFiveFYs();
+  const [selectedFY, setSelectedFY] = useState(getCurrentFY());
+  const [range, setRange] = useState<RangeType>('12M');
 
-  // Create chart on mount and cleanup
-  useEffect(() => {
-    if (chartRef.current && IncomeData.length > 0) {
-      const ctx = chartRef.current.getContext('2d');
-      if (ctx) {
-        // Destroy existing chart if it exists
-        if (chartInstanceRef.current) {
-          chartInstanceRef.current.destroy();
+
+  const downloadStatement = async (customerId: number) => {
+    try {
+      const response = await api.get(
+        `/sales/customers/${customerId}/statement/pdf/`,
+        {
+          responseType: "blob", // 🚨 REQUIRED
         }
+      );
 
-        chartInstanceRef.current = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: IncomeData.map((item) => item.month),
-            datasets: [
-              {
-                label: 'Expenses (₹)',
-                data: IncomeData.map((item) => item.income),
-                backgroundColor: 'rgba(13, 110, 253, 0.8)',
-                borderColor: 'rgba(13, 110, 253, 1)',
-                borderWidth: 1,
-                borderRadius: 4,
-                borderSkipped: false,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                display: false,
-              },
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: {
-                  callback: function (value) {
-                    return '₹' + (value as number).toLocaleString();
-                  },
-                },
-                grid: {
-                  color: 'rgba(0,0,0,0.1)',
-                },
-              },
-              x: {
-                grid: {
-                  display: false,
-                },
-              },
-            },
-          },
-        });
-      }
+      const blob = new Blob([response.data], {
+        type: "application/pdf",
+      });
+
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Customer_Statement_${customerId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("PDF download failed", error);
     }
+  };
 
-    // Cleanup function
-    return () => {
-      if (chartInstanceRef.current) {
-        chartInstanceRef.current.destroy();
+
+
+
+  const incomeBarOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx: any) =>
+            ` ₹${Number(ctx.raw).toLocaleString()}`,
+        },
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0,0,0,0.08)',
+        },
+        ticks: {
+          callback: (value: any) =>
+            '₹' + Number(value).toLocaleString(),
+        },
+      },
+      x: {
+        grid: { display: false },
+      },
+    },
+  } as const;
+
+
+  const getPreviousFY = (fy: string) => {
+    const [start, end] = fy.replace('FY ', '').split('-').map(Number);
+    return `FY ${start - 1}-${end - 1}`;
+  };
+
+  const getTotalLabel = () => {
+    switch (range) {
+      case '6M':
+        return 'Last 6 Months';
+      case '12M':
+        return 'Last 12 Months';
+      case 'THIS_YEAR':
+        return 'This Financial Year';
+      case 'LAST_YEAR':
+        return 'Last Financial Year';
+      default:
+        return '';
+    }
+  };
+
+
+  const chartData = useMemo(() => {
+    const fyData = incomeByFY[selectedFY] ?? [];
+
+    switch (range) {
+      case '6M':
+        return fyData.slice(-6);
+
+      case '12M':
+      case 'THIS_YEAR':
+        return fyData;
+
+      case 'LAST_YEAR': {
+        const prevFY = getPreviousFY(selectedFY);
+        return incomeByFY[prevFY] ?? [];
       }
-    };
-  }, [IncomeData]);
+
+      default:
+        return fyData;
+    }
+  }, [selectedFY, range]);
+
+  const incomeBarData = {
+    labels: chartData.map((i) => i.month),
+    datasets: [
+      {
+        label: 'Income',
+        data: chartData.map((i) => i.income),
+        backgroundColor: 'rgba(13,110,253,0.85)',
+        borderRadius: 4,
+      },
+    ],
+  };
+
+  useEffect(() => {
+    setRange('12M');
+  }, [selectedFY]);
+
 
   useEffect(() => {
     const fetchCustomer = async () => {
@@ -116,20 +177,27 @@ const ViewCustomer: React.FC = () => {
       }
     };
 
+
+
     if (id) fetchCustomer();
   }, [id]);
-
 
   // ---------------- TAB CONTENT -----------------
 
   // Overview Tab
   const renderOverview = () => (
     <div>
+      {/* ================= Payment Info ================= */}
       <div className="mb-2">
-        <p style={{ color: '#5E5E5E', margin: 0, fontSize: '14px' }}>Payment Due Period</p>
-        <p style={{ margin: 0, fontSize: '15px', fontWeight: 500 }}>Due on Receipt</p>
+        <p style={{ color: '#5E5E5E', margin: 0, fontSize: '14px' }}>
+          Payment Due Period
+        </p>
+        <p style={{ margin: 0, fontSize: '15px', fontWeight: 500 }}>
+          Due on Receipt
+        </p>
       </div>
 
+      {/* ================= Receivables ================= */}
       <h5 className="fw-bold">Receivables</h5>
 
       <table className="table mt-3 rounded-table">
@@ -149,23 +217,31 @@ const ViewCustomer: React.FC = () => {
         </tbody>
       </table>
 
+      {/* ================= Income Chart ================= */}
       <h4 className="chart-header">Enter Opening Balance</h4>
 
-      <div className="border rounded p-3 chart-container" style={{ background: '#FFFFFF' }}>
-        {/* ROW: Income + helper text + dropdowns */}
-        <div className="d-flex justify-content-between align-items-center">
+      <Card title="Income Overview"
+        selectable
+        selectedFY={selectedFY}
+        onFYChange={setSelectedFY}>
+        {/* Header row inside card body */}
+        <div className="d-flex justify-content-between align-items-center mb-2">
           {/* LEFT SIDE TEXT */}
           <div className="d-flex align-items-center gap-2">
             <h6 className="fw-bold mb-0">Income</h6>
-            <p className="text-muted mb-0" style={{ fontSize: '13px', whiteSpace: 'nowrap' }}>
+            <p
+              className="text-muted mb-0"
+              style={{ fontSize: '13px', whiteSpace: 'nowrap' }}
+            >
               This chart is displayed in the organization base currency.
             </p>
           </div>
 
           {/* RIGHT SIDE DROPDOWNS */}
           <div className="d-flex gap-2">
-            {/* Last 6 months dropdown */}
             <select
+              value={range}
+              onChange={(e) => setRange(e.target.value as RangeType)}
               className="form-select form-select-sm"
               style={{
                 color: '#0D6EFD',
@@ -175,13 +251,19 @@ const ViewCustomer: React.FC = () => {
                 paddingRight: '12px',
               }}
             >
-              <option>Last 6 Months</option>
-              <option>Last 12 Months</option>
-              <option>This Year</option>
-              <option>Last Year</option>
+              <option value="6M">Last 6 Months</option>
+              <option value="12M">Last 12 Months</option>
+              <option value="THIS_YEAR">This Year</option>
+              <option
+                value="LAST_YEAR"
+                disabled={!incomeByFY[getPreviousFY(selectedFY)]}
+              >
+                Last Year
+              </option>
             </select>
 
-            {/* Accrual dropdown (blue text) */}
+
+
             <select
               className="form-select form-select-sm"
               style={{
@@ -189,7 +271,6 @@ const ViewCustomer: React.FC = () => {
                 color: '#0D6EFD',
                 fontWeight: 500,
                 border: 'none',
-                paddingLeft: '12px',
               }}
             >
               <option value="accrual">Accrual</option>
@@ -198,17 +279,27 @@ const ViewCustomer: React.FC = () => {
           </div>
         </div>
 
-        {/* CHART AREA - Updated with Canvas */}
-        <div style={{ height: 200, position: 'relative' }}>
-          <canvas ref={chartRef}></canvas>
+        {/* CHART */}
+        <div style={{ height: 220 }}>
+          <Bar data={incomeBarData} options={incomeBarOptions} />
         </div>
-      </div>
 
-      <p className="mt-3" style={{ fontSize: '15px' }}>
-        Total Income (Last 6 Months): <span className="fw-semibold">₹52,500</span>
-      </p>
+        {/* FOOTER */}
+        <p className="mt-3" style={{ fontSize: '15px' }}>
+          Total Income ({getTotalLabel()}):{' '}
+          <span className="fw-semibold">
+            ₹{chartData
+              .reduce((sum, item) => sum + item.income, 0)
+              .toLocaleString()}
+          </span>
+        </p>
+
+
+
+      </Card>
     </div>
   );
+
 
   // Commenet Tab
   const renderComments = () => <CommentBox />;
@@ -347,7 +438,41 @@ const ViewCustomer: React.FC = () => {
 
   const renderMails = () => <MailSystem />;
 
-  const renderStatements = () => <div>Statements content…</div>;
+  const renderStatements = () => {
+    return (
+      <div className="statement-container">
+        {/* HEADER */}
+        <div className="d-flex justify-content-center mb-4">
+          <div>
+            <h5 className="fw-bold">Customer Statement</h5>
+            <p className="text-muted mb-0">
+              From 01/01/2026 to 31/01/2026
+            </p>
+          </div>
+
+        </div>
+
+        <div className="d-flex justify-content-end mb-2">
+
+
+          <button
+            className="btn me-3 px-4"
+            style={{ background: '#7991BB', color: '#FFF', fontSize: 14 }}
+            onClick={() => downloadStatement(customer.id)}
+          >
+            Download Statement
+          </button>
+
+        </div>
+
+
+        {/* STATEMENT BODY */}
+        <div className="statement-paper">
+          <StatementPreview customer={customer} />
+        </div>
+      </div>
+    );
+  };
 
   const tabs = [
     { key: 'overview', label: 'Overview', content: renderOverview() },
@@ -460,8 +585,8 @@ const ViewCustomer: React.FC = () => {
                             {c.designation || "—"} • {c.department || "—"}
                           </div>
                           <div className="contact-rows">
-                            <Phone size={ 14 } /> {c.phone || "—"} <br />
-                            <Mail size={ 14 }/> {c.email || "—"}
+                            <Phone size={14} /> {c.phone || "—"} <br />
+                            <Mail size={14} /> {c.email || "—"}
                           </div>
                         </div>
                       ))
@@ -483,7 +608,7 @@ const ViewCustomer: React.FC = () => {
                         ? new Date(customer.created_on).toLocaleDateString()
                         : "—"}
                     </p>
-                    <p>Created By: {customer?.created_by_name || "System"}</p>
+                    <p>Created By: {customer?.created_by || "System"}</p>
                   </div>
                 </div>
 

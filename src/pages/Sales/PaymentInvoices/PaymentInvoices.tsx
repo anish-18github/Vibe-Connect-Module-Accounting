@@ -13,12 +13,13 @@ const PaymentInvoices = () => {
   const { toast, setToast } = useGlobalToast();
   useFormSuccess();
   const columns = [
-    { key: 'invoice', label: 'Invoice' },
-    { key: 'orderNumber', label: 'Oreder Number' },
     { key: 'customerName', label: 'Customer Name' },
+    { key: 'profileNane', label: 'Profile Name' },
+    { key: 'frequency', label: 'Frequency' },
+    { key: 'lastInvoiceDate', label: 'Last Invoice Date' },
+    { key: 'nextInvoiceDate', label: 'Next Invoice Date' },
     { key: 'status', label: 'Status' },
     { key: 'amount', label: 'Amount' },
-    { key: 'balanceDue', label: 'Balance Due' },
   ];
 
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const PaymentInvoices = () => {
           <DynamicTable
             columns={columns}
             data={customers}
-            actions={true}
+            actions={false}
             rowsPerPage={10}
             onAdd={() => navigate('/sales/add-recurringInvoice')} //May be change it latter. "/add-customer"
             onView={(row) => navigate(`/view-customer/${row.customerId}`)}

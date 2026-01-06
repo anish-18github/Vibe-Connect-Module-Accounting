@@ -1,0 +1,45 @@
+.statement {
+    background: #fff;
+    padding: 24px;
+    font-size: 13px;
+    border-radius: 8px;
+}
+
+.statement-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.account-summary {
+    width: 280px;
+    float: right;
+    margin-bottom: 20px;
+}
+
+.account-summary table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.account-summary td {
+    padding: 4px 0;
+}
+
+.statement-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 40px;
+}
+
+.statement-table th {
+    background: #2f2f2f;
+    color: #fff;
+    padding: 6px;
+    font-weight: 500;
+}
+
+.statement-table td {
+    padding: 6px;
+    border-bottom: 1px solid #ddd;
+}

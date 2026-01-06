@@ -128,9 +128,10 @@ export default function AddPurchaseOrder() {
   const handleOpenAddress = () => setShowAddressModal(true);
   const handleCloseAddress = () => setShowAddressModal(false);
   const [mode, setMode] = useState<'auto' | 'manual'>('auto');
-  const [prefix, setPrefix] = useState('');
   const [nextNumber, setNextNumber] = useState('');
   const [restartYear, setRestartYear] = useState(false);
+  const [prefixPattern, setPrefixPattern] = useState<string>('CUSTOM');
+
 
   useEffect(() => {
     document.body.style.overflow = showSettings ? 'hidden' : 'auto';
@@ -171,6 +172,27 @@ export default function AddPurchaseOrder() {
       updated[index] = row;
       return { ...prev, itemTable: updated };
     });
+  };
+
+  // helper: build prefix string from pattern
+  const buildPrefixFromPattern = (pattern: string) => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    switch (pattern) {
+      case 'YEAR':
+        return `SO-${year}-`;
+      case 'YEAR_MONTH':
+        return `SO-${year}${month}-`;
+      case 'DATE_DDMMYYYY':
+        return `SO-${day}${month}${year}-`;
+      case 'YEAR_SLASH_MONTH':
+        return `SO-${year}/${month}-`;
+      default:
+        return 'SO-';
+    }
   };
 
   const closePopup = () => {
@@ -231,11 +253,15 @@ export default function AddPurchaseOrder() {
 
   const applyAutoSO = () => {
     if (mode === 'auto') {
+
+      const prefix = buildPrefixFromPattern(prefixPattern);
+      const fullNumber = `${prefix}${nextNumber || '001'}`;
+
       setFormData((prev) => ({
         ...prev,
-        challan: {
+        purchaseOrder: {
           ...prev.purchaseOrder,
-          challanNo: prefix + nextNumber,
+          purchaseOrderNo: fullNumber,
         },
       }));
     }
@@ -278,7 +304,7 @@ export default function AddPurchaseOrder() {
                 {/* Purchase Order No (same as Sales Order No) */}
                 <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Sales Order No:
+                    Purchase Order No:
                   </label>
 
                   <div style={{ position: 'relative', width: '100%' }}>
@@ -359,8 +385,8 @@ export default function AddPurchaseOrder() {
                   </div>
                   <button
                     type="button"
-                    className="btn btn-link p-0 text-sm"
-                    style={{ fontSize: 12 , marginRight: 90, textDecoration: "none" }}
+                    className="btn btn-link p-0 text-sm align-self-start"
+                    style={{ fontSize: 12, textDecoration: "none" }}
                     onClick={handleOpenAddress}
                   >
                     Change destination to deliver
@@ -557,65 +583,101 @@ export default function AddPurchaseOrder() {
       </div>
 
       {showAddressModal && (
-        <div className="modal-backdrop-custom" onClick={handleCloseAddress}>
-          <div className="modal-dialog-custom" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header border-0 pb-2">
-              <h5 className="modal-title">New address</h5>
-              <button
-                type="button"
-                className="btn-close text-danger"
+        <div className="settings-overlay" onClick={handleCloseAddress}>
+          <div
+            className="settings-modal opening "
+            style={{ maxWidth: 520 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* HEADER */}
+            <div
+              className="modal-header custom-header"
+              style={{ background: '#f4f4f4', color: '#0a0000ff' }}
+            >
+              <h4 style={{ fontSize: 17 }} className="mb-0">Delivery Address</h4>
+              <X
+                size={20}
+                style={{ cursor: 'pointer', color: '#fc0404ff' }}
                 onClick={handleCloseAddress}
               />
             </div>
 
-            <div className="modal-body pt-0">
-              <div className="mb-2">
-                <label className="form-label">Attention</label>
-                <input className="form-control form-control-sm border" />
-              </div>
-              <div className="mb-2">
-                <label className="form-label">Street 1</label>
-                <textarea className="form-control form-control-sm border" rows={2} />
-              </div>
-              <div className="mb-2">
-                <label className="form-label">Street 2</label>
-                <textarea className="form-control form-control-sm border" rows={2} />
-              </div>
-              <div className="mb-2">
-                <label className="form-label">City</label>
-                <input className="form-control form-control-sm border" />
-              </div>
-              <div className="mb-2">
-                <label className="form-label">State/Province</label>
-                <input className="form-control form-control-sm border" />
-              </div>
-              <div className="mb-2">
-                <label className="form-label">ZIP/Postal Code</label>
-                <input className="form-control form-control-sm border" />
-              </div>
-              <div className="mb-2">
-                <label className="form-label">Country/Region</label>
-                <select className="form-select form-select-sm border">
-                  <option value="">Select or type to add</option>
+            {/* BODY */}
+            <div className="modal-body mt-3">
+              {/* Country */}
+              <div className="so-form-group mb-3">
+                <label className="so-label fw-bold">Country / Region</label>
+                <select className="form-select so-control">
+                  <option value="">Select Country</option>
+                  <option value="India">India</option>
+                  <option value="USA">USA</option>
                 </select>
               </div>
-              <div className="mb-2">
-                <label className="form-label">Phone</label>
-                <input className="form-control form-control-sm border" />
+
+              {/* State */}
+              <div className="so-form-group mb-3">
+                <label className="so-label fw-bold">State / Province</label>
+                <input
+                  type="text"
+                  className="form-control so-control border"
+                  placeholder="Enter state"
+                />
+              </div>
+
+              {/* City */}
+              <div className="so-form-group mb-3">
+                <label className="so-label fw-bold">City</label>
+                <input
+                  type="text"
+                  className="form-control so-control border"
+                  placeholder="Enter city"
+                />
+              </div>
+
+              {/* Address Line 1 */}
+              <div className="so-form-group mb-3">
+                <label className="so-label fw-bold">Street Address</label>
+                <textarea
+                  className="form-control so-control textarea border"
+                  rows={2}
+                  placeholder="Street, building, area"
+                />
+              </div>
+
+              {/* ZIP + Phone */}
+              <div className="row g-3">
+                <div className="col-md-6">
+                  <div className="so-form-group">
+                    <label className="so-label fw-bold">ZIP / Postal Code</label>
+                    <input className="form-control so-control border" />
+                  </div>
+                </div>
+
+                <div className="col-md-6">
+                  <div className="so-form-group">
+                    <label className="so-label fw-bold">Phone</label>
+                    <input className="form-control so-control border" />
+                  </div>
+                </div>
+              </div>
+              {/* FOOTER */}
+              <div className="d-flex justify-content-center mt-2 gap-0">
+                <button className="btn border me-3 px-4" onClick={handleCloseAddress}>
+                  Cancel
+                </button>
+                <button className="btn me-2 px-4"
+                  style={{ background: '#7991BB', color: '#FFF' }}>
+                  Save Address
+                </button>
               </div>
             </div>
 
-            <div className="modal-footer border-0">
-              <button type="button" className="btn btn-primary btn-sm" onClick={handleCloseAddress}>
-                Save
-              </button>
-              <button type="button" className="btn btn-light btn-sm" onClick={handleCloseAddress}>
-                Cancel
-              </button>
-            </div>
+
           </div>
         </div>
       )}
+
+
 
       {showSettings && (
         <div className="settings-overlay" onClick={closePopup}>
@@ -624,16 +686,16 @@ export default function AddPurchaseOrder() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header custom-header">
-              <h4 className="mb-0 p-4">Configure Delivery Challan Number</h4>
+              <h4 className="mb-0" style={{ fontSize: 17 }}>Configure Delivery Challan Number</h4>
               <X
                 size={20}
-                style={{ cursor: 'pointer', marginRight: '15px' }}
+                style={{ cursor: 'pointer', color: '#fc0404ff' }}
                 onClick={closePopup}
               />
             </div>
 
             <div className="modal-body mt-3">
-              <p style={{ fontSize: '14px', color: '#555' }}>
+              <p style={{ fontSize: 13, color: '#555' }}>
                 Your Delivery Challans are currently set to auto-generate numbers. Change settings
                 if needed.
               </p>
@@ -647,43 +709,61 @@ export default function AddPurchaseOrder() {
                   checked={mode === 'auto'}
                   onChange={() => setMode('auto')}
                 />
-                <label className="form-check-label" style={{ fontWeight: 500 }}>
+                <label className="form-check-label fw-normal">
                   Continue auto-generating Challan Numbers
                 </label>
-                <span style={{ marginLeft: '6px', cursor: 'pointer' }}>
-                  <Info size={18} />
+                <span className='i-btn'>
+                  <Info size={13} />
                 </span>
               </div>
 
               {mode === 'auto' && (
-                <div style={{ marginLeft: 25 }}>
-                  <div style={{ display: 'flex', gap: 20 }}>
-                    <div style={{ flex: 1 }}>
-                      <label className="form-label">Prefix</label>
-                      <input
-                        value={prefix}
-                        onChange={(e) => setPrefix(e.target.value)}
-                        className="form-control"
-                        placeholder="DC-"
-                      />
+                <div className="auto-settings">
+                  <div className="auto-settings-row">
+                    {/* PREFIX PATTERN SELECT */}
+                    <div style={{ flex: 1, fontSize: 13 }}>
+                      <label className="so-label text-sm text-muted-foreground fw-bold">Prefix pattern</label>
+                      <select
+                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                        value={prefixPattern}
+                        onChange={(e) => setPrefixPattern(e.target.value)}
+                      >
+                        <option value="" disabled>
+                          -- Select prefix --
+                        </option>
+                        <option value="YEAR">Current year (YYYY-)</option>
+                        <option value="YEAR_MONTH">Current year + month (YYYYMM-)</option>
+                        <option value="DATE_DDMMYYYY">Current date (DDMMYYYY-)</option>
+                        <option value="YEAR_SLASH_MONTH">Year/Month (YYYY/MM-)</option>
+                      </select>
+                      <small className="text-muted d-block mt-1">
+                        Example prefix: {buildPrefixFromPattern(prefixPattern)}
+                      </small>
                     </div>
 
-                    <div style={{ flex: 1 }}>
-                      <label className="form-label">Next Number</label>
+                    {/* NEXT NUMBER */}
+                    <div style={{ flex: 1, fontSize: 13 }} className="so-form-group mb-4">
+                      <label className="so-label text-sm text-muted-foreground fw-bold">Next Number</label>
                       <input
                         value={nextNumber}
                         onChange={(e) => setNextNumber(e.target.value)}
-                        className="form-control"
+                        className="form-control so-control border"
+                        placeholder="001"
                       />
+                      <small className="text-muted d-block mt-1">
+                        Full example: {buildPrefixFromPattern(prefixPattern)}
+                        {nextNumber || '001'}
+                      </small>
                     </div>
                   </div>
 
                   <div className="mt-3">
-                    <label>
+                    <label style={{ fontSize: 13 }}>
                       <input
                         type="checkbox"
                         checked={restartYear}
                         onChange={(e) => setRestartYear(e.target.checked)}
+                        // style={{ fontSize: 12 }}
                         className="me-2"
                       />
                       Restart numbering every fiscal year.
@@ -701,16 +781,17 @@ export default function AddPurchaseOrder() {
                   checked={mode === 'manual'}
                   onChange={() => setMode('manual')}
                 />
-                <label className="form-check-label" style={{ fontWeight: 500 }}>
+                <label className="form-check-label" style={{ fontWeight: 0 }}>
                   Enter Challan Numbers manually
                 </label>
               </div>
 
-              <div className="d-flex justify-content-end mt-4" style={{ gap: 10 }}>
-                <button className="btn btn-outline-secondary" onClick={closePopup}>
+              <div className="d-flex justify-content-center mt-4 g-0" style={{ gap: 10 }}>
+                <button className="btn border me-3 px-4" onClick={closePopup}>
                   Cancel
                 </button>
-                <button className="btn btn-primary px-4" onClick={applyAutoSO}>
+                <button className="btn me-2 px-4"
+                  style={{ background: '#7991BB', color: '#FFF' }} onClick={applyAutoSO}>
                   Save
                 </button>
               </div>

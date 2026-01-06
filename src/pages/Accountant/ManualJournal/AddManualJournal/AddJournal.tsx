@@ -7,11 +7,11 @@ import './addJournal.css';
 import { FeatherUpload } from '../../../Sales/Customers/AddCustomer/Add';
 // Journal entry row interface
 interface JournalRow {
-  account: string; // 1️⃣ SELECT
-  description: string; // 2️⃣ TEXT INPUT
-  contact: string; // 3️⃣ SELECT
-  debit: number | string; // 4️⃣ TEXT INPUT (no placeholder)
-  credit: number | string; // 5️⃣ TEXT INPUT (no placeholder)
+  account: string; 
+  description: string; 
+  contact: string; 
+  debit: number | string; 
+  credit: number | string; 
 }
 
 export default function AddJournal() {

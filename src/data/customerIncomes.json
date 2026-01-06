@@ -1,5 +1,37 @@
 [
   {
+    "month": "Apr 2024",
+    "income": 9000
+  },
+  {
+    "month": "May 2024",
+    "income": 9500
+  },
+  {
+    "month": "Jun 2024",
+    "income": 10000
+  },
+  {
+    "month": "Jul 2024",
+    "income": 5000
+  },
+  {
+    "month": "Aug 2024",
+    "income": 12000
+  },
+  {
+    "month": "Sep 2024",
+    "income": 11000
+  },
+  {
+    "month": "Oct 2024",
+    "income": 10500
+  },
+  {
+    "month": "Nov 2024",
+    "income": 9800
+  },
+  {
     "month": "Dec 2024",
     "income": 6000
   },
@@ -14,25 +46,5 @@
   {
     "month": "Mar 2025",
     "income": 7500
-  },
-  {
-    "month": "Apr 2025",
-    "income": 9000
-  },
-  {
-    "month": "May 2025",
-    "income": 9500
-  },
-  {
-    "month": "Jun 2025",
-    "income": 10000
-  },
-  {
-    "month": "Jul 2025",
-    "income": 5000
-  },
-  {
-    "month": "Aug 2025",
-    "income": 12000
   }
 ]

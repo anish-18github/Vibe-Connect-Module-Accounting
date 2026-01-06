@@ -14,15 +14,16 @@ export const parchasesTabs = [
   { label: 'Recurring Expenses', path: '/purchases/recurring-expenses' },
   { label: 'Purchase Orders', path: '/purchases/PurchaseOrders' },
   { label: 'Bills', path: '/purchases/bills' },
-  { label: 'Payment Made', path: '/purchases/payment-made' }, //yet to be done
   { label: 'Recurring Bills', path: '/purchases/recurringBills' },
+  { label: 'Payment Made', path: '/purchases/payment-made' }, //yet to be done
   { label: 'Vender Credits', path: '/purchases/vendor-credit' },
 ];
 
 const columns = [
-  { key: 'vendorId', label: 'Vendor Id' },
   { key: 'name', label: 'Name' },
-  { key: 'paymentDuePeriod', label: 'Customer Type' },
+  { key: 'companyName', label: 'Company Name' },
+  { key: 'email', label: 'Email' },
+  { key: 'workPhone', label: 'work Phone' },
   { key: 'createdOn', label: 'Created On' },
   { key: 'createdBy', label: 'Created By' },
 ];
@@ -36,8 +37,8 @@ const Vendors = () => {
   // INFUTURE HERE'S GET API CALL
   // Load from localStorage
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('customers') || '[]');
-    setCustomers(stored);
+    // const stored = JSON.parse(localStorage.getItem('customers') || '[]');
+    // setCustomers(stored);
   }, []);
 
   return (

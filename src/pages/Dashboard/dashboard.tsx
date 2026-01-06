@@ -3,7 +3,7 @@ import Navbar from '../../components/Navbar/NavBar';
 import Card from '../../components/Cards/Card';
 import './dashboard.css';
 
-import { Bar, Line } from 'react-chartjs-2';
+import { Bar, Line, Doughnut } from 'react-chartjs-2';
 
 import chartData from '../../data/incomeExpense.json';
 import topExpenses from '../../data/topExpenses.json';
@@ -70,17 +70,28 @@ function Dashboard() {
 
   const formattedTopExpenses = {
     labels: topExpensesTyped.map(item =>
-      item.Category.length > 12
-        ? item.Category.slice(0, 12) + '…'
+      item.Category.length > 14
+        ? item.Category.slice(0, 14) + '…'
         : item.Category
     ),
     datasets: [
       {
         label: 'Top Expenses',
         data: topExpensesTyped.map(item => item.Amount),
+        backgroundColor: [
+          '#3B82F6', // blue
+          '#EF4444', // red
+          '#F59E0B', // amber
+          '#10B981', // green
+          '#8B5CF6', // purple
+          '#EC4899', // pink
+        ],
+        borderWidth: 2,
+        hoverOffset: 12,
       },
     ],
   };
+
 
 
 
@@ -152,6 +163,35 @@ function Dashboard() {
     } as const,
   } as const;
 
+  const donutOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '65%', // donut thickness
+    plugins: {
+      legend: {
+        position: 'right' as const,
+        labels: {
+          usePointStyle: true,
+          pointStyle: 'circle',
+          padding: 16,
+          font: {
+            size: 12,
+            weight: 'bold' as const,
+          },
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: function (context: any) {
+            const value = context.raw || 0;
+            return ` ₹${value.toLocaleString()}`;
+          },
+        },
+      },
+    },
+  };
+
+
 
 
   // Bright styled charts
@@ -181,19 +221,19 @@ function Dashboard() {
     ],
   };
 
-  const brightTopExpenses = {
-    ...formattedTopExpenses,
-    datasets: [
-      {
-        ...formattedTopExpenses.datasets[0],
-        backgroundColor: 'rgba(59, 130, 246, 0.8)', // Bright blue
-        borderColor: 'rgba(59, 130, 246, 1)',
-        borderWidth: 2,
-        borderRadius: 8,
-        borderSkipped: false,
-      },
-    ],
-  };
+  // const brightTopExpenses = {
+  //   ...formattedTopExpenses,
+  //   datasets: [
+  //     {
+  //       ...formattedTopExpenses.datasets[0],
+  //       backgroundColor: 'rgba(59, 130, 246, 0.8)', // Bright blue
+  //       borderColor: 'rgba(59, 130, 246, 1)',
+  //       borderWidth: 2,
+  //       borderRadius: 8,
+  //       borderSkipped: false,
+  //     },
+  //   ],
+  // };
 
   // ✅ UPDATED: Cash Flow line chart with alternate colors
 
@@ -309,10 +349,15 @@ function Dashboard() {
           </Card>
 
           <Card title="Top Expenses" selectable>
-            <div className="dataCard customerCard" style={{ height: '350px' }}>
-              <Bar data={brightTopExpenses} options={chartOptions} />
+            <div className="dataCard customerCard donut-wrapper" style={{
+              height: '350px',
+              paddingTop: '20px',      // ✅ creates space from card header
+              paddingBottom: '10px',
+            }}>
+              <Doughnut data={formattedTopExpenses} options={donutOptions} />
             </div>
           </Card>
+
 
           <Card title="Cash Flow" selectable className="wide-card">
             <div className="cashflow-content">

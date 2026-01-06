@@ -13,10 +13,12 @@ const Invoices = () => {
   const { toast, setToast } = useGlobalToast();
   useFormSuccess();
   const columns = [
+    { key: 'date', label: 'Date' },
     { key: 'invoice', label: 'Invoice' },
     { key: 'orderNumber', label: 'Order Number' },
     { key: 'customerName', label: 'Customer Name' },
     { key: 'status', label: 'Status' },
+    { key: 'dueDate', label: 'Due Date' },
     { key: 'amount', label: 'Amount' },
     { key: 'balanceDue', label: 'Balance Due' },
   ];

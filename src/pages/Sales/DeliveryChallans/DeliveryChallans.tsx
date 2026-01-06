@@ -13,11 +13,13 @@ const DeliveryChallans = () => {
   const { toast, setToast } = useGlobalToast();
   useFormSuccess();
   const columns = [
-    { key: 'name', label: 'Name' },
-    { key: 'deliveryChallanNo', label: 'Delivery Challan No.' },
-    { key: 'type', label: 'Type' },
     { key: 'date', label: 'Date' },
+    { key: 'deliveryChallanNo', label: 'Delivery Challan No.' },
     { key: 'reference', label: 'Reference' },
+    { key: 'customerName', label: 'Customer Name' },
+    { key: 'status', label: 'Status' },
+    { key: 'invoiceStatus', label: 'Invoive Status' },
+    { key: 'amount', label: 'Amount' },
   ];
 
   const navigate = useNavigate();
@@ -43,7 +45,7 @@ const DeliveryChallans = () => {
           <DynamicTable
             columns={columns}
             data={customers}
-            actions={true}
+            actions={false}
             rowsPerPage={10}
             onAdd={() => navigate('/sales/add-deliveryChallans')} //May be change it latter. "/add-customer"
             onView={(row) => navigate(`/view-customer/${row.customerId}`)}

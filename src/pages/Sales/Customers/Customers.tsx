@@ -15,10 +15,10 @@ export const salesTabs = [
   { label: 'Customers', path: '/sales/customers' },
   { label: 'Quotes', path: '/sales/quotes' },
   { label: 'Sales Orders', path: '/sales/sales-orders' },
-  { label: 'Delivery Challans', path: '/sales/delivery-challans' },
   { label: 'Invoices', path: '/sales/invoices' },
-  { label: 'Payment Received', path: '/sales/payment-received' },
   { label: 'Recurring Invoices', path: '/sales/payment-invoices' },
+  { label: 'Delivery Challans', path: '/sales/delivery-challans' },
+  { label: 'Payment Received', path: '/sales/payment-received' },
   { label: 'Credit Notes', path: '/sales/credit-notes' },
 ];
 

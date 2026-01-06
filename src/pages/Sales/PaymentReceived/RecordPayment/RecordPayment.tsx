@@ -55,21 +55,7 @@ interface PaymentUsageRow {
   paymentUsed: number;
 }
 
-// export interface PaymentSummary {
-//   amountReceived: number;
-//   amountUsed: number;
-//   amountRefunded: number;
-//   amountExcess: number;
-// }
 
-// export interface PaymentUsageRow {
-//   date: string;
-//   invoiceNumber: string;
-//   invoiceAmount: number;
-//   amountDue: number;
-//   paymentReceivedOn: string;
-//   paymentUsed: number;
-// }
 
 // ------------------- Component -------------------
 

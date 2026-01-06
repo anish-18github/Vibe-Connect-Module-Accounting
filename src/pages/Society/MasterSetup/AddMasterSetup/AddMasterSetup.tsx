@@ -481,6 +481,7 @@ const AddMasterSetup = () => {
                                         <option>1 BHK</option>
                                         <option>2 BHK</option>
                                         <option>3 BHK</option>
+                                        <option>Commercial</option>
                                     </select>
                                     {errors.flatType && <small className="text-danger">{errors.flatType}</small>}
                                 </div>
@@ -1239,6 +1240,7 @@ const AddMasterSetup = () => {
                             {isSubmitting ? 'Submitting...' : 'Submit'}
                         </button>
                     </div>
+               
                 </form>
             </div>
         </>

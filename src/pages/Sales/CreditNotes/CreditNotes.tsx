@@ -13,12 +13,13 @@ const CreditNote = () => {
   const { toast, setToast } = useGlobalToast();
   useFormSuccess();
   const columns = [
-    { key: 'invoice', label: 'Invoice' },
-    { key: 'orderNumber', label: 'Oreder Number' },
+    { key: 'date', label: 'Date' },
+    { key: 'reference', label: 'reference' },
     { key: 'customerName', label: 'Customer Name' },
+    { key: 'invoice', label: 'Invoice' },
     { key: 'status', label: 'Status' },
     { key: 'amount', label: 'Amount' },
-    { key: 'balanceDue', label: 'Balance Due' },
+    { key: 'balance', label: 'Balance' },
   ];
 
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const CreditNote = () => {
           <DynamicTable
             columns={columns}
             data={customers}
-            actions={true}
+            actions={false}
             rowsPerPage={10}
             onAdd={() => navigate('/sales/add-creditNote')} //May be change it latter. "/add-customer"
             onView={(row) => navigate(`/view-customer/${row.customerId}`)}

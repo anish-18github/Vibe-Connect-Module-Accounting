@@ -60,15 +60,15 @@ export default function AddCreditNote() {
 
     switch (pattern) {
       case 'YEAR':
-        return `SO-${year}-`;
+        return `CN-${year}-`;
       case 'YEAR_MONTH':
-        return `SO-${year}${month}-`;
+        return `CN-${year}${month}-`;
       case 'DATE_DDMMYYYY':
-        return `SO-${day}${month}${year}-`;
+        return `CN-${day}${month}${year}-`;
       case 'YEAR_SLASH_MONTH':
-        return `SO-${year}/${month}-`;
+        return `CN-${year}/${month}-`;
       default:
-        return 'SO-';
+        return 'CN-';
     }
   };
 
@@ -619,7 +619,7 @@ export default function AddCreditNote() {
                 <label className="form-check-label fw-normal">Enter Credit Note Numbers manually</label>
               </div>
 
-              <div className="d-flex justify-content-end mt-4" style={{ gap: 10 }}>
+              <div className="d-flex justify-content-center mt-4" style={{ gap: 10 }}>
                 <button className="btn border me-3 px-4" onClick={closePopup}>
                   Cancel
                 </button>

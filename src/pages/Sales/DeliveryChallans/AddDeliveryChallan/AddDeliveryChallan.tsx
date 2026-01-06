@@ -23,7 +23,6 @@ interface DeliveryChallanForm {
     customerName: string;
     challanNo: string;
     challanDate: string;
-    // deliveryDate: string;
     deliveryMethod: string;
     reference: string;
     customerNotes: string;

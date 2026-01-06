@@ -13,21 +13,75 @@ const noSpinnerStyle = {
   appearance: 'textfield',
 } as React.CSSProperties;
 
-interface UsageRow {
+// BILL PAYMENT FORM
+
+export interface BillPaymentFormData {
+  billPaymentRecord: BillPaymentRecord;
+
+  billPaymentSummary: BillPaymentSummary;
+
+  billPaymentUsageRows: BillPaymentUsageRow[];
+}
+
+
+export interface BillPaymentRecord {
+  vendorName: string;
+  paymentMode: string;
+  reference: string;
+
+  currency: string;
+  amount: number;
+
+  paidThrough: string;
+  paymentDate: string;
+  paymentNumber: string;
+
+  customerNotes: string;
+}
+
+
+export interface BillPaymentUsageRow {
   date: string;
   invoiceNumber: string;
   invoiceAmount: number;
   amountDue: number;
   paymentReceivedOn: string;
-  paymentUsed: number;
+  amountUsed: number;
 }
 
-interface Summary {
+
+export interface BillPaymentSummary {
   amountReceived: number;
   amountUsed: number;
   amountRefunded: number;
   amountExcess: number;
 }
+
+// VENDOR ADVANCE PAYMENT FORM
+export interface VendorAdvanceFormData {
+  vendorAdvanceRecord: VendorAdvanceRecord;
+}
+
+
+export interface VendorAdvanceRecord {
+  vendorName: string;
+  paymentMode: string;
+  paidThrough: string;
+
+  currency: string;
+  amount: number;
+
+  tds: string;
+  depositTo: string;
+
+  paymentDate: string;
+  paymentNumber: string;
+  reference: string;
+
+  note: string;
+}
+
+
 
 const AddPaymentMade: React.FC = () => {
   const [activeTab, setActiveKey] = useState('record-expense');
@@ -35,52 +89,76 @@ const AddPaymentMade: React.FC = () => {
   const { toast, setToast, showToast } = useToast();
 
   // Bill Payment Form State
-  const [formData, setFormData] = useState({
-    vendorName: '',
-    paymentNumber: '',
-    currency: '₹',
-    amount: '',
-    paymentDate: '',
-    paymentMode: '',
-    paidThrough: '',
-    reference: '',
-    customerNotes: '',
+  const [formData, setFormData] = useState<BillPaymentFormData>({
+    billPaymentRecord: {
+      vendorName: '',
+      paymentMode: '',
+      reference: '',
+
+      currency: '₹',
+      amount: 0,
+
+      paidThrough: '',
+      paymentDate: new Date().toISOString().split('T')[0],
+      paymentNumber: '',
+
+      customerNotes: '',
+    },
+
+    billPaymentSummary: {
+      amountReceived: 0,
+      amountUsed: 0,
+      amountRefunded: 0,
+      amountExcess: 0,
+    },
+
+    billPaymentUsageRows: [
+      {
+        date: '',
+        invoiceNumber: '',
+        invoiceAmount: 0,
+        amountDue: 0,
+        paymentReceivedOn: '',
+        amountUsed: 0,
+      },
+    ],
   });
+
 
   // Table + Summary State
-  const [usageRows, setUsageRows] = useState<UsageRow[]>([
-    {
-      date: '2025-12-10',
-      invoiceNumber: 'INV-001',
-      invoiceAmount: 50000,
-      amountDue: 25000,
-      paymentReceivedOn: '2025-12-12',
-      paymentUsed: 0,
-    },
-    {
-      date: '2025-12-11',
-      invoiceNumber: 'INV-002',
-      invoiceAmount: 30000,
-      amountDue: 15000,
-      paymentReceivedOn: '2025-12-13',
-      paymentUsed: 0,
-    },
-  ]);
+  // const [usageRows, setUsageRows] = useState<BillPaymentUsageRow[]>([
+  //   {
+  //     date: '',
+  //     invoiceNumber: '',
+  //     invoiceAmount: 0,
+  //     amountDue: 0,
+  //     paymentReceivedOn: '',
+  //     amountUsed: 0,
+  //   },
+  // ]);
 
-  const [summary, setSummary] = useState<Summary>({
-    amountReceived: 0,
-    amountUsed: 0,
-    amountRefunded: 0,
-    amountExcess: 0,
-  });
+
+  const [usageRows, setUsageRows] = useState<BillPaymentUsageRow[]>([]);
+
+
+  // const [summary, setSummary] = useState<BillPaymentSummary>({
+  //   amountReceived: 0,
+  //   amountUsed: 0,
+  //   amountRefunded: 0,
+  //   amountExcess: 0,
+  // });
+
+
+
 
   // SETTING MODAL STATES
   const [showSettings, setShowSettings] = useState(false);
   const [mode, setMode] = useState<'auto' | 'manual'>('auto');
-  const [prefix, setPrefix] = useState('');
   const [nextNumber, setNextNumber] = useState('');
   const [restartYear, setRestartYear] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [prefixPattern, setPrefixPattern] = useState<string>('CUSTOM');
+
 
   const closePopup = () => {
     setClosing(true);
@@ -98,21 +176,33 @@ const AddPaymentMade: React.FC = () => {
   }, [showSettings]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      billPaymentRecord: {
+        ...prev.billPaymentRecord,
+        [name]: value,
+      },
     }));
   };
+
 
   // ---------------- Apply Auto Payment ID ----------------
   const applyAutoSO = () => {
     if (mode === 'auto') {
+
+      const prefix = buildPrefixFromPattern(prefixPattern);
+      const fullNumber = `${prefix}${nextNumber || '001'}`;
+
       setFormData((prev) => ({
         ...prev,
-        paymentId: prefix + nextNumber,
+        billPaymentRecord: {
+          ...prev.billPaymentRecord,
+          paymentNumber: fullNumber,
+        },
       }));
     }
     closePopup();
@@ -120,26 +210,57 @@ const AddPaymentMade: React.FC = () => {
 
   const handleUsageChange = (index: number, value: number) => {
     const updated = [...usageRows];
-    updated[index].paymentUsed = value;
+    updated[index].amountUsed = value;
     setUsageRows(updated);
 
-    const totalUsed = updated.reduce((sum, r) => sum + r.paymentUsed, 0);
-    const amountReceived = Number(formData.amount) || 0;
+    const totalUsed = updated.reduce((sum, r) => sum + r.amountUsed, 0);
+    const amountReceived = formData.billPaymentRecord.amount || 0;
 
-    setSummary((prev) => ({
+    setFormData((prev) => ({
       ...prev,
-      amountUsed: totalUsed,
-      amountReceived,
-      amountRefunded: 0,
-      amountExcess: Math.max(0, amountReceived - totalUsed),
+      billPaymentSummary: {
+        amountReceived,
+        amountUsed: totalUsed,
+        amountRefunded: 0,
+        amountExcess: Math.max(0, amountReceived - totalUsed),
+      },
     }));
+
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Bill Payment submitted:', { formData, usageRows, summary });
+
+    console.log('Bill Payment submitted:', {
+      billPaymentRecord: formData.billPaymentRecord,
+      billPaymentSummary: formData.billPaymentSummary,
+      billPaymentUsage: usageRows,
+    });
+
     sessionStorage.setItem('formSuccess', 'Payment saved');
     navigate('/purchases/payments-made');
+  };
+
+
+  // helper: build prefix string from pattern
+  const buildPrefixFromPattern = (pattern: string) => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    switch (pattern) {
+      case 'YEAR':
+        return `PO-${year}-`;
+      case 'YEAR_MONTH':
+        return `PO-${year}${month}-`;
+      case 'DATE_DDMMYYYY':
+        return `PO-${day}${month}${year}-`;
+      case 'YEAR_SLASH_MONTH':
+        return `PO-${year}/${month}-`;
+      default:
+        return 'PO-';
+    }
   };
 
   useEffect(() => {
@@ -163,7 +284,7 @@ const AddPaymentMade: React.FC = () => {
               <select
                 name="vendorName"
                 className="form-select so-control"
-                value={formData.vendorName}
+                value={formData.billPaymentRecord.vendorName}
                 onChange={handleChange}
               >
                 <option value="">Select Vendor</option>
@@ -180,7 +301,7 @@ const AddPaymentMade: React.FC = () => {
               <select
                 name="paymentMode"
                 className="form-select so-control"
-                value={formData.paymentMode}
+                value={formData.billPaymentRecord.paymentMode}
                 onChange={handleChange}
               >
                 <option value="">Select Mode</option>
@@ -199,7 +320,7 @@ const AddPaymentMade: React.FC = () => {
                 type="text"
                 name="reference"
                 className="form-control so-control"
-                value={formData.reference}
+                value={formData.billPaymentRecord.reference}
                 onChange={handleChange}
               />
             </div>
@@ -216,7 +337,7 @@ const AddPaymentMade: React.FC = () => {
                   name="currency"
                   className="form-select so-control"
                   style={{ width: '70px' } as React.CSSProperties}
-                  value={formData.currency}
+                  value={formData.billPaymentRecord.currency}
                   onChange={handleChange}
                 >
                   <option value="₹">IND</option>
@@ -228,7 +349,7 @@ const AddPaymentMade: React.FC = () => {
                   name="amount"
                   className="form-control so-control flex-grow-1"
                   style={noSpinnerStyle}
-                  value={formData.amount}
+                  value={formData.billPaymentRecord.amount}
                   onChange={handleChange}
                 />
               </div>
@@ -241,7 +362,7 @@ const AddPaymentMade: React.FC = () => {
               <select
                 name="paidThrough"
                 className="form-select so-control"
-                value={formData.paidThrough}
+                value={formData.billPaymentRecord.paidThrough}
                 onChange={handleChange}
               >
                 <option value="">Select Method</option>
@@ -264,7 +385,7 @@ const AddPaymentMade: React.FC = () => {
                 type="date"
                 name="paymentDate"
                 className="form-control so-control"
-                value={formData.paymentDate}
+                value={formData.billPaymentRecord.paymentDate}
                 onChange={handleChange}
               />
             </div>
@@ -278,7 +399,7 @@ const AddPaymentMade: React.FC = () => {
                   type="text"
                   name="paymentNumber"
                   className="form-control so-control"
-                  value={formData.paymentNumber}
+                  value={formData.billPaymentRecord.paymentNumber}
                   onChange={handleChange}
                   style={{ paddingRight: '35px' } as React.CSSProperties}
                 />
@@ -319,31 +440,49 @@ const AddPaymentMade: React.FC = () => {
                   <th className="fw-medium text-dark">Amount Used</th>
                 </tr>
               </thead>
+
               <tbody>
+                {/* EXISTING ROWS */}
                 {usageRows.map((row, index) => (
                   <tr key={index} style={{ fontSize: 12 }}>
                     <td>{row.date}</td>
                     <td>{row.invoiceNumber}</td>
                     <td>
-                      {formData.currency} {row.invoiceAmount.toLocaleString()}
+                      {formData.billPaymentRecord.currency}{' '}
+                      {row.invoiceAmount.toLocaleString()}
                     </td>
                     <td>
-                      {formData.currency} {row.amountDue.toLocaleString()}
+                      {formData.billPaymentRecord.currency}{' '}
+                      {row.amountDue.toLocaleString()}
                     </td>
                     <td>{row.paymentReceivedOn}</td>
                     <td>
                       <input
                         type="number"
+                        min={0}
+                        max={row.amountDue}
                         style={noSpinnerStyle}
                         className="form-control form-control-sm border-0 item-input"
-                        value={row.paymentUsed || ''}
-                        onChange={(e) => handleUsageChange(index, Number(e.target.value) || 0)}
+                        value={row.amountUsed || ''}
+                        onChange={(e) =>
+                          handleUsageChange(index, Number(e.target.value) || 0)
+                        }
                       />
                     </td>
                   </tr>
                 ))}
+
+                {/* EMPTY STATE */}
+                {usageRows.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="text-center   text-muted py-3">
+                      No invoices available for this payment
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
+
           </div>
         </div>
 
@@ -355,7 +494,7 @@ const AddPaymentMade: React.FC = () => {
               <textarea
                 className="form-control so-control textarea"
                 name="customerNotes"
-                value={formData.customerNotes}
+                value={formData.billPaymentRecord.customerNotes}
                 onChange={handleChange}
                 placeholder="Add note for customer..."
               />
@@ -365,34 +504,46 @@ const AddPaymentMade: React.FC = () => {
           <div className="summary-column">
             <div
               className="border p-3"
-              style={{ minHeight: '200px', background: "#ffffff", borderRadius: 10 } as React.CSSProperties}
+              style={{
+                minHeight: '200px',
+                background: '#ffffff',
+                borderRadius: 10,
+              }}
             >
               <div className="d-flex justify-content-between mb-2">
                 <span>Amount Received:</span>
                 <strong>
-                  {formData.currency} {Number(formData.amount || 0).toLocaleString()}
+                  {formData.billPaymentRecord.currency}{' '}
+                  {formData.billPaymentSummary.amountReceived.toLocaleString()}
                 </strong>
               </div>
+
               <div className="d-flex justify-content-between mb-2">
                 <span>Amount Used:</span>
                 <strong>
-                  {formData.currency} {summary.amountUsed.toLocaleString()}
+                  {formData.billPaymentRecord.currency}{' '}
+                  {formData.billPaymentSummary.amountUsed.toLocaleString()}
                 </strong>
               </div>
+
               <div className="d-flex justify-content-between mb-2">
                 <span>Amount Refunded:</span>
                 <strong>
-                  {formData.currency} {summary.amountRefunded.toLocaleString()}
+                  {formData.billPaymentRecord.currency}{' '}
+                  {formData.billPaymentSummary.amountRefunded.toLocaleString()}
                 </strong>
               </div>
+
               <div className="d-flex justify-content-between mt-2 pt-2 border-top">
                 <span>Amount in Excess:</span>
                 <strong>
-                  {formData.currency} {summary.amountExcess.toLocaleString()}
+                  {formData.billPaymentRecord.currency}{' '}
+                  {formData.billPaymentSummary.amountExcess.toLocaleString()}
                 </strong>
               </div>
             </div>
           </div>
+
         </div>
 
         {/* Documents */}
@@ -441,35 +592,53 @@ const AddPaymentMade: React.FC = () => {
   );
 
   const vendorAdvance = () => {
-    // Vendor Advance State
-    const [vendorFormData, setVendorFormData] = useState({
-      vendorName: '',
-      paymentNumber: '',
-      currency: '₹',
-      amount: '',
-      tds: '',
-      paymentDate: '',
-      paymentMode: '',
-      paidThrough: '',
-      depositTo: '',
-      reference: '',
-      note: '',
+    const [vendorFormData, setVendorFormData] = useState<VendorAdvanceFormData>({
+      vendorAdvanceRecord: {
+        vendorName: '',
+        paymentMode: '',
+        paidThrough: '',
+
+        currency: '₹',
+        amount: 0,
+
+        tds: '',
+        depositTo: '',
+
+        paymentDate: new Date().toISOString().split('T')[0],
+        paymentNumber: '',
+        reference: '',
+
+        note: '',
+      },
     });
 
     useEffect(() => {
       const today = new Date().toISOString().split('T')[0];
-      setVendorFormData((prev) => ({ ...prev, paymentDate: today }));
-    }, []);
 
-    const handleVendorChange = (
-      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
-    ) => {
-      const { name, value } = e.target;
       setVendorFormData((prev) => ({
         ...prev,
-        [name]: value,
+        vendorAdvanceRecord: {
+          ...prev.vendorAdvanceRecord,
+          paymentDate: today,
+        },
+      }));
+    }, []);
+
+
+    const handleVendorChange = (
+      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    ) => {
+      const { name, value } = e.target;
+
+      setVendorFormData((prev) => ({
+        ...prev,
+        vendorAdvanceRecord: {
+          ...prev.vendorAdvanceRecord,
+          [name]: name === 'amount' ? Number(value) : value,
+        },
       }));
     };
+
 
     const handleVendorSubmit = (e: React.FormEvent) => {
       e.preventDefault();
@@ -492,7 +661,7 @@ const AddPaymentMade: React.FC = () => {
                 <select
                   name="vendorName"
                   className="form-select so-control"
-                  value={vendorFormData.vendorName}
+                  value={vendorFormData.vendorAdvanceRecord.vendorName}
                   onChange={handleVendorChange}
                 >
                   <option value="">Select Vendor</option>
@@ -509,7 +678,7 @@ const AddPaymentMade: React.FC = () => {
                 <select
                   name="paymentMode"
                   className="form-select so-control"
-                  value={vendorFormData.paymentMode}
+                  value={vendorFormData.vendorAdvanceRecord.paymentMode}
                   onChange={handleVendorChange}
                 >
                   <option value="">Select Mode</option>
@@ -527,7 +696,7 @@ const AddPaymentMade: React.FC = () => {
                 <select
                   name="paidThrough"
                   className="form-select so-control"
-                  value={vendorFormData.paidThrough}
+                  value={vendorFormData.vendorAdvanceRecord.paidThrough}
                   onChange={handleVendorChange}
                 >
                   <option value="">Select Method</option>
@@ -550,7 +719,7 @@ const AddPaymentMade: React.FC = () => {
                     name="currency"
                     className="form-select so-control"
                     style={{ width: '70px' } as React.CSSProperties}
-                    value={vendorFormData.currency}
+                    value={vendorFormData.vendorAdvanceRecord.currency}
                     onChange={handleVendorChange}
                   >
                     <option value="₹">IND</option>
@@ -562,7 +731,7 @@ const AddPaymentMade: React.FC = () => {
                     name="amount"
                     className="form-control so-control flex-grow-1"
                     style={noSpinnerStyle}
-                    value={vendorFormData.amount}
+                    value={vendorFormData.vendorAdvanceRecord.amount}
                     onChange={handleVendorChange}
                   />
                 </div>
@@ -573,7 +742,7 @@ const AddPaymentMade: React.FC = () => {
                 <select
                   name="tds"
                   className="form-select so-control"
-                  value={vendorFormData.tds}
+                  value={vendorFormData.vendorAdvanceRecord.tds}
                   onChange={handleVendorChange}
                 >
                   <option value="">Select TDS</option>
@@ -592,7 +761,7 @@ const AddPaymentMade: React.FC = () => {
                 <select
                   name="depositTo"
                   className="form-select so-control"
-                  value={vendorFormData.depositTo}
+                  value={vendorFormData.vendorAdvanceRecord.depositTo}
                   onChange={handleVendorChange}
                 >
                   <option value="">Select Account</option>
@@ -613,7 +782,7 @@ const AddPaymentMade: React.FC = () => {
                   type="date"
                   name="paymentDate"
                   className="form-control so-control"
-                  value={vendorFormData.paymentDate}
+                  value={vendorFormData.vendorAdvanceRecord.paymentDate}
                   onChange={handleVendorChange}
                 />
               </div>
@@ -629,14 +798,15 @@ const AddPaymentMade: React.FC = () => {
                     type="text"
                     name="paymentNumber"
                     className="form-control so-control"
-                    value={vendorFormData.paymentNumber}
+                    value={vendorFormData.vendorAdvanceRecord.paymentNumber}
                     onChange={handleVendorChange}
+                    placeholder='Configure Purchase Order number...'
                     style={{ paddingRight: '35px' } as React.CSSProperties}
                   />
                   <span style={{
                     position: 'absolute',
                     right: '10px',
-                    top: '50%',
+                    top: '45%',
                     transform: 'translateY(-50%)',
                     cursor: 'pointer',
                     color: '#6c757d',
@@ -654,7 +824,7 @@ const AddPaymentMade: React.FC = () => {
                   type="text"
                   name="reference"
                   className="form-control so-control"
-                  value={vendorFormData.reference}
+                  value={vendorFormData.vendorAdvanceRecord.reference}
                   onChange={handleVendorChange}
                 />
               </div>
@@ -672,7 +842,7 @@ const AddPaymentMade: React.FC = () => {
                 <textarea
                   className="form-control so-control textarea"
                   name="note"
-                  value={vendorFormData.note}
+                  value={vendorFormData.vendorAdvanceRecord.note}
                   onChange={handleVendorChange}
                   placeholder="Add note..."
                   rows={4}
@@ -763,17 +933,17 @@ const AddPaymentMade: React.FC = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header custom-header">
-              <h4 className="mb-0 p-4">Configure Sales Order Number Preferences</h4>
+              <h4 className="mb-0" style={{ fontSize: 17 }}>Configure Sales Order Number Preferences</h4>
               <X
                 size={20}
-                style={{ cursor: 'pointer', marginRight: '15px' }}
+                style={{ cursor: 'pointer', color: '#fc0404ff' }}
                 onClick={closePopup}
               />
             </div>
 
             <div className="modal-body mt-3">
-              <p style={{ fontSize: '14px', color: '#555' }}>
-                Your Sales Orders are currently set to auto-generate numbers. Change settings if
+              <p style={{ fontSize: 13, color: '#555' }}>
+                Your Purchase Orders are currently set to auto-generate numbers. Change settings if
                 needed.
               </p>
 
@@ -786,43 +956,61 @@ const AddPaymentMade: React.FC = () => {
                   checked={mode === 'auto'}
                   onChange={() => setMode('auto')}
                 />
-                <label className="form-check-label" style={{ fontWeight: 500 }}>
-                  Continue auto-generating Sales Order Numbers
+                <label className="form-check-label fw-normal">
+                  Continue auto-generating Purchase Order Number
                 </label>
-                <span style={{ marginLeft: '6px', cursor: 'pointer' }}>
-                  <Info size={18} />
+                <span className='i-btn'>
+                  <Info size={13} />
                 </span>
               </div>
 
               {mode === 'auto' && (
-                <div style={{ marginLeft: 25 }}>
-                  <div style={{ display: 'flex', gap: 20 }}>
-                    <div style={{ flex: 1 }}>
-                      <label className="form-label">Prefix</label>
-                      <input
-                        value={prefix}
-                        onChange={(e) => setPrefix(e.target.value)}
-                        className="form-control"
-                        placeholder="PID-"
-                      />
+                <div className="auto-settings">
+                  <div className="auto-settings-row">
+                    {/* PREFIX PATTERN SELECT */}
+                    <div style={{ flex: 1, fontSize: 13 }}>
+                      <label className="so-label text-sm text-muted-foreground fw-bold">Prefix pattern</label>
+                      <select
+                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                        value={prefixPattern}
+                        onChange={(e) => setPrefixPattern(e.target.value)}
+                      >
+                        <option value="" disabled>
+                          -- Select prefix --
+                        </option>
+                        <option value="YEAR">Current year (YYYY-)</option>
+                        <option value="YEAR_MONTH">Current year + month (YYYYMM-)</option>
+                        <option value="DATE_DDMMYYYY">Current date (DDMMYYYY-)</option>
+                        <option value="YEAR_SLASH_MONTH">Year/Month (YYYY/MM-)</option>
+                      </select>
+                      <small className="text-muted d-block mt-1">
+                        Example prefix: {buildPrefixFromPattern(prefixPattern)}
+                      </small>
                     </div>
 
-                    <div style={{ flex: 1 }}>
-                      <label className="form-label">Next Number</label>
+                    {/* NEXT NUMBER */}
+                    <div style={{ flex: 1, fontSize: 13 }} className="so-form-group mb-4">
+                      <label className="so-label text-sm text-muted-foreground fw-bold">Next Number</label>
                       <input
                         value={nextNumber}
                         onChange={(e) => setNextNumber(e.target.value)}
-                        className="form-control"
+                        className="form-control so-control border"
+                        placeholder="001"
                       />
+                      <small className="text-muted d-block mt-1">
+                        Full example: {buildPrefixFromPattern(prefixPattern)}
+                        {nextNumber || '001'}
+                      </small>
                     </div>
                   </div>
 
                   <div className="mt-3">
-                    <label>
+                    <label style={{ fontSize: 13 }}>
                       <input
                         type="checkbox"
                         checked={restartYear}
                         onChange={(e) => setRestartYear(e.target.checked)}
+                        // style={{ fontSize: 12 }}
                         className="me-2"
                       />
                       Restart numbering every fiscal year.
@@ -840,16 +1028,17 @@ const AddPaymentMade: React.FC = () => {
                   checked={mode === 'manual'}
                   onChange={() => setMode('manual')}
                 />
-                <label className="form-check-label" style={{ fontWeight: 500 }}>
+                <label className="form-check-label" style={{ fontWeight: 0 }}>
                   Enter Sales Order Numbers manually
                 </label>
               </div>
 
-              <div className="d-flex justify-content-end mt-4" style={{ gap: 10 }}>
-                <button className="btn btn-outline-secondary" onClick={closePopup}>
+              <div className="d-flex justify-content-center mt-4 g-0" style={{ gap: 10 }}>
+                <button className="btn border me-3 px-4" onClick={closePopup}>
                   Cancel
                 </button>
-                <button className="btn btn-primary px-4" onClick={applyAutoSO}>
+                <button className="btn me-2 px-4"
+                  style={{ background: '#7991BB', color: '#FFF' }} onClick={applyAutoSO}>
                   Save
                 </button>
               </div>

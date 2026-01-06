@@ -13,12 +13,14 @@ const PaymentReceived = () => {
   const { toast, setToast } = useGlobalToast();
   useFormSuccess();
   const columns = [
-    { key: 'invoice', label: 'Invoice' },
-    { key: 'orderNumber', label: 'Oreder Number' },
+    { key: 'date', label: 'Date' },
+    { key: 'payment', label: 'Payment' },
+    { key: 'reference', label: 'Reference' },
     { key: 'customerName', label: 'Customer Name' },
-    { key: 'status', label: 'Status' },
+    { key: 'invoice', label: 'Invoice' },
+    { key: 'mode', label: 'Mode' },
     { key: 'amount', label: 'Amount' },
-    { key: 'balanceDue', label: 'Balance Due' },
+    { key: 'status', label: 'Status' },
   ];
 
   const navigate = useNavigate();
@@ -44,7 +46,7 @@ const PaymentReceived = () => {
           <DynamicTable
             columns={columns}
             data={customers}
-            actions={true}
+            actions={false}
             rowsPerPage={10}
             onAdd={() => navigate('/sales/record-payment')} //May be change it latter. "/add-customer"
             onView={(row) => navigate(`/view-customer/${row.customerId}`)}

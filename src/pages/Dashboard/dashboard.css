@@ -10,16 +10,16 @@
     /* margin-left: 55px; */
   }
 
+  /* 
   .dashboard-container .dropdown-menu {
     position: fixed !important;
-    /* Changed from absolute */
     z-index: 10000 !important;
     background: white;
     border-radius: 6px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     min-width: 180px;
     border: 1px solid #e5e7eb;
-  }
+  } */
 
   .dashboard-container .card-body {
     padding: 20px;
@@ -295,7 +295,7 @@
   }
 
   /* Target Recharts SVG + groups */
-  .dataCard svg,
+  /* .dataCard svg,
   .dataCard .recharts-wrapper,
   .dataCard g,
   .dataCard rect,
@@ -307,8 +307,13 @@
   .customerCard canvas {
     z-index: 1 !important;
     position: relative !important;
-  }
+  } */
 
   .chart-toggle {
     margin-bottom: 15px;
   }
+
+  .donut-wrapper canvas {
+    margin-top: 8px;
+  }
+  

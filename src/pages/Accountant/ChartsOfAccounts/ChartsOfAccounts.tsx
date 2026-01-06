@@ -194,9 +194,6 @@ const ChartsOfAccounts = () => {
             </div>
 
             <div className="modal-footer-custom">
-              <button type="button" className="btn px-4" style={{ background: '#7991BB', color: '#FFF' }} onClick={handleContinue}>
-                Continue
-              </button>
               <button
                 type="button"
                 className="btn border me-3 px-4"
@@ -204,6 +201,10 @@ const ChartsOfAccounts = () => {
               >
                 Cancel
               </button>
+              <button type="button" className="btn px-4" style={{ background: '#7991BB', color: '#FFF' }} onClick={handleContinue}>
+                Continue
+              </button>
+
             </div>
           </div>
         </div>
