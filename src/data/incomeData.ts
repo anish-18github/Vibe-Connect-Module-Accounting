@@ -8,7 +8,7 @@ export const incomeByFY: Record<
         { month: 'Jun', income: 11200 },
         { month: 'Jul', income: 7600 },
         { month: 'Aug', income: 12800 },
-        { month: 'Sep', income: 12100 },
+        { month: 'Sep', income:  12100 },
         { month: 'Oct', income: 11700 },
         { month: 'Nov', income: 10900 },
         { month: 'Dec', income: 8800 },

@@ -26,12 +26,6 @@ const Invoices = () => {
   const navigate = useNavigate();
   const [customers, setCustomers] = useState<any[]>([]);
 
-  // INFUTURE HERE'S GET API CALL
-  // Load from localStorage
-  // useEffect(() => {
-  //   const stored = JSON.parse(localStorage.getItem('customers') || '[]');
-  //   setCustomers(stored);
-  // }, []);
 
   return (
     <>

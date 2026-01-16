@@ -23,12 +23,14 @@ export const salesTabs = [
 ];
 
 const columns = [
-  { key: 'customerId', label: 'Customer ID' },
-  { key: 'name', label: 'Name' },
+  { key: 'name', label: 'Display Name' },
+  { key: 'companyName', label: 'Company Name' },
+  { key: 'email', label: 'Email' },
   { key: 'customerType', label: 'Customer Type' },
   { key: 'createdOn', label: 'Created On' },
   { key: 'createdBy', label: 'Created By' },
 ];
+
 
 function Customers() {
   const navigate = useNavigate();
@@ -49,7 +51,7 @@ function Customers() {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const response = await api.get<Customer[]>('sales/customers/');
+        const response = await api.get<Customer[]>('customers/');
         setCustomers(response.data);
       } catch (error: any) {
         setToast({

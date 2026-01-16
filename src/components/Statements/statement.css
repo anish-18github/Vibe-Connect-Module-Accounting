@@ -5,6 +5,38 @@
     border-radius: 8px;
 }
 
+/* DROPDOWN STYING */
+
+.statement-filters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.statement-select {
+    padding: 6px 32px 6px 12px !important;
+    /* ⬅ extra right padding */
+    font-size: 13px;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
+    background-color: #fff;
+    cursor: pointer;
+    outline: none;
+
+    /* Optional but recommended */
+    appearance: auto;
+}
+
+
+.statement-select:hover {
+    border-color: #bfbfbf;
+}
+
+.statement-select:focus {
+    border-color: #4a90e2;
+}
+
+
 .statement-header {
     display: flex;
     justify-content: space-between;
@@ -41,5 +73,42 @@
 
 .statement-table td {
     padding: 6px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 0px solid #ddd;
+}
+
+.balance-due-row td {
+    border-top: 1px solid #444;
+    padding-top: 10px;
+    background-color: #ffffff !important;
+}
+
+.statement-table tbody tr:nth-child(even) {
+    background-color: #f5f5f5;
+}
+
+.statement-table tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+/* TABLE CUSTOMIZATION */
+
+.statement-table th,
+.statement-table td {
+    padding: 12px 10px;
+    line-height: 1.6;
+    vertical-align: middle;
+}
+
+/* Amount */
+.statement-table th:nth-child(4),
+.statement-table td:nth-child(4),
+
+/* Payments */
+.statement-table th:nth-child(5),
+.statement-table td:nth-child(5),
+
+/* Balance */
+.statement-table th:nth-child(6),
+.statement-table td:nth-child(6) {
+    text-align: right;
 }

@@ -53,7 +53,22 @@ const SalesOrders = () => {
     { key: 'date', label: 'Date' },
     { key: 'salesOrder', label: 'Sales Order' },
     { key: 'reference', label: 'Reference' },
-    { key: 'customerName', label: 'Customer Name' },
+    {
+      key: 'customerName',
+      label: 'Customer Name',
+      render: (value: string) => (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-center',
+            gap: '4px',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {value}
+        </div>
+      ),
+    },
     {
       key: 'status',
       label: 'Status',
@@ -79,7 +94,29 @@ const SalesOrders = () => {
         );
       },
     },
-    { key: 'shipmentDate', label: 'Shipment Date' },
+    { key: 'expectedShipmentDate', label: 'Shipment Date' },
+    {
+      key: 'amount',
+      label: 'Amount',
+      render: (value: number) => (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-center',
+            gap: '4px',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <span style={{ fontSize: '0.8rem', color: '#6c757d' }}>₹</span>
+          <span style={{ fontWeight: 600 }}>
+            {value.toLocaleString('en-IN', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </span>
+        </div>
+      ),
+    },
     { key: 'createdBy', label: 'Created By' },
   ];
 
@@ -88,7 +125,7 @@ const SalesOrders = () => {
     const fetchSalesOrders = async () => {
       try {
         const response = await api.get<SalesOrder[]>(
-          'sales/sales-orders/'
+          'sales-orders/'
         );
         setSalesOrders(response.data);
       } catch (error: any) {

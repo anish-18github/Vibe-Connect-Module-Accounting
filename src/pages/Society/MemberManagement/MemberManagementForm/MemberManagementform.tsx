@@ -635,133 +635,133 @@ const MemberManagementForm = () => {
                     {/* Divider */}
                     <div className="mx-5" style={{ borderTop: "1px solid #e5e7eb" }} />
 
-                    {/* ===== Maintenance Payment Status ===== */}
-                    <div className="so-details-card mx-5 mb-3 mt-3">
-                        <h1 className="sales-order-title mb-3">Maintenance Payment Status</h1>
+                        {/* ===== Maintenance Payment Status ===== */}
+                        <div className="so-details-card mx-5 mb-3 mt-3">
+                            <h1 className="sales-order-title mb-3">Maintenance Payment Status</h1>
 
-                        <div className="row g-3 three-column-form">
-                            {/* Col 1 */}
-                            <div className="col-lg-4">
-                                <div className="so-form-group mb-4">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Billing Period:
-                                    </label>
-                                    <select
-                                        name="maint.billingPeriod"
-                                        className="form-select so-control"
-                                    >
-                                        <option value="">Select</option>
-                                    </select>
-                                </div>
+                            <div className="row g-3 three-column-form">
+                                {/* Col 1 */}
+                                <div className="col-lg-4">
+                                    <div className="so-form-group mb-4">
+                                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                                            Billing Period:
+                                        </label>
+                                        <select
+                                            name="maint.billingPeriod"
+                                            className="form-select so-control"
+                                        >
+                                            <option value="">Select</option>
+                                        </select>
+                                    </div>
 
-                                <div className="so-form-group mb-4">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Payment Date:
-                                    </label>
-                                    <input
-                                        type="date"
-                                        name="maint.paymentDate"
-                                        className="form-control so-control"
-                                    />
-                                </div>
-
-                                <div className="so-form-group mb-4">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Payment Receipts:
-                                    </label>
-                                    <div
-                                        className="doc-upload-box"
-                                        onClick={() =>
-                                            document.getElementById("doc-share-upload")?.click()
-                                        }
-                                    >
-                                        <FeatherUpload size={16} className="text-muted mb-1" />
-                                        <span className="text-secondary small">
-                                            Click to Upload Documents
-                                        </span>
-
+                                    <div className="so-form-group mb-4">
+                                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                                            Payment Date:
+                                        </label>
                                         <input
-                                            id="doc-share-upload"
-                                            type="file"
-                                            multiple
-                                            className="d-none"
-                                            onChange={(e) => {
-                                                const files = e.target.files;
-                                                if (files?.length) {
-                                                    console.log("Share Register files:", files);
-                                                }
-                                            }}
+                                            type="date"
+                                            name="maint.paymentDate"
+                                            className="form-control so-control"
                                         />
                                     </div>
-                                </div>
-                            </div>
 
-                            {/* Col 2 */}
-                            <div className="col-lg-4">
-                                <div className="so-form-group mb-4">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Bill Amount:
-                                    </label>
-                                    <input
-                                        type="number"
-                                        name="maint.billAmount"
-                                        className="form-control so-control"
-                                        placeholder="0.00"
-                                    />
-                                </div>
+                                    <div className="so-form-group mb-4">
+                                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                                            Payment Receipts:
+                                        </label>
+                                        <div
+                                            className="doc-upload-box"
+                                            onClick={() =>
+                                                document.getElementById("doc-share-upload")?.click()
+                                            }
+                                        >
+                                            <FeatherUpload size={16} className="text-muted mb-1" />
+                                            <span className="text-secondary small">
+                                                Click to Upload Documents
+                                            </span>
 
-                                <div className="so-form-group mb-4">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Amount Paid:
-                                    </label>
-                                    <input
-                                        type="number"
-                                        name="maint.amountPaid"
-                                        className="form-control so-control"
-                                        placeholder="0.00"
-                                    />
-                                </div>
-
-                                <div className="so-form-group mb-4">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Status:
-                                    </label>
-                                    <select
-                                        name="maint.status"
-                                        className="form-select so-control"
-                                    >
-                                        <option value="">Select</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            {/* Col 3 */}
-                            <div className="col-lg-4">
-                                <div className="so-form-group mb-4">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Due Date:
-                                    </label>
-                                    <input
-                                        type="date"
-                                        name="maint.dueDate"
-                                        className="form-control so-control"
-                                    />
+                                            <input
+                                                id="doc-share-upload"
+                                                type="file"
+                                                multiple
+                                                className="d-none"
+                                                onChange={(e) => {
+                                                    const files = e.target.files;
+                                                    if (files?.length) {
+                                                        console.log("Share Register files:", files);
+                                                    }
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div className="so-form-group mb-4">
-                                    <label className="so-label text-sm text-muted-foreground fw-bold">
-                                        Payment Date:
-                                    </label>
-                                    <input
-                                        type="date"
-                                        name="maint.secondPaymentDate"
-                                        className="form-control so-control"
-                                    />
+                                {/* Col 2 */}
+                                <div className="col-lg-4">
+                                    <div className="so-form-group mb-4">
+                                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                                            Bill Amount:
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="maint.billAmount"
+                                            className="form-control so-control"
+                                            placeholder="0.00"
+                                        />
+                                    </div>
+
+                                    <div className="so-form-group mb-4">
+                                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                                            Amount Paid:
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="maint.amountPaid"
+                                            className="form-control so-control"
+                                            placeholder="0.00"
+                                        />
+                                    </div>
+
+                                    <div className="so-form-group mb-4">
+                                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                                            Status:
+                                        </label>
+                                        <select
+                                            name="maint.status"
+                                            className="form-select so-control"
+                                        >
+                                            <option value="">Select</option>
+                                        </select>
+                                    </div>
                                 </div>
 
+                                {/* Col 3 */}
+                                <div className="col-lg-4">
+                                    <div className="so-form-group mb-4">
+                                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                                            Due Date:
+                                        </label>
+                                        <input
+                                            type="date"
+                                            name="maint.dueDate"
+                                            className="form-control so-control"
+                                        />
+                                    </div>
+
+                                    <div className="so-form-group mb-4">
+                                        <label className="so-label text-sm text-muted-foreground fw-bold">
+                                            Payment Date:
+                                        </label>
+                                        <input
+                                            type="date"
+                                            name="maint.secondPaymentDate"
+                                            className="form-control so-control"
+                                        />
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
-                    </div>
 
                     {/* Divider */}
                     <div className="mx-5" style={{ borderTop: "1px solid #e5e7eb" }} />

@@ -26,7 +26,7 @@ interface Customer {
   email: string;
 }
 
-type RangeType = '6M' | '12M' | 'THIS_YEAR' | 'LAST_YEAR';
+export type RangeType = '6M' | '12M' | 'THIS_YEAR' | 'LAST_YEAR';
 
 
 
@@ -79,6 +79,12 @@ const ViewCustomer: React.FC = () => {
   const incomeBarOptions = {
     responsive: true,
     maintainAspectRatio: false,
+
+    animation: {
+      duration: 600,
+      easing: 'easeOutQuart',
+    },
+
     plugins: {
       legend: { display: false },
       tooltip: {
@@ -87,6 +93,11 @@ const ViewCustomer: React.FC = () => {
             ` ₹${Number(ctx.raw).toLocaleString()}`,
         },
       },
+      animation: {
+        duration: 600,
+        easing: 'easeOutQuart',
+      },
+
     },
     scales: {
       y: {
@@ -218,7 +229,7 @@ const ViewCustomer: React.FC = () => {
       </table>
 
       {/* ================= Income Chart ================= */}
-      <h4 className="chart-header">Enter Opening Balance</h4>
+      <h4 className="chart-header">Customer Income</h4>
 
       <Card title="Income Overview"
         selectable
@@ -293,8 +304,6 @@ const ViewCustomer: React.FC = () => {
               .toLocaleString()}
           </span>
         </p>
-
-
 
       </Card>
     </div>
@@ -441,30 +450,49 @@ const ViewCustomer: React.FC = () => {
   const renderStatements = () => {
     return (
       <div className="statement-container">
-        {/* HEADER */}
-        <div className="d-flex justify-content-center mb-4">
-          <div>
-            <h5 className="fw-bold">Customer Statement</h5>
-            <p className="text-muted mb-0">
-              From 01/01/2026 to 31/01/2026
-            </p>
+
+        {/* TOP CONTROLS ROW */}
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          {/* LEFT: DATE RANGE + FILTER */}
+          <div className="d-flex gap-2">
+            <select className="form-select form-select-sm" style={{ width: 170 }}>
+              <option>Today</option>
+              <option>This Week</option>
+              <option>This Month</option>
+              <option>This Quarter</option>
+              <option>This Year</option>
+              <option>Yesterday</option>
+              <option>Previous Week</option>
+              <option>Previous Month</option>
+              <option>Previous Quarter</option>
+              <option>Previous Year</option>
+              <option>Custom</option>
+            </select>
+
+            <select className="form-select form-select-sm" style={{ width: 140 }}>
+              <option>Filter By: All</option>
+              <option>Invoices</option>
+              <option>Payments</option>
+            </select>
           </div>
 
-        </div>
-
-        <div className="d-flex justify-content-end mb-2">
-
-
+          {/* RIGHT: DOWNLOAD */}
           <button
-            className="btn me-3 px-4"
+            className="btn px-4"
             style={{ background: '#7991BB', color: '#FFF', fontSize: 14 }}
             onClick={() => downloadStatement(customer.id)}
           >
             Download Statement
           </button>
-
         </div>
 
+        {/* TITLE */}
+        <div className="text-center mb-4">
+          <h5 className="fw-bold mb-1">Customer Statement</h5>
+          <p className="text-muted mb-0">
+            From 01/01/2026 to 31/01/2026
+          </p>
+        </div>
 
         {/* STATEMENT BODY */}
         <div className="statement-paper">
@@ -473,6 +501,7 @@ const ViewCustomer: React.FC = () => {
       </div>
     );
   };
+
 
   const tabs = [
     { key: 'overview', label: 'Overview', content: renderOverview() },

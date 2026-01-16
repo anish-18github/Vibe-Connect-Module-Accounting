@@ -54,8 +54,6 @@ interface FormData {
 }
 
 // Dropdown Data
-// const salutations = ['Mr.', 'Ms.', 'Mrs.', 'Dr.', 'Sir', 'Madam'];
-// const currencies = ['USD - US Dollar', 'EUR - Euro', 'INR - Indian Rupee'];
 const paymentTerms = ['Net 15', 'Net 30', 'Due on Receipt', 'Custom'];
 const languages = ['English', 'Spanish', 'French', 'German'];
 const countries = ['India', 'United States', 'United Kingdom', 'Canada', 'Australia'];
@@ -90,16 +88,29 @@ export const FeatherUpload = ({
 const getDisplayNameSuggestions = (
   salutation?: string,
   firstName?: string,
-  lastName?: string
+  lastName?: string,
+  companyName?: string
 ) => {
-  if (!firstName && !lastName) return [];
+  const suggestions: string[] = [];
 
-  return [
-    [salutation, firstName, lastName].filter(Boolean).join(' '),
-    [firstName, lastName].filter(Boolean).join(' '),
-    [lastName, firstName].filter(Boolean).join(', '),
-  ].filter(Boolean);
+  // 👤 Individual name-based suggestions
+  if (firstName || lastName) {
+    suggestions.push(
+      [salutation, firstName, lastName].filter(Boolean).join(' '),
+      [firstName, lastName].filter(Boolean).join(' '),
+      [lastName, firstName].filter(Boolean).join(', ')
+    );
+  }
+
+  //  Company name fallback (IMPORTANT)
+  if (companyName) {
+    suggestions.push(companyName);
+  }
+
+  // Remove duplicates + empty values
+  return Array.from(new Set(suggestions.filter(Boolean)));
 };
+
 
 
 
@@ -120,8 +131,8 @@ const Add = () => {
       companyName: '',
       displayName: '',
       emailAddress: '',
-      countryCode: '', // ✅ Fixed: Added
-      phoneNumber: '', // ✅ Fixed: Added
+      countryCode: '', 
+      phoneNumber: '', 
     },
     otherDetails: {
       pan: '',
@@ -227,23 +238,6 @@ const Add = () => {
 
     return true;
   };
-
-  // const displayNameOptions = [
-  //   [formData.customer.salutation, formData.customer.firstName, formData.customer.lastName]
-  //     .filter(Boolean)
-  //     .join(' '),
-
-  //   [formData.customer.firstName, formData.customer.lastName]
-  //     .filter(Boolean)
-  //     .join(' '),
-
-  //   [formData.customer.lastName, formData.customer.firstName]
-  //     .filter(Boolean)
-  //     .join(', ')
-  // ].filter(option => option.trim().length > 0);
-
-
-
 
   // Contact Persons handlers
 
@@ -394,7 +388,7 @@ const Add = () => {
     };
 
     try {
-      const response = await api.post('sales/customers/create/', payload);
+      const response = await api.post('customers/create/', payload);
       console.log('Customer created:', response.data);
 
       showToast('Customer created successfully', 'success');
@@ -1038,7 +1032,8 @@ const Add = () => {
                     {getDisplayNameSuggestions(
                       formData.customer.salutation,
                       formData.customer.firstName,
-                      formData.customer.lastName
+                      formData.customer.lastName,
+                      formData.customer.companyName
                     ).map((option, index) => (
                       <option key={index} value={option} />
                     ))}

@@ -63,7 +63,7 @@ export default function AddSalesOrder() {
   const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([]);
   const [loadingTax, setLoadingTax] = useState(false);
 
-  /* ---------------- SUBMIT WITH STATUS ---------------- */  
+  /* ---------------- SUBMIT WITH STATUS ---------------- */
   const [submitType, setSubmitType] = useState<SubmitType>('draft');
 
   // TCS HANDLER
@@ -277,7 +277,7 @@ export default function AddSalesOrder() {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const res = await api.get<Customer[]>('sales/customers/');
+        const res = await api.get<Customer[]>('customers/');
         setCustomers(res.data);
       } catch {
         showToast('Failed to load customers', 'error');
@@ -404,7 +404,7 @@ export default function AddSalesOrder() {
 
       payment_terms: formData.salesOrder.paymentTerms,
       delivery_method: formData.salesOrder.deliveryMethod,
-      salesperson: formData.salesOrder.salesPerson,
+      sales_person: Number(formData.salesOrder.salesPerson),
       reference_number: formData.salesOrder.referenceNumber || "",
 
       customer_notes: formData.salesOrder.customerNotes,
@@ -417,20 +417,19 @@ export default function AddSalesOrder() {
       adjustment: round2(taxInfo.adjustment),
       grand_total: round2(totals.grandTotal),
 
-      items: formData.itemTable.map((row: any, index: number) => ({
+      items: formData.itemTable.map((row) => ({
         item_details: row.itemDetails,
         quantity: Number(row.quantity),
         rate: round2(Number(row.rate)),
         discount: round2(Number(row.discount) || 0),
         amount: round2(Number(row.amount)),
-        line_order: index,
       })),
     };
 
     try {
       console.log('FINAL SALES ORDER PAYLOAD', payload);
 
-      await api.post('sales/sales-orders/create/', payload);
+      await api.post('sales-orders/create/', payload);
 
       showToast('Sales Order created successfully', 'success');
 
@@ -440,6 +439,8 @@ export default function AddSalesOrder() {
 
     } catch (error: any) {
       console.error(error);
+      // console.error('FULL ERROR RESPONSE:', error.response?.data);
+      // showToast(JSON.stringify(error.response?.data), 'error');
 
       const message =
         error.response?.data?.detail ||

@@ -85,7 +85,7 @@ const Quotes = () => {
         <div
           style={{
             display: 'flex',
-            justifyContent: 'flex-end',
+            justifyContent: 'flex-center',
             gap: '4px',
             whiteSpace: 'nowrap',
           }}
@@ -106,7 +106,7 @@ const Quotes = () => {
   useEffect(() => {
     const fetchQuotes = async () => {
       try {
-        const response = await api.get<Quote[]>('sales/quotes/');
+        const response = await api.get<Quote[]>('quotes/');
         setQuotes(response.data);
       } catch (error: any) {
         setToast({

@@ -1,15 +1,92 @@
 import { useNavigate } from "react-router-dom";
 import Header from "../../../../components/Header/Header";
 import { FeatherUpload } from "../../../Sales/Customers/AddCustomer/Add";
-import { Plus } from "react-feather";
+import { Plus, X } from "react-feather";
+import { useState } from "react";
+
+
+interface BudgetRow {
+    category: string;
+    budgeted: number | string;
+    actual: number | string;
+    varianceAmount: number | string;
+    variancePercent: number | string;
+}
+
+
+
+
 
 const AddBudgeting = () => {
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: any) => {
         e.preventDefault();
         // submit logic
     };
 
     const navigate = useNavigate();
+
+    const [budgetRows, setBudgetRows] = useState<BudgetRow[]>([
+        {
+            category: "",
+            budgeted: "",
+            actual: "",
+            varianceAmount: "",
+            variancePercent: "",
+        },
+    ]);
+
+
+    // HANDLERS
+    const handleBudgetRowChange = (
+        index: number,
+        field: keyof BudgetRow,
+        value: string
+    ) => {
+        const updatedRows = [...budgetRows];
+
+        updatedRows[index][field] =
+            field === "category" ? value : value;
+
+        const budgeted = Number(updatedRows[index].budgeted) || 0;
+        const actual = Number(updatedRows[index].actual) || 0;
+
+        const variance = actual - budgeted;
+        const variancePercent =
+            budgeted !== 0 ? (variance / budgeted) * 100 : 0;
+
+        updatedRows[index].varianceAmount =
+            updatedRows[index].budgeted === "" ? "" : variance.toFixed(2);
+
+        updatedRows[index].variancePercent =
+            updatedRows[index].budgeted === "" ? "" : variancePercent.toFixed(2);
+
+        setBudgetRows(updatedRows);
+    };
+
+
+
+    const addBudgetRow = () => {
+        setBudgetRows([
+            ...budgetRows,
+            {
+                category: "",
+                budgeted: "",
+                actual: "",
+                varianceAmount: "",
+                variancePercent: "",
+            },
+        ]);
+    };
+
+    const removeBudgetRow = (index: number) => {
+        if (budgetRows.length === 1) return; // safety guard
+
+        const updatedRows = budgetRows.filter((_, i) => i !== index);
+        setBudgetRows(updatedRows);
+    };
+
+
+
 
     return (
         <>
@@ -197,165 +274,106 @@ const AddBudgeting = () => {
                                                     <th className="fw-medium text-dark">Actual</th>
                                                     <th className="fw-medium text-dark">Variance(₹)</th>
                                                     <th className="fw-medium text-dark">Variance(%)</th>
+                                                    <th className="fw-medium text-dark text-center" style={{ width: 40 }}></th>
+
                                                 </tr>
                                             </thead>
 
                                             <tbody>
-                                                {/* Row 1 */}
-                                                <tr>
-                                                    <td>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control form-control-sm border-0"
-                                                            placeholder="Category"
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="number"
-                                                            className="form-control form-control-sm no-spinner border-0"
-                                                            placeholder="00.00"
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="number"
-                                                            className="form-control form-control-sm no-spinner border-0"
-                                                            placeholder="00.00"
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="number"
-                                                            className="form-control form-control-sm no-spinner border-0"
-                                                            placeholder="00.00"
-                                                        />
-                                                    </td>
+                                                {budgetRows.map((row, index) => (
+                                                    <tr key={index}>
+                                                        <td>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control form-control-sm border-0"
+                                                                placeholder="Category"
+                                                                value={row.category}
+                                                                onChange={(e) =>
+                                                                    handleBudgetRowChange(index, "category", e.target.value)
+                                                                }
+                                                            />
+                                                        </td>
 
-
-                                                    <td className="d-flex align-items-center">
-                                                        <div className="position-relative">
+                                                        <td>
                                                             <input
                                                                 type="number"
                                                                 className="form-control form-control-sm no-spinner border-0"
                                                                 placeholder="00.00"
+                                                                value={row.budgeted}
+                                                                onChange={(e) =>
+                                                                    handleBudgetRowChange(index, "budgeted", e.target.value)
+                                                                }
                                                             />
-                                                            <span
-                                                                className="position-absolute top-50 end-0 translate-middle-y me-2 text-muted"
-                                                                style={{ pointerEvents: 'none', fontSize: 12 }}
-                                                            >
-                                                                %
-                                                            </span>
-                                                        </div>                                                   </td>
-                                                </tr>
+                                                        </td>
 
-                                                {/* Row 2 */}
-                                                <tr>
-                                                    <td>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control form-control-sm border-0"
-                                                            placeholder="Category"
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="number"
-                                                            className="form-control form-control-sm no-spinner border-0"
-                                                            placeholder="00.00"
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="number"
-                                                            className="form-control form-control-sm no-spinner border-0"
-                                                            placeholder="00.00"
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="number"
-                                                            className="form-control form-control-sm no-spinner border-0"
-                                                            placeholder="00.00"
-                                                        />
-                                                    </td>
-                                                    <td className="d-flex align-items-center">
-                                                        <div className="position-relative">
-
+                                                        <td>
                                                             <input
                                                                 type="number"
                                                                 className="form-control form-control-sm no-spinner border-0"
                                                                 placeholder="00.00"
+                                                                value={row.actual}
+                                                                onChange={(e) =>
+                                                                    handleBudgetRowChange(index, "actual", e.target.value)
+                                                                }
                                                             />
-                                                            <span
-                                                                className="position-absolute top-50 end-0 translate-middle-y me-2 text-muted"
-                                                                style={{ pointerEvents: 'none', fontSize: 12 }}
-                                                            >
-                                                                %
-                                                            </span>
-                                                        </div>
+                                                        </td>
 
-                                                    </td>
-                                                </tr>
-
-                                                {/* Row 3 */}
-                                                <tr>
-                                                    <td>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control form-control-sm border-0"
-                                                            placeholder="Category"
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="number"
-                                                            className="form-control form-control-sm no-spinner border-0"
-                                                            placeholder="00.00"
-                                                        />
-                                                    </td>
-                                                    <td>
-                                                        <input
-                                                            type="number"
-                                                            className="form-control form-control-sm no-spinner border-0"
-                                                            placeholder="00.00"
-                                                        />
-                                                    </td>
-                                                    <td>
-
-
-                                                        <input
-                                                            type="number"
-                                                            className="form-control form-control-sm no-spinner border-0"
-                                                            placeholder="00.00"
-                                                        />
-                                                    </td>
-                                                    <td className="d-flex align-items-center">
-                                                        <div className="position-relative">
-
+                                                        {/* Variance ₹ */}
+                                                        <td>
                                                             <input
                                                                 type="number"
                                                                 className="form-control form-control-sm no-spinner border-0"
-                                                                placeholder="00.00"
+                                                                value={row.varianceAmount}
+                                                                disabled
                                                             />
-                                                            <span
-                                                                className="position-absolute top-50 end-0 translate-middle-y me-2 text-muted"
-                                                                style={{ pointerEvents: 'none', fontSize: 12 }}
-                                                            >
-                                                                %
-                                                            </span>                                                        </div>
-                                                    </td>
-                                                </tr>
+                                                        </td>
+
+                                                        {/* Variance % */}
+                                                        <td className="d-flex align-items-center">
+                                                            <div className="position-relative">
+                                                                <input
+                                                                    type="number"
+                                                                    className="form-control form-control-sm no-spinner border-0"
+                                                                    value={row.variancePercent}
+                                                                    disabled
+                                                                />
+                                                                <span
+                                                                    className="position-absolute top-50 end-0 translate-middle-y me-2 text-muted"
+                                                                    style={{ pointerEvents: "none", fontSize: 12 }}
+                                                                >
+                                                                    %
+                                                                </span>
+                                                            </div>
+                                                        </td>
+
+                                                        <td className="text-center">
+                                                            {budgetRows.length > 1 && (
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm border-0 p-0 pb-1 text-danger"
+                                                                    onClick={() => removeBudgetRow(index)}
+                                                                    title="Remove row"
+                                                                >
+                                                                    <X size={ 18 }/>
+                                                                </button>
+                                                            )}
+                                                        </td>
+
+                                                    </tr>
+                                                ))}
                                             </tbody>
+
                                         </table>
 
                                         {/* later you can wire this to add more rows dynamically */}
                                         <button
                                             type="button"
                                             className="btn btn-sm fw-bold item-add-row-btn"
+                                            onClick={addBudgetRow}
                                         >
                                             <Plus size={16} /> Add New Row
                                         </button>
+
                                     </div>
                                 </div>
                             </div>

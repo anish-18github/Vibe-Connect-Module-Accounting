@@ -59,7 +59,7 @@ export default function SalesPersonSelect({
     const fetchSalesPersons = async () => {
         try {
             setLoading(true);
-            const res = await api.get('/sales/sales-persons/');
+            const res = await api.get('sales-persons/');
             setSalesPersons(res.data);
         } finally {
             setLoading(false);
@@ -76,7 +76,7 @@ export default function SalesPersonSelect({
 
         try {
             setSaving(true);
-            const res = await api.post('/sales/sales-persons/', newPerson);
+            const res = await api.post('sales-persons/', newPerson);
             const created = res.data;
 
             setSalesPersons((prev) => [...prev, created]);

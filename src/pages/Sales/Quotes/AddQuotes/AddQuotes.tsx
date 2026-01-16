@@ -217,7 +217,7 @@ export default function AddQuotes() {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const res = await api.get<Customer[]>('sales/customers/');
+        const res = await api.get<Customer[]>('customers/');
         setCustomers(res.data);
       } catch {
         showToast('Failed to load customers', 'error');
@@ -371,14 +371,13 @@ export default function AddQuotes() {
         rate: round2(Number(row.rate)),
         discount: round2(Number(row.discount) || 0),
         amount: round2(Number(row.amount)),
-        // line_order: index,
       })),
     };
 
 
     try {
       console.log('FINAL PAYLOAD', payload);
-      await api.post('sales/quotes/create/', payload);
+      await api.post('quotes/create/', payload);
 
       showToast('Quote created successfully', 'success');
 

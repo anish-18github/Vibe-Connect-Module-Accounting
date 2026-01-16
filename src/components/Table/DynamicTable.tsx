@@ -162,9 +162,9 @@ function DynamicTable({
                     <td key={col.key}>
                       {col.render
                         ? col.render(row[col.key], row)
-                      :col.key === 'createdOn'
-                      ? new Date(row[col.key]).toLocaleDateString('en-GB') // dd/mm/yyyy
-                        : row[col.key]}
+                        : col.key === 'createdOn'
+                          ? new Date(row[col.key]).toLocaleDateString('en-GB') // dd/mm/yyyy
+                          : row[col.key]}
                     </td>
                   ))}
                 </tr>

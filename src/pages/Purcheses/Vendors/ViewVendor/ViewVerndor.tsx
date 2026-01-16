@@ -1,98 +1,155 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Header from '../../../../components/Header/Header';
 import Tabs from '../../../../components/Tab/Tabs';
 import CommentBox from '../../../../components/ViewComponents/CommentBox';
 import Transactions from '../../../../components/ViewComponents/Transactions';
 import MailSystem from '../../../../components/ViewComponents/MailSystem';
-import Chart from 'chart.js/auto';
-import vendorExpenseData from '../../../../data/vendorExpense.json';
+// import Chart from 'chart.js/auto';
+// import vendorExpenseData from '../../../../data/vendorExpense.json';
+import Card from '../../../../components/Cards/Card';
+import { getCurrentFY } from '../../../../utils/financialYear';
+// import type { RangeType } from '../../../Sales/Customers/ViewCustomer/View';
+import { expenseByFY } from '../../../../data/expenseData';
+import { Bar } from 'react-chartjs-2';
 
-interface ExpenseData {
-  month: string;
-  expense: number;
-}
 
-export default function ViewVendor() {
+export type RangeType = '6M' | '12M' | 'THIS_YEAR' | 'LAST_YEAR';
+
+// interface ExpenseData {
+//   month: string;
+//   expense: number;
+// }
+
+const ViewVendor: React.FC = () => {
   // const { id } = useParams<{ id: string }>();
   const [activeKey, setActiveKey] = React.useState('overview');
-  const chartRef = useRef<HTMLCanvasElement>(null);
-  const chartInstanceRef = useRef<Chart | null>(null);
+  // const chartRef = useRef<HTMLCanvasElement>(null);
+  // const chartInstanceRef = useRef<Chart | null>(null);
+  const [selectedFY, setSelectedFY] = useState<string>(getCurrentFY());
+  const [range, setRange] = useState<RangeType>('12M');
+
 
   // Chart data from JSON
-  const expenseData: ExpenseData[] = vendorExpenseData as ExpenseData[];
+  // const expenseData: ExpenseData[] = vendorExpenseData as ExpenseData[];
 
-  // Create chart on mount and cleanup
-  useEffect(() => {
-    if (chartRef.current && expenseData.length > 0) {
-      const ctx = chartRef.current.getContext('2d');
-      if (ctx) {
-        // Destroy existing chart if it exists
-        if (chartInstanceRef.current) {
-          chartInstanceRef.current.destroy();
-        }
 
-        chartInstanceRef.current = new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: expenseData.map((item) => item.month),
-            datasets: [
-              {
-                label: 'Expenses (₹)',
-                data: expenseData.map((item) => item.expense),
-                backgroundColor: 'rgba(220, 53, 69, 0.8)', // Red theme for expenses
-                borderColor: 'rgba(220, 53, 69, 1)',
-                borderWidth: 1,
-                borderRadius: 4,
-                borderSkipped: false,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                display: false,
-              },
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: {
-                  callback: function (value) {
-                    return '₹' + (value as number).toLocaleString();
-                  },
-                },
-                grid: {
-                  color: 'rgba(0,0,0,0.1)',
-                },
-              },
-              x: {
-                grid: {
-                  display: false,
-                },
-              },
-            },
-          },
-        });
-      }
+  const expenseBarOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+
+    animations: {
+      duration: 600,
+      easing: 'easeOutQuart',
+    },
+
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx: any) =>
+            ` ₹${Number(ctx.raw).toLocaleString()}`,
+        },
+      },
+    },
+
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0,0,0,0.08)',
+        },
+        ticks: {
+          callback: (value: any) =>
+            '₹' + Number(value).toLocaleString(),
+        },
+      },
+      x: {
+        grid: { display: false },
+      },
+    },
+  };
+
+
+
+  const getPreviousFY = (fy: string) => {
+    const [start, end] = fy.replace('FY ', '').split('-').map(Number);
+    return `FY ${start - 1}-${end - 1}`;
+  };
+
+  const getTotalLabel = () => {
+    switch (range) {
+      case '6M':
+        return 'Last 6 Months';
+      case '12M':
+        return 'Last 12 Months';
+      case 'THIS_YEAR':
+        return 'This Financial Year';
+      case 'LAST_YEAR':
+        return 'Last Financial Year';
+      default:
+        return '';
     }
+  };
 
-    // Cleanup function
-    return () => {
-      if (chartInstanceRef.current) {
-        chartInstanceRef.current.destroy();
+
+  const chartData = useMemo(() => {
+    const fyData = expenseByFY[selectedFY] ?? [];
+
+    switch (range) {
+      case '6M':
+        return fyData.slice(-6);
+
+      case '12M':
+      case 'THIS_YEAR':
+        return fyData;
+
+      case 'LAST_YEAR': {
+        const prevFY = getPreviousFY(selectedFY);
+        return expenseByFY[prevFY] ?? [];
       }
-    };
-  }, [expenseData]);
+
+      default:
+        return [];
+    }
+  }, [selectedFY, range]);
+
+
+  const expenseBarData = {
+    labels: chartData.map((item) => item.month),
+    datasets: [
+      {
+        label: 'Expenses (₹)',
+        data: chartData.map((item) => item.expense),
+        backgroundColor: 'rgba(220, 53, 69, 0.8)',
+        borderRadius: 4,
+      },
+    ],
+  };
+
+  useEffect(() => {
+    setRange('12M');
+  }, [selectedFY]);
+
+
+
+
+
+
+
 
   const renderOverview = () => (
     <div>
+      {/* ================= Payment Info ================= */}
       <div className="mb-2">
-        <p style={{ color: '#5E5E5E', margin: 0, fontSize: '14px' }}>Payment Due Period</p>
-        <p style={{ margin: 0, fontSize: '15px', fontWeight: 500 }}>Due on Receipt</p>
+        <p style={{ color: '#5E5E5E', margin: 0, fontSize: '14px' }}>
+          Payment Due Period
+        </p>
+        <p style={{ margin: 0, fontSize: '15px', fontWeight: 500 }}>
+          Due on Receipt
+        </p>
       </div>
 
+      {/* ================= Payables ================= */}
       <h5 className="fw-bold">Payables</h5>
 
       <table className="table mt-3 rounded-table">
@@ -112,23 +169,33 @@ export default function ViewVendor() {
         </tbody>
       </table>
 
+      {/* ================= Expense Chart ================= */}
       <h4 className="chart-header">Vendor Expenses</h4>
 
-      <div className="border rounded p-3 chart-container" style={{ background: '#FFFFFF' }}>
-        {/* ROW: Expenses + helper text + dropdowns */}
-        <div className="d-flex justify-content-between align-items-center">
-          {/* LEFT SIDE TEXT */}
+      <Card
+        title="Expense Overview"
+        selectable
+        selectedFY={selectedFY}
+        onFYChange={setSelectedFY}
+      >
+        {/* HEADER ROW */}
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          {/* LEFT */}
           <div className="d-flex align-items-center gap-2">
             <h6 className="fw-bold mb-0">Expenses</h6>
-            <p className="text-muted mb-0" style={{ fontSize: '13px', whiteSpace: 'nowrap' }}>
+            <p
+              className="text-muted mb-0"
+              style={{ fontSize: '13px', whiteSpace: 'nowrap' }}
+            >
               This chart is displayed in the organization base currency.
             </p>
           </div>
 
-          {/* RIGHT SIDE DROPDOWNS */}
+          {/* RIGHT DROPDOWNS */}
           <div className="d-flex gap-2">
-            {/* Last 6 months dropdown */}
             <select
+              value={range}
+              onChange={(e) => setRange(e.target.value as RangeType)}
               className="form-select form-select-sm"
               style={{
                 color: '#0D6EFD',
@@ -138,13 +205,18 @@ export default function ViewVendor() {
                 paddingRight: '12px',
               }}
             >
-              <option>Last 6 Months</option>
-              <option>Last 12 Months</option>
-              <option>This Year</option>
-              <option>Last Year</option>
+              <option value="6M">Last 6 Months</option>
+              <option value="12M">Last 12 Months</option>
+              <option value="THIS_YEAR">This Year</option>
+              <option
+                value="LAST_YEAR"
+                disabled={!expenseByFY[getPreviousFY(selectedFY)]}
+              >
+                Last Year
+              </option>
+
             </select>
 
-            {/* Accrual dropdown */}
             <select
               className="form-select form-select-sm"
               style={{
@@ -152,7 +224,6 @@ export default function ViewVendor() {
                 color: '#0D6EFD',
                 fontWeight: 500,
                 border: 'none',
-                paddingLeft: '12px',
               }}
             >
               <option value="accrual">Accrual</option>
@@ -161,17 +232,31 @@ export default function ViewVendor() {
           </div>
         </div>
 
-        {/* CHART AREA - Updated with Canvas */}
-        <div style={{ height: 200, position: 'relative' }}>
-          <canvas ref={chartRef}></canvas>
+        {/* CHART */}
+        <div style={{ height: 220 }}>
+          {chartData.length > 0 ? (
+            <Bar data={expenseBarData} options={expenseBarOptions} />
+          ) : (
+            <div className="text-muted text-center pt-5">
+              No expense data available for selected period
+            </div>
+          )}
         </div>
-      </div>
 
-      <p className="mt-3" style={{ fontSize: '15px' }}>
-        Total Expenses (Last 6 Months): <span className="fw-semibold text-danger">₹52,500</span>
-      </p>
+
+        {/* FOOTER */}
+        <p className="mt-3" style={{ fontSize: '15px' }}>
+          Total Expenses ({getTotalLabel()}):{' '}
+          <span className="fw-semibold text-danger">
+            ₹{chartData
+              .reduce((sum, item) => sum + item.expense, 0)
+              .toLocaleString()}
+          </span>
+        </p>
+      </Card>
     </div>
   );
+
 
   const renderComments = () => <CommentBox />;
 
@@ -309,7 +394,70 @@ export default function ViewVendor() {
 
   const renderMails = () => <MailSystem />;
 
-  const renderStatements = () => <div>Statements content…</div>;
+  const renderStatements = () => {
+    return (
+      <div className="statement-container">
+
+        {/* TOP CONTROLS */}
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          {/* LEFT: DROPDOWNS */}
+          <div className="d-flex gap-2">
+            <select
+              className="form-select form-select-sm"
+              style={{ width: 170 }}
+            >
+              <option>Today</option>
+              <option>This Week</option>
+              <option>This Month</option>
+              <option>This Quarter</option>
+              <option>This Year</option>
+              <option>Yesterday</option>
+              <option>Previous Week</option>
+              <option>Previous Month</option>
+              <option>Previous Quarter</option>
+              <option>Previous Year</option>
+              <option>Custom</option>
+            </select>
+
+            <select
+              className="form-select form-select-sm"
+              style={{ width: 140 }}
+            >
+              <option>Filter By: All</option>
+              <option>Bills</option>
+              <option>Payments</option>
+              <option>Credits</option>
+            </select>
+          </div>
+
+          {/* RIGHT: DOWNLOAD */}
+          <button
+            className="btn px-4"
+            style={{ background: '#7991BB', color: '#FFF', fontSize: 14 }}
+          >
+            Download Statement
+          </button>
+        </div>
+
+        {/* TITLE */}
+        <div className="text-center mb-4">
+          <h5 className="fw-bold mb-1">Vendor Statement</h5>
+          <p className="text-muted mb-0">
+            From 01/01/2026 to 31/01/2026
+          </p>
+        </div>
+
+        {/* STATEMENT BODY */}
+        <div className="statement-paper">
+          {/* You can reuse StatementPreview later if needed */}
+          <div className="text-center text-muted py-5">
+            Vendor statement content will appear here.
+          </div>
+        </div>
+      </div>
+    );
+  };
+
 
   const tabs = [
     { key: 'overview', label: 'Overview', content: renderOverview() },
@@ -326,7 +474,7 @@ export default function ViewVendor() {
       <Header />
 
       <div className="container-fluid ">
-        <div style={{ padding: '0 1rem' }}>
+        <div className="sales-orders-page" style={{ paddingTop: 39 }}>
           {/* Tabs Header */}
           <Tabs tabs={tabs} defaultActiveKey="overview" onChange={(key) => setActiveKey(key)} />
 
@@ -401,3 +549,5 @@ export default function ViewVendor() {
     </>
   );
 }
+
+export default ViewVendor;

@@ -8,7 +8,8 @@
 
   box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.18),
-    /* main shadow */ 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* main shadow */
+    0 2px 4px rgba(0, 0, 0, 0.1);
   /* soft top shadow */
 }
 
@@ -29,11 +30,11 @@
   padding: 10px;
 }
 
-.section-box p{
+.section-box p {
   font-size: 12px;
 }
 
-.section-box p span{
+.section-box p span {
   font-size: 12px;
 }
 
@@ -101,4 +102,35 @@
 
 .chart-wrapper canvas {
   border-radius: 8px;
+}
+
+.statement-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  width: 35%;
+}
+
+.statement-select {
+  padding: 6px 0px 6px 12px !important;
+  /* ⬅ extra right padding */
+  font-size: 13px;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  outline: none;
+
+  /* Optional but recommended */
+  appearance: auto;
+}
+
+
+.statement-select:hover {
+  border-color: #bfbfbf;
+}
+
+.statement-select:focus {
+  border-color: #4a90e2;
 }
