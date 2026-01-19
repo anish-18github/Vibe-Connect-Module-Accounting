@@ -7,8 +7,13 @@ import './addInvoice.css';
 import ItemTable, {
   SummaryBox,
   type TcsOption,
+  type TdsOption,
 } from '../../../../components/Table/ItemTable/ItemTable';
 import { FeatherUpload } from '../../Customers/AddCustomer/Add';
+import api from '../../../../services/api/apiConfig';
+import type { Customer } from '../../SalesOrders/AddOrderSales/AddSalesOrders';
+import { createTCS, getTCS, getTDS } from '../../../../services/api/taxService';
+import SalesPersonSelect from '../../../../components/SalesPersonSelect/SalesPersonSelect';
 
 interface ItemRow {
   itemDetails: string;
@@ -20,17 +25,21 @@ interface ItemRow {
 
 interface InvoiceForm {
   invoice: {
-    customerName: string;
+    customerId: string;
+    salesOrderNumber: string;
     invoiceNo: string;
     invoiceDate: string;
     dueDate: string;
     paymentTerms: string;
-    salesperson: string;
+    salesPerson: string;
     customerNotes: string;
     termsAndConditions: string;
   };
   itemTable: ItemRow[];
 }
+
+
+type SubmitType = 'draft' | 'sent';
 
 type TaxType = 'TDS' | 'TCS' | '';
 
@@ -42,10 +51,20 @@ export default function AddInvoice() {
   const [showSettings, setShowSettings] = useState(false);
   const [closing, setClosing] = useState(false);
   const [mode, setMode] = useState<'auto' | 'manual'>('auto');
-  // const [prefix, setPrefix] = useState('');
   const [nextNumber, setNextNumber] = useState('');
   const [restartYear, setRestartYear] = useState(false);
-  const [prefixPattern, setPrefixPattern] = useState<string>('CUSTOM');
+  const [prefixPattern, setPrefixPattern] = useState('');
+
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loadingCustomers, setLoadingCustomers] = useState(true);
+
+
+  /* ---------------- TAX STATE ---------------- */
+  const [tdsOptions, setTdsOptions] = useState<TdsOption[]>([]);
+  const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([]);
+  const [loadingTax, setLoadingTax] = useState(false);
+
+  const [submitType, setSubmitType] = useState<SubmitType>('draft');
 
 
   const buildPrefixFromPattern = (pattern: string) => {
@@ -84,18 +103,61 @@ export default function AddInvoice() {
     };
   }, [showSettings]);
 
+
+  /* ---------------- LOAD TAX ---------------- */
+  useEffect(() => {
+    const loadTaxes = async () => {
+      try {
+        setLoadingTax(true);
+
+        const [tdsRes, tcsRes] = await Promise.all([
+          getTDS(),
+          getTCS(),
+        ]);
+
+        // ✅ TDS (read-only)
+        setTdsOptions(
+          tdsRes.map((t) => ({
+            id: Number(t.id),   // TDS → number
+            name: t.name,
+            rate: Number(t.rate),
+          }))
+        );
+
+        // ✅ TCS (editable)
+        setTcsOptions(
+          tcsRes.map((t) => ({
+            id: String(t.id),   // TCS → string
+            name: t.name,
+            rate: Number(t.rate),
+          }))
+        );
+      } catch {
+        showToast('Failed to load tax options', 'error');
+      } finally {
+        setLoadingTax(false);
+      }
+    };
+
+    loadTaxes();
+  }, []);
+
+
+
   // ---------------- Form State ----------------
   const [formData, setFormData] = useState<InvoiceForm>({
     invoice: {
-      customerName: '',
+      customerId: '',
+      salesOrderNumber: '',
       invoiceNo: '',
       invoiceDate: '',
       dueDate: '',
       paymentTerms: '',
-      salesperson: '',
+      salesPerson: '',
       customerNotes: '',
       termsAndConditions: '',
     },
+
     itemTable: [
       {
         itemDetails: '',
@@ -106,13 +168,6 @@ export default function AddInvoice() {
       },
     ],
   });
-
-  // ---------------- TCS Options ----------------
-  const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([
-    { id: 'tcs_5', name: 'TCS Standard', rate: 5 },
-    { id: 'tcs_12', name: 'TCS Standard', rate: 12 },
-    { id: 'tcs_18', name: 'TCS Standard', rate: 18 },
-  ]);
 
   // ---------------- Tax & Totals ----------------
   const [taxInfo, setTaxInfo] = useState({
@@ -173,6 +228,23 @@ export default function AddInvoice() {
   }, [formData.itemTable, taxInfo.type, taxInfo.selectedTax, taxInfo.adjustment, tcsOptions]);
 
 
+  // ---------------- Load customers ----------------
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const res = await api.get<Customer[]>('customers/');
+        setCustomers(res.data);
+      } catch {
+        showToast('Failed to load customers', 'error');
+      } finally {
+        setLoadingCustomers(false);
+      }
+    };
+    fetchCustomers();
+  }, [showToast]);
+
+
+
   // CURRENT DATE
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -191,8 +263,17 @@ export default function AddInvoice() {
     setTaxInfo((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleAddTcs = (opt: TcsOption) => {
-    setTcsOptions((prev) => [...prev, opt]);
+  // TCS HANDLER
+  const handleAddTcs = async (data: { name: string; rate: number }) => {
+    const created = await createTCS(data);
+
+    setTcsOptions((prev) => [...prev, created]);
+
+    setTaxInfo((prev) => ({
+      ...prev,
+      type: 'TCS',
+      selectedTax: String(created.id),
+    }));
   };
 
   const handleChange = (
@@ -244,24 +325,84 @@ export default function AddInvoice() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateForm = () => {
+    if (!formData.invoice.customerId) return showToast('Select a customer', 'warning'), false;
+    if (!formData.invoice.invoiceNo) return showToast('Invoice number required', 'warning'), false;
+    if (!formData.invoice.invoiceDate) return showToast('Quote date required', 'warning'), false;
+    if (!formData.itemTable.length) return showToast('Add items', 'warning'), false;
+    return true;
+  };
+
+  const round2 = (value: number) =>
+    Number(Number(value).toFixed(2));
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const finalPayload = {
-      ...formData,
-      totals,
-      taxInfo,
-      invoiceId: Math.floor(100000 + Math.random() * 900000),
-      createdOn: new Date().toISOString().split('T')[0],
-      createdBy: 'Admin',
+    if (!validateForm()) return;
+
+    const payload = {
+      customer: Number(formData.invoice.customerId),
+
+      sales_order_number: formData.invoice.salesOrderNumber || null, // ✅ FIX
+
+      invoice_number: formData.invoice.invoiceNo,
+      invoice_date: formData.invoice.invoiceDate,
+      due_date: formData.invoice.dueDate,
+      payment_terms: formData.invoice.paymentTerms,
+
+      sales_person: Number(formData.invoice.salesPerson),
+      status: submitType,
+
+      customer_notes: formData.invoice.customerNotes,
+      terms_and_conditions: formData.invoice.termsAndConditions,
+
+      subtotal: round2(totals.subtotal),
+      tax_total: round2(taxInfo.taxAmount),
+      adjustment: round2(taxInfo.adjustment),
+      grand_total: round2(totals.grandTotal),
+
+      items: formData.itemTable.map((row) => ({
+        item_details: row.itemDetails,
+        quantity: Number(row.quantity),
+        rate: round2(Number(row.rate)),
+        discount: round2(Number(row.discount) || 0),
+        amount: round2(Number(row.amount)),
+      })),
     };
 
-    const existing = JSON.parse(localStorage.getItem('invoices') || '[]');
-    existing.push(finalPayload);
-    localStorage.setItem('invoices', JSON.stringify(existing));
-    sessionStorage.setItem('formSuccess', 'Invoice created');
-    navigate('/sales/invoices');
+
+    try {
+      console.log("FINAL INVOICE PAYLOAD", payload);
+
+      await api.post("invoices/create/", payload);
+
+      showToast("Invoice created successfully", "success");
+
+      setTimeout(() => {
+        navigate("/sales/invoices");
+      }, 800);
+    } catch (error: any) {
+      // console.error(error);
+
+      // const message =
+      //   error.response?.data?.detail ||
+      //   error.response?.data?.non_field_errors?.[0] ||
+      //   "Failed to create invoice";
+
+      // showToast(message, "error");
+
+      console.error("INVOICE ERROR RESPONSE:", error.response?.data);
+
+      showToast(
+        JSON.stringify(error.response?.data),
+        "error"
+      );
+
+    }
   };
+
 
   const applyAutoSO = () => {
     if (mode === 'auto') {
@@ -298,33 +439,41 @@ export default function AddInvoice() {
                     Customer:
                   </label>
                   <select
-                    name="customerName"
-                    className="form-select so-control"
-                    value={formData.invoice.customerName}
+                    name="customerId"
+                    className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                    value={formData.invoice.customerId}
                     onChange={handleChange}
+                    disabled={loadingCustomers}
                   >
-                    <option value="">Select Customer</option>
-                    <option value="Customer A">Customer A</option>
-                    <option value="Customer B">Customer B</option>
+
+                    <option value="" >
+                      {loadingCustomers ? "Loading customers..." : "Select Customer"}
+                    </option>
+
+                    {customers.map((c) => (
+                      <option key={c.customerId} value={c.customerId}>
+                        {c.name}
+                      </option>
+                    ))}
                   </select>
+
                 </div>
 
                 <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Invoice Date:
+                    Order Number:
                   </label>
                   <input
-                    type="date"
-                    name="invoiceDate"
+                    type="text"
+                    name="salesOrderNumber"
                     className="form-control so-control"
-                    value={formData.invoice.invoiceDate}
+                    value={formData.invoice.salesOrderNumber}
                     onChange={handleChange}
+                    placeholder="e.g. SO-16012026-xxxx"
                   />
                 </div>
-              </div>
 
-              {/* COLUMN 2: Payment Terms + Invoice No */}
-              <div className="col-lg-4">
+
                 <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Payment Terms:
@@ -340,6 +489,24 @@ export default function AddInvoice() {
                     <option value="Net 15">Net 15</option>
                     <option value="Net 30">Net 30</option>
                   </select>
+                </div>
+
+              </div>
+
+              {/* COLUMN 2: Payment Terms + Invoice No */}
+              <div className="col-lg-4">
+                {/* Invoice date */}
+                <div className="so-form-group mb-4">
+                  <label className="so-label text-sm text-muted-foreground fw-bold">
+                    Invoice Date:
+                  </label>
+                  <input
+                    type="date"
+                    name="invoiceDate"
+                    className="form-control so-control"
+                    value={formData.invoice.invoiceDate}
+                    onChange={handleChange}
+                  />
                 </div>
 
                 <div className="so-form-group mb-4">
@@ -391,16 +558,11 @@ export default function AddInvoice() {
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Salesperson:
                   </label>
-                  <select
-                    name="salesperson"
-                    className="form-select so-control"
-                    value={formData.invoice.salesperson}
+                  <SalesPersonSelect
+                    name="salesPerson"
+                    value={formData.invoice.salesPerson}
                     onChange={handleChange}
-                  >
-                    <option value="">Select Salesperson</option>
-                    <option value="John">John</option>
-                    <option value="Maria">Maria</option>
-                  </select>
+                  />
                 </div>
               </div>
             </div>
@@ -450,6 +612,8 @@ export default function AddInvoice() {
                   taxInfo={taxInfo}
                   onTaxChange={handleTaxChange}
                   tcsOptions={tcsOptions}
+                  tdsOptions={tdsOptions}
+                  loadingTax={loadingTax}
                   onAddTcs={handleAddTcs}
                 />
               </div>
@@ -480,16 +644,32 @@ export default function AddInvoice() {
               </div>
             </div>
 
+            {/* Buttons */}
             <div className="form-actions">
-              <button type="button" className="btn border me-3 px-4" onClick={() => navigate(-1)}>
+              <button
+                type="button"
+                className="btn border me-3 px-4"
+                style={{ fontSize: 14 }}
+                onClick={() => navigate(-1)}
+              >
                 Cancel
+              </button>
+
+              <button
+                type="submit"
+                className="btn me-3 px-4"
+                style={{ background: '#7991BB', color: '#FFF', fontSize: 14 }}
+                onClicappk={() => setSubmitType('sent')}
+              >
+                Save and send
               </button>
               <button
                 type="submit"
-                className="btn px-4"
-                style={{ background: '#7991BB', color: '#FFF' }}
+                className="btn border me-3 px-4"
+                style={{ fontSize: 14 }}
+                onClick={() => setSubmitType('draft')}
               >
-                Save
+                Save and draft
               </button>
             </div>
           </div>
@@ -540,6 +720,7 @@ export default function AddInvoice() {
                         className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                         value={prefixPattern}
                         onChange={(e) => setPrefixPattern(e.target.value)}
+                        style={{ fontSize: 13 }}
                       >
                         <option value="" disabled>
                           -- Select prefix --
@@ -562,6 +743,7 @@ export default function AddInvoice() {
                         onChange={(e) => setNextNumber(e.target.value)}
                         className="form-control so-control border"
                         placeholder="001"
+                        style={{ fontSize: 13 }}
                       />
                       <small className="text-muted d-block mt-1">
                         Full example: {buildPrefixFromPattern(prefixPattern)}
@@ -576,7 +758,6 @@ export default function AddInvoice() {
                         type="checkbox"
                         checked={restartYear}
                         onChange={(e) => setRestartYear(e.target.checked)}
-                        // style={{ fontSize: 12 }}
                         className="me-2"
                       />
                       Restart numbering every fiscal year.

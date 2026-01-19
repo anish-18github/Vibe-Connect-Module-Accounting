@@ -415,8 +415,6 @@ export default function AddQuotes() {
     closePopup();
   };
 
-
-
   return (
     <>
       <Header />
@@ -730,6 +728,7 @@ export default function AddQuotes() {
                         className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                         value={prefixPattern}
                         onChange={(e) => setPrefixPattern(e.target.value)}
+                        style={{ fontSize: 13 }}
                       >
                         <option value="" disabled>
                           -- Select prefix --
@@ -749,11 +748,12 @@ export default function AddQuotes() {
                     <div style={{ flex: 1, fontSize: 13 }} className="so-form-group mb-4">
                       <label className="so-label text-sm text-muted-foreground fw-bold">Next Number</label>
                       <input
-                        type='text'
+                        // type='text'
                         value={nextNumber}
                         onChange={(e) => setNextNumber(e.target.value)}
                         className="form-control so-control border"
                         placeholder="001"
+                        style={{ fontSize: 13 }}
                       />
                       <small className="text-muted d-block mt-1">
                         Full example: {buildPrefixFromPattern(prefixPattern)}

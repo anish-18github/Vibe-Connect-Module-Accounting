@@ -117,7 +117,20 @@ const SalesOrders = () => {
         </div>
       ),
     },
-    { key: 'createdBy', label: 'Created By' },
+    {
+      key: 'createdBy', label: 'Created By', render: (value: string) => (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: '4px',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {value}
+        </div>
+      ),
+    },
   ];
 
   // ---------------- Data Load (SAME AS CUSTOMERS) ----------------

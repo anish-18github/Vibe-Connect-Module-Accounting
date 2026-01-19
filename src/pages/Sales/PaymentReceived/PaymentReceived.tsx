@@ -9,8 +9,24 @@ import useFormSuccess from '../../../components/Toast/useFormSuccess';
 import { Toast } from '../../../components/Toast/Toast';
 import { useGlobalToast } from '../../../components/Toast/ToastContext';
 
+
+interface Payments {
+  id: number;
+  paymnetDate: String;
+  paymentId: string;
+  reference: string;
+  invoiceNumber: string;
+  paymentMode: string;
+  status: string;
+  amount: number;
+}
+
+
 const PaymentReceived = () => {
+    const navigate = useNavigate();
+  const [payments, setPayments] = useState<Payments[]>([]);
   const { toast, setToast } = useGlobalToast();
+  const [loading, setLoading] = useState(true);
   useFormSuccess();
   const columns = [
     { key: 'date', label: 'Date' },
@@ -23,15 +39,8 @@ const PaymentReceived = () => {
     { key: 'status', label: 'Status' },
   ];
 
-  const navigate = useNavigate();
-  const [customers, setCustomers] = useState<any[]>([]);
 
-  // INFUTURE HERE'S GET API CALL
-  // Load from localStorage
-  // useEffect(() => {
-  //   const stored = JSON.parse(localStorage.getItem('customers') || '[]');
-  //   setCustomers(stored);
-  // }, []);
+
 
   return (
     <>
@@ -45,7 +54,7 @@ const PaymentReceived = () => {
         <div className=" mt-3">
           <DynamicTable
             columns={columns}
-            data={customers}
+            data={payments}
             actions={false}
             rowsPerPage={10}
             onAdd={() => navigate('/sales/record-payment')} //May be change it latter. "/add-customer"

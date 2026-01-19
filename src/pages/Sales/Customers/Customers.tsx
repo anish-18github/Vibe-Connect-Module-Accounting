@@ -23,7 +23,7 @@ export const salesTabs = [
 ];
 
 const columns = [
-  { key: 'name', label: 'Display Name' },
+  { key: 'name', label: 'Name' },
   { key: 'companyName', label: 'Company Name' },
   { key: 'email', label: 'Email' },
   { key: 'customerType', label: 'Customer Type' },

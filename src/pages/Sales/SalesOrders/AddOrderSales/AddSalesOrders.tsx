@@ -17,7 +17,7 @@ import api from '../../../../services/api/apiConfig';
 import SalesPersonSelect from '../../../../components/SalesPersonSelect/SalesPersonSelect';
 import { createTCS, getTCS, getTDS } from '../../../../services/api/taxService';
 
-interface Customer {
+export interface Customer {
   customerId: number;
   name: string;
 }
@@ -53,7 +53,7 @@ export default function AddSalesOrder() {
   const [nextNumber, setNextNumber] = useState('');
   const [restartYear, setRestartYear] = useState(false);
   const [closing, setClosing] = useState(false);
-  const [prefixPattern, setPrefixPattern] = useState<string>('CUSTOM');
+  const [prefixPattern, setPrefixPattern] = useState('');
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loadingCustomers, setLoadingCustomers] = useState(true);

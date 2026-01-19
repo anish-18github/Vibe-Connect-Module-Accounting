@@ -77,7 +77,6 @@ const Quotes = () => {
       },
     },
     { key: 'expiredOn', label: 'Expire On' },
-    { key: 'createdBy', label: 'Created By' },
     {
       key: 'amount',
       label: 'Amount',
@@ -97,6 +96,20 @@ const Quotes = () => {
               maximumFractionDigits: 2,
             })}
           </span>
+        </div>
+      ),
+    },
+    {
+      key: 'createdBy', label: 'Created By', render: (value: string) => (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: '4px',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {value}
         </div>
       ),
     },

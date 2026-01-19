@@ -7,8 +7,13 @@ import './addDeliveryChallan.css';
 import ItemTable, {
   SummaryBox,
   type TcsOption,
+  type TdsOption,
 } from '../../../../components/Table/ItemTable/ItemTable';
 import { FeatherUpload } from '../../Customers/AddCustomer/Add';
+import api from '../../../../services/api/apiConfig';
+import type { Customer } from '../../SalesOrders/AddOrderSales/AddSalesOrders';
+import { createTCS, getTCS, getTDS } from '../../../../services/api/taxService';
+
 
 interface ItemRow {
   itemDetails: string;
@@ -20,7 +25,7 @@ interface ItemRow {
 
 interface DeliveryChallanForm {
   challan: {
-    customerName: string;
+    customerId: string;
     challanNo: string;
     challanDate: string;
     deliveryMethod: string;
@@ -33,7 +38,7 @@ interface DeliveryChallanForm {
 
 type TaxType = 'TDS' | 'TCS' | '';
 
-// type SubmitType = 'draft' | 'sent';
+type SubmitType = 'draft';
 
 
 export default function AddDeliveryChallan() {
@@ -47,10 +52,18 @@ export default function AddDeliveryChallan() {
   const [nextNumber, setNextNumber] = useState('');
   const [restartYear, setRestartYear] = useState(false);
   const [closing, setClosing] = useState(false);
-  const [prefixPattern, setPrefixPattern] = useState<string>('CUSTOM');
+  const [prefixPattern, setPrefixPattern] = useState('');
 
 
-  // const [submitType, setSubmitType] = useState<SubmitType>('draft');
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loadingCustomers, setLoadingCustomers] = useState(true);
+
+  /* ---------------- TAX STATE ---------------- */
+  const [tdsOptions, setTdsOptions] = useState<TdsOption[]>([]);
+  const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([]);
+  const [loadingTax, setLoadingTax] = useState(false);
+
+  const [submitType, setSubmitType] = useState<SubmitType>('draft');
 
 
   const closePopup = () => {
@@ -68,10 +81,52 @@ export default function AddDeliveryChallan() {
     };
   }, [showSettings]);
 
+
+  /* ---------------- LOAD TAX ---------------- */
+  useEffect(() => {
+    const loadTaxes = async () => {
+      try {
+        setLoadingTax(true);
+
+        const [tdsRes, tcsRes] = await Promise.all([
+          getTDS(),
+          getTCS(),
+        ]);
+
+        // ✅ TDS (read-only)
+        setTdsOptions(
+          tdsRes.map((t) => ({
+            id: Number(t.id),   // TDS → number
+            name: t.name,
+            rate: Number(t.rate),
+          }))
+        );
+
+        // ✅ TCS (editable)
+        setTcsOptions(
+          tcsRes.map((t) => ({
+            id: String(t.id),   // TCS → string
+            name: t.name,
+            rate: Number(t.rate),
+          }))
+        );
+      } catch {
+        showToast('Failed to load tax options', 'error');
+      } finally {
+        setLoadingTax(false);
+      }
+    };
+
+    loadTaxes();
+  }, []);
+
+
+
+
   // ---------------- Form State ----------------
   const [formData, setFormData] = useState<DeliveryChallanForm>({
     challan: {
-      customerName: '',
+      customerId: '',
       challanNo: '',
       challanDate: '',
       // deliveryDate: '',
@@ -90,13 +145,6 @@ export default function AddDeliveryChallan() {
       },
     ],
   });
-
-  // ---------------- TCS Options ----------------
-  const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([
-    { id: 'tcs_5', name: 'TCS Standard', rate: 5 },
-    { id: 'tcs_12', name: 'TCS Standard', rate: 12 },
-    { id: 'tcs_18', name: 'TCS Standard', rate: 18 },
-  ]);
 
   // ---------------- Tax & Totals ----------------
   const [taxInfo, setTaxInfo] = useState({
@@ -153,6 +201,24 @@ export default function AddDeliveryChallan() {
     });
   }, [formData.itemTable, taxInfo.type, taxInfo.selectedTax, taxInfo.adjustment, tcsOptions]);
 
+
+  // ---------------- Load customers ----------------
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const res = await api.get<Customer[]>('customers/');
+        setCustomers(res.data);
+      } catch {
+        showToast('Failed to load customers', 'error');
+      } finally {
+        setLoadingCustomers(false);
+      }
+    };
+    fetchCustomers();
+  }, [showToast]);
+
+
+
   const buildPrefixFromPattern = (pattern: string) => {
     const now = new Date();
     const year = now.getFullYear();
@@ -191,8 +257,16 @@ export default function AddDeliveryChallan() {
     setTaxInfo((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleAddTcs = (opt: TcsOption) => {
-    setTcsOptions((prev) => [...prev, opt]);
+  const handleAddTcs = async (data: { name: string; rate: number }) => {
+    const created = await createTCS(data);
+
+    setTcsOptions((prev) => [...prev, created]);
+
+    setTaxInfo((prev) => ({
+      ...prev,
+      type: 'TCS',
+      selectedTax: String(created.id),
+    }));
   };
 
   const handleChange = (
@@ -252,24 +326,55 @@ export default function AddDeliveryChallan() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const round2 = (v: number) => Number(Number(v).toFixed(2));
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const finalPayload = {
-      ...formData,
-      totals,
-      taxInfo,
-      challanId: Math.floor(100000 + Math.random() * 900000),
-      createdOn: new Date().toISOString().split('T')[0],
-      createdBy: 'Admin',
+    const payload = {
+      customer: Number(formData.challan.customerId),
+
+
+      challan_number: formData.challan.challanNo,
+      challan_date: formData.challan.challanDate,
+      challan_type: formData.challan.deliveryMethod,
+
+      reference_number: formData.challan.reference,
+      status: submitType,
+      // invoice_status → backend will auto-handle
+
+      customer_notes: formData.challan.customerNotes,
+      terms_and_conditions: formData.challan.termsAndConditions,
+
+      subtotal: round2(totals.subtotal),
+      adjustment: round2(taxInfo.adjustment),
+      grand_total: round2(totals.grandTotal),
+
+      items: formData.itemTable.map((row) => ({
+        item_details: row.itemDetails,
+        quantity: Number(row.quantity),
+        rate: round2(Number(row.rate)),
+        discount: round2(Number(row.discount) || 0),
+        amount: round2(Number(row.amount)),
+      })),
     };
 
-    const existing = JSON.parse(localStorage.getItem('deliveryChallans') || '[]');
-    existing.push(finalPayload);
-    localStorage.setItem('deliveryChallans', JSON.stringify(existing));
-    sessionStorage.setItem('formSuccess', 'Delivery challan created');
-    navigate('/delivery/challan');
+    try {
+      console.log('FINAL DELIVERY CHALLAN PAYLOAD', payload);
+
+      await api.post('delivery-challans/create/', payload);
+
+      showToast('Delivery challan created successfully', 'success');
+
+      setTimeout(() => {
+        navigate('/sales/delivery-challans');
+      }, 800);
+    } catch (error: any) {
+      console.error('DELIVERY CHALLAN ERROR:', error.response?.data);
+      showToast(JSON.stringify(error.response?.data), 'error');
+    }
   };
+
 
   const applyAutoSO = () => {
     if (mode === 'auto') {
@@ -308,14 +413,21 @@ export default function AddDeliveryChallan() {
                     Customer:
                   </label>
                   <select
-                    name="customerName"
+                    name="customerId"
                     className="form-select so-control"
-                    value={formData.challan.customerName}
+                    value={formData.challan.customerId}
                     onChange={handleChange}
+                    disabled={loadingCustomers}
                   >
-                    <option value="">Select Customer</option>
-                    <option value="Customer A">Customer A</option>
-                    <option value="Customer B">Customer B</option>
+                    <option value="" >
+                      {loadingCustomers ? "Loading customers..." : "Select Customer"}
+                    </option>
+
+                    {customers.map((c) => (
+                      <option key={c.customerId} value={c.customerId}>
+                        {c.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -346,9 +458,9 @@ export default function AddDeliveryChallan() {
                     onChange={handleChange}
                   >
                     <option value="">Select Delivery Method</option>
-                    <option value="Courier">Courier</option>
-                    <option value="Transport">Transport</option>
-                    <option value="Pickup">Pickup</option>
+                    <option value="courier">Courier</option>
+                    <option value="transport">Transport</option>
+                    <option value="pickup">Pickup</option>
                   </select>
                 </div>
 
@@ -447,6 +559,8 @@ export default function AddDeliveryChallan() {
                   taxInfo={taxInfo}
                   onTaxChange={handleTaxChange}
                   tcsOptions={tcsOptions}
+                  tdsOptions={tdsOptions}
+                  loadingTax={loadingTax}
                   onAddTcs={handleAddTcs}
                 />
               </div>
@@ -490,8 +604,9 @@ export default function AddDeliveryChallan() {
                 type="submit"
                 className="btn px-4"
                 style={{ background: '#7991BB', color: '#FFF' }}
+                onClick={() => setSubmitType('draft')}
               >
-                Save
+                Save as Draft
               </button>
             </div>
           </div>
