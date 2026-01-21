@@ -413,7 +413,7 @@ export default function AddInvoice() {
         ...prev,
         invoice: {
           ...prev.invoice,
-          invoiceNo: fullNumber, // ✅ matches the input binding
+          invoiceNo: fullNumber, 
         },
       }));
     }
@@ -659,7 +659,7 @@ export default function AddInvoice() {
                 type="submit"
                 className="btn me-3 px-4"
                 style={{ background: '#7991BB', color: '#FFF', fontSize: 14 }}
-                onClicappk={() => setSubmitType('sent')}
+                onClick={() => setSubmitType('sent')}
               >
                 Save and send
               </button>

@@ -475,8 +475,8 @@ const AddPaymentMade: React.FC = () => {
                 {/* EMPTY STATE */}
                 {usageRows.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="text-center   text-muted py-3">
-                      No invoices available for this payment
+                    <td colSpan={6} className="text-center text-muted py-3">
+                      There are no unpaid invoices associated with this customer.
                     </td>
                   </tr>
                 )}

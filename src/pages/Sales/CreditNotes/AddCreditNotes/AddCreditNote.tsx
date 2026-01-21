@@ -7,10 +7,15 @@ import { Info, Settings, X } from 'react-feather';
 import ItemTable, {
   SummaryBox,
   type TcsOption,
+  type TdsOption,
 } from '../../../../components/Table/ItemTable/ItemTable';
 
 import './creditNotes.css';
 import { FeatherUpload } from '../../Customers/AddCustomer/Add';
+import type { Customer } from '../../SalesOrders/AddOrderSales/AddSalesOrders';
+import api from '../../../../services/api/apiConfig';
+import { createTCS, getTCS, getTDS } from '../../../../services/api/taxService';
+import SalesPersonSelect from '../../../../components/SalesPersonSelect/SalesPersonSelect';
 
 interface ItemRow {
   itemDetails: string;
@@ -22,7 +27,7 @@ interface ItemRow {
 
 interface CreditNoteForm {
   credit: {
-    customerName: string;
+    customerId: string;
     creditNoteNo: string;
     creditDate: string;
     referenceNo: string;
@@ -35,6 +40,9 @@ interface CreditNoteForm {
   itemTable: ItemRow[];
 }
 
+type SubmitType = 'draft' | 'open' | 'closed';
+
+
 type TaxType = 'TDS' | 'TCS' | '';
 
 export default function AddCreditNote() {
@@ -44,12 +52,24 @@ export default function AddCreditNote() {
   // ---------------- Modal ----------------
   const [showSettings, setShowSettings] = useState(false);
   const [mode, setMode] = useState<'auto' | 'manual'>('auto');
-  // const [prefix, setPrefix] = useState('');
+  const [prefixPattern, setPrefixPattern] = useState('');
   const [nextNumber, setNextNumber] = useState('');
   const [restartYear, setRestartYear] = useState(false);
   const [closing, setClosing] = useState(false);
 
-  const [prefixPattern, setPrefixPattern] = useState<string>('CUSTOM');
+
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loadingCustomers, setLoadingCustomers] = useState(true);
+
+
+  /* ---------------- TAX STATE ---------------- */
+  const [tdsOptions, setTdsOptions] = useState<TdsOption[]>([]);
+  const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([]);
+  const [loadingTax, setLoadingTax] = useState(false);
+
+  const [submitType, setSubmitType] = useState<SubmitType>('draft');
+
+
 
   // helper: build prefix string from pattern
   const buildPrefixFromPattern = (pattern: string) => {
@@ -72,21 +92,6 @@ export default function AddCreditNote() {
     }
   };
 
-  const applyAutoSO = () => {
-    if (mode === 'auto') {
-      const prefix = buildPrefixFromPattern(prefixPattern);
-      const fullNumber = `${prefix}${nextNumber || '001'}`;
-
-      setFormData((prev) => ({
-        ...prev,
-        credit: {
-          ...prev.credit,
-          creditNoteNo: fullNumber, // ✅ matches the input binding
-        },
-      }));
-    }
-    closePopup();
-  };
 
   const closePopup = () => {
     setClosing(true);
@@ -100,10 +105,51 @@ export default function AddCreditNote() {
     document.body.style.overflow = showSettings ? 'hidden' : 'auto';
   }, [showSettings]);
 
+
+  /* ---------------- LOAD TAX ---------------- */
+  useEffect(() => {
+    const loadTaxes = async () => {
+      try {
+        setLoadingTax(true);
+
+        const [tdsRes, tcsRes] = await Promise.all([
+          getTDS(),
+          getTCS(),
+        ]);
+
+        // ✅ TDS (read-only)
+        setTdsOptions(
+          tdsRes.map((t) => ({
+            id: Number(t.id),   // TDS → number
+            name: t.name,
+            rate: Number(t.rate),
+          }))
+        );
+
+        // ✅ TCS (editable)
+        setTcsOptions(
+          tcsRes.map((t) => ({
+            id: String(t.id),   // TCS → string
+            name: t.name,
+            rate: Number(t.rate),
+          }))
+        );
+      } catch {
+        showToast('Failed to load tax options', 'error');
+      } finally {
+        setLoadingTax(false);
+      }
+    };
+
+    loadTaxes();
+  }, []);
+
+
+
   // ---------------- Form State ----------------
   const [formData, setFormData] = useState<CreditNoteForm>({
     credit: {
-      customerName: '',
+      customerId: '',
       creditNoteNo: '',
       creditDate: '',
       referenceNo: '',
@@ -123,13 +169,6 @@ export default function AddCreditNote() {
       },
     ],
   });
-
-  // ---------------- TCS Options ----------------
-  const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([
-    { id: 'tcs_5', name: 'TCS Standard', rate: 5 },
-    { id: 'tcs_12', name: 'TCS Standard', rate: 12 },
-    { id: 'tcs_18', name: 'TCS Standard', rate: 18 },
-  ]);
 
   // ---------------- Tax & Totals ----------------
   const [taxInfo, setTaxInfo] = useState({
@@ -181,6 +220,22 @@ export default function AddCreditNote() {
   }, [formData.itemTable, taxInfo.type, taxInfo.selectedTax, taxInfo.adjustment]);
 
 
+  // ---------------- Load customers ----------------
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const res = await api.get<Customer[]>('customers/');
+        setCustomers(res.data);
+      } catch {
+        showToast('Failed to load customers', 'error');
+      } finally {
+        setLoadingCustomers(false);
+      }
+    };
+    fetchCustomers();
+  }, [showToast]);
+
+
   // CURRENT DATE
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -199,8 +254,17 @@ export default function AddCreditNote() {
     setTaxInfo((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleAddTcs = (opt: TcsOption) => {
-    setTcsOptions((prev) => [...prev, opt]);
+  // TCS HANDLER
+  const handleAddTcs = async (data: { name: string; rate: number }) => {
+    const created = await createTCS(data);
+
+    setTcsOptions((prev) => [...prev, created]);
+
+    setTaxInfo((prev) => ({
+      ...prev,
+      type: 'TCS',
+      selectedTax: String(created.id),
+    }));
   };
 
   const handleChange = (
@@ -247,32 +311,57 @@ export default function AddCreditNote() {
     setFormData((prev) => ({ ...prev, itemTable: updated }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const payload = {
-      ...formData,
-      totals,
-      taxInfo,
-      creditNoteId: Math.floor(100000 + Math.random() * 900000),
-      createdOn: new Date().toISOString().split('T')[0],
-      createdBy: 'Admin',
+      customer: formData.credit.customerId,  // ID string → FK
+      credit_note_number: formData.credit.creditNoteNo,
+      credit_date: formData.credit.creditDate,
+      reference_no: formData.credit.referenceNo,
+      payment_term: formData.credit.paymentTerm,
+      sales_person: formData.credit.salesperson || null,  // FK ID or null
+      subject: formData.credit.subject,
+      customer_notes: formData.credit.notes,  // Map notes → customer_notes
+      terms_and_conditions: formData.credit.terms,  // Map terms → terms_and_conditions
+      subtotal: totals.subtotal,
+      adjustment: taxInfo.adjustment,
+      grand_total: totals.grandTotal,
+      items: formData.itemTable.map((row) => ({
+        item_details: row.itemDetails,
+        quantity: parseFloat(row.quantity as string) || 0,
+        rate: parseFloat(row.rate as string) || 0,
+        discount: parseFloat(row.discount as string) || 0,
+        amount: parseFloat(row.amount as string) || 0,
+        // line_order: index,
+      })),
+      tax_info: taxInfo.type ? {
+        tax_type: taxInfo.type,
+        ...(taxInfo.type === 'TDS' && { tds_rate: taxInfo.taxRate }),
+        ...(taxInfo.type === 'TCS' && { tcs: taxInfo.selectedTax }),  // TCS ID string
+        tax_amount: taxInfo.taxAmount,
+      } : undefined,
+      // documents: [] if file handling later
     };
-
-    const existing = JSON.parse(localStorage.getItem('creditNotes') || '[]');
-    existing.push(payload);
-    localStorage.setItem('creditNotes', JSON.stringify(existing));
-    sessionStorage.setItem('formSuccess', 'Credit note created successfully');
-    navigate('/sales/credit-notes');
+    try {
+      await api.post('credit-notes/create/', payload);
+      sessionStorage.setItem('formSuccess', `Credit note ${submitType}d successfully`);
+      navigate('/sales/credit-notes');
+    } catch (error: any) {
+      showToast(error.response?.data?.detail || 'Failed to create credit note', 'error');
+    }
   };
+
 
   const applyAutoCN = () => {
     if (mode === 'auto') {
+      const prefix = buildPrefixFromPattern(prefixPattern);
+      const fullNumber = `${prefix}${nextNumber || '001'}`;
+
       setFormData((prev) => ({
         ...prev,
         credit: {
           ...prev.credit,
-          creditNoteNo: prefix + nextNumber,
+          creditNoteNo: fullNumber,
         },
       }));
     }
@@ -299,14 +388,22 @@ export default function AddCreditNote() {
                     Customer:
                   </label>
                   <select
-                    name="customerName"
+                    name="customerId"
                     className="form-select so-control"
-                    value={formData.credit.customerName}
+                    value={formData.credit.customerId}
                     onChange={handleChange}
+                    disabled={loadingCustomers}
+
                   >
-                    <option value="">Select Customer</option>
-                    <option value="Customer A">Customer A</option>
-                    <option value="Customer B">Customer B</option>
+                    <option value="" >
+                      {loadingCustomers ? "Loading customers..." : "Select Customer"}
+                    </option>
+
+                    {customers.map((c) => (
+                      <option key={c.customerId} value={c.customerId}>
+                        {c.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -392,16 +489,11 @@ export default function AddCreditNote() {
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Salesperson:
                   </label>
-                  <select
+                  <SalesPersonSelect
                     name="salesperson"
-                    className="form-select so-control"
                     value={formData.credit.salesperson}
                     onChange={handleChange}
-                  >
-                    <option value="">Select Salesperson</option>
-                    <option value="John">John</option>
-                    <option value="Maria">Maria</option>
-                  </select>
+                  />
                 </div>
               </div>
 
@@ -466,6 +558,8 @@ export default function AddCreditNote() {
                   taxInfo={taxInfo}
                   onTaxChange={handleTaxChange}
                   tcsOptions={tcsOptions}
+                  tdsOptions={tdsOptions}
+                  loadingTax={loadingTax}
                   onAddTcs={handleAddTcs}
                 />
               </div>
@@ -497,17 +591,24 @@ export default function AddCreditNote() {
               </div>
             </div>
 
+            {/* Buttons */}
             <div className="form-actions">
-              <button type="button" className="btn border me-3 px-4" onClick={() => navigate(-1)}>
+              <button
+                type="button"
+                className="btn border me-3 px-4"
+                style={{ fontSize: 14 }}
+                onClick={() => navigate(-1)}
+              >
                 Cancel
               </button>
-              <button
-                type="submit"
-                className="btn px-4"
-                style={{ background: '#7991BB', color: '#FFF' }}
-              >
-                Save
+
+              <button type="submit" className="btn me-3 px-4" style={{ background: '#7991BB', color: '#FFF' }} onClick={() => setSubmitType('open')}>
+                Save & Open
               </button>
+              <button type="submit" className="btn border me-3 px-4" onClick={() => setSubmitType('draft')}>
+                Save Draft
+              </button>
+
             </div>
           </div>
         </form>
@@ -562,6 +663,7 @@ export default function AddCreditNote() {
                         className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                         value={prefixPattern}
                         onChange={(e) => setPrefixPattern(e.target.value)}
+                        style={{ fontSize: 13 }}
                       >
                         <option value="" disabled>
                           -- Select prefix --
@@ -584,8 +686,9 @@ export default function AddCreditNote() {
                         onChange={(e) => setNextNumber(e.target.value)}
                         className="form-control so-control border"
                         placeholder="001"
+                        style={{ fontSize: 13 }}
                       />
-                      <small className="text-muted d-block mt-1">
+                      <small className="text-muted d-block mt-1" >
                         Full example: {buildPrefixFromPattern(prefixPattern)}
                         {nextNumber || '001'}
                       </small>
@@ -623,7 +726,7 @@ export default function AddCreditNote() {
                 <button className="btn border me-3 px-4" onClick={closePopup}>
                   Cancel
                 </button>
-                <button className="btn me-2 px-4" style={{ background: '#7991BB', color: '#FFF' }} onClick={applyAutoSO}>
+                <button className="btn me-2 px-4" style={{ background: '#7991BB', color: '#FFF' }} onClick={applyAutoCN}>
                   Save
                 </button>
               </div>

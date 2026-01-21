@@ -27,6 +27,7 @@ interface Invoice {
 
 
 const Invoices = () => {
+  const navigate = useNavigate();
   const { toast, setToast } = useGlobalToast();
   const [loading, setLoading] = useState(true);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -52,7 +53,7 @@ const Invoices = () => {
   const columns = [
     { key: 'date', label: 'Date' },
     { key: 'invoiceNumber', label: 'Invoice' },
-    { key: 'orderNumber', label: 'Order Number' }, // ✅ ADDED
+    { key: 'orderNumber', label: 'Order Number' },  
     { key: 'customerName', label: 'Customer Name' },
     {
       key: 'status',
@@ -98,7 +99,6 @@ const Invoices = () => {
   ];
 
 
-
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
@@ -118,9 +118,6 @@ const Invoices = () => {
 
     fetchInvoices();
   }, []);
-
-
-  const navigate = useNavigate();
 
 
   return (
