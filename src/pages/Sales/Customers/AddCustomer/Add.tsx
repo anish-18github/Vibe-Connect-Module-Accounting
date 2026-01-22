@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Header from '../../../../components/Header/Header';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './addCustomer.css';
 import { Plus, X } from 'react-feather';
 import Toast, { useToast } from '../../../../components/Toast/Toast';
@@ -131,8 +131,8 @@ const Add = () => {
       companyName: '',
       displayName: '',
       emailAddress: '',
-      countryCode: '', 
-      phoneNumber: '', 
+      countryCode: '',
+      phoneNumber: '',
     },
     otherDetails: {
       pan: '',
@@ -167,6 +167,9 @@ const Add = () => {
   });
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState('Other Details');
@@ -176,6 +179,12 @@ const Add = () => {
     displayName: '',
   });
   // const [showDisplaySuggestions, setShowDisplaySuggestions] = useState(false);
+
+
+  // Check if coming from CustomerSelect
+  const fromCustomerSelect = location.state?.fromCustomerSelect || false;
+  const returnPath = sessionStorage.getItem('returnAfterCustomer');
+
 
 
   const validateForm = () => {
@@ -344,58 +353,66 @@ const Add = () => {
 
     if (!validateForm()) return;
 
-
-    // Transform nested formData into serializer-friendly payload
-    const payload = {
-      customer_type: formData.customer.customerType,
-      salutation: formData.customer.salutation,
-      first_name: formData.customer.firstName,
-      last_name: formData.customer.lastName,
-      company_name: formData.customer.companyName,
-      display_name: formData.customer.displayName,
-      email: formData.customer.emailAddress,
-      phone_country_code: formData.customer.countryCode,
-      phone_number: formData.customer.phoneNumber,
-      pan: formData.otherDetails.pan,
-      currency: formData.otherDetails.currency,
-      payment_terms: formData.otherDetails.paymentTerms,
-      portal_language: formData.otherDetails.portalLanguage,
-      remarks: formData.remarks || "",
-      addresses: [
-        {
-          attention: formData.address.attention,
-          address1: formData.address.address1,
-          address2: formData.address.address2,
-          city: formData.address.city,
-          state: formData.address.state,
-          country: formData.address.country,
-          zip_code: formData.address.zip,
-          phone_country_code: formData.address.countryCode,
-          phone_number: formData.address.phoneNumber,
-          fax: formData.address.fax,
-        },
-      ],
-      contacts: formData.contactPersons.map((c) => ({
-        salutation: c.salutation,
-        first_name: c.firstName,
-        last_name: c.lastName,
-        email: c.email,
-        phone: c.phone,
-        designation: c.designation,
-        department: c.department,
-        is_primary: false, // or true if you want the first contact as primary
-      })),
-    };
-
     try {
+      // Transform nested formData into serializer-friendly payload
+      const payload = {
+        customer_type: formData.customer.customerType,
+        salutation: formData.customer.salutation,
+        first_name: formData.customer.firstName,
+        last_name: formData.customer.lastName,
+        company_name: formData.customer.companyName,
+        display_name: formData.customer.displayName,
+        email: formData.customer.emailAddress,
+        phone_country_code: formData.customer.countryCode,
+        phone_number: formData.customer.phoneNumber,
+        pan: formData.otherDetails.pan,
+        currency: formData.otherDetails.currency,
+        payment_terms: formData.otherDetails.paymentTerms,
+        portal_language: formData.otherDetails.portalLanguage,
+        remarks: formData.remarks || "",
+        addresses: [
+          {
+            attention: formData.address.attention,
+            address1: formData.address.address1,
+            address2: formData.address.address2,
+            city: formData.address.city,
+            state: formData.address.state,
+            country: formData.address.country,
+            zip_code: formData.address.zip,
+            phone_country_code: formData.address.countryCode,
+            phone_number: formData.address.phoneNumber,
+            fax: formData.address.fax,
+          },
+        ],
+        contacts: formData.contactPersons.map((c) => ({
+          salutation: c.salutation,
+          first_name: c.firstName,
+          last_name: c.lastName,
+          email: c.email,
+          phone: c.phone,
+          designation: c.designation,
+          department: c.department,
+          is_primary: false, // or true if you want the first contact as primary
+        })),
+      };
+
+
       const response = await api.post('customers/create/', payload);
       console.log('Customer created:', response.data);
 
       showToast('Customer created successfully', 'success');
 
-      setTimeout(() => {
-        navigate('/sales/customers');
-      }, 800);
+      // setTimeout(() => {
+      //   navigate('/sales/customers');
+      // }, 800);
+
+      if (fromCustomerSelect && returnPath) {
+        sessionStorage.removeItem('returnAfterCustomer');
+        // Refresh parent page to show new customer in dropdown
+        window.location.href = returnPath;
+      } else {
+        navigate('/sales/customers'); 
+      }
     } catch (error: any) {
       const message =
         error.response?.data?.detail ||

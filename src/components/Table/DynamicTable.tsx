@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './dynamicTable.css';
-import { Edit, Eye, ChevronLeft, ChevronRight, Search } from 'react-feather';
+import { ChevronLeft, ChevronRight, Search } from 'react-feather';
 
 interface Column {
   key: string;
@@ -8,24 +8,31 @@ interface Column {
   render?: (value: any, row: any) => React.ReactNode;
 }
 
+interface ActionConfig {
+  icon: React.ReactNode;
+  onClick: (row: any) => void;
+  tooltip?: string;
+  disabled?: boolean;
+}
+
 interface DynamicTableProps {
   columns: Column[];
   data: any[];
-  actions?: boolean;
+  actions?: ActionConfig[];  // ✅ NEW: Array of action buttons
   loading?: boolean;
   rowsPerPage?: number;
-  onAdd?: () => void; /* For Navigation */
+  onAdd?: () => void;
   onView?: (row: any) => void;
 }
+
 
 function DynamicTable({
   columns,
   data,
-  actions = false,
+  actions = [],
   rowsPerPage = 10,
   loading = false,
   onAdd,
-  onView,
 }: DynamicTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -119,7 +126,7 @@ function DynamicTable({
         <table className="table custom-table table-bordered" style={{ fontSize: 14 }}>
           <thead className="fw-normal">
             <tr>
-              {actions && <th>Action</th>}
+              {actions.length > 0 && <th style={{ width: '120px' }}>Actions</th>}  {/* Dynamic action header */}
               {columns.map((col) => (
                 <th key={col.key}>{col.label}</th>
               ))}
@@ -130,7 +137,7 @@ function DynamicTable({
             {loading ? (
               <tr>
                 <td
-                  colSpan={columns.length + (actions ? 1 : 0)}
+                  colSpan={columns.length + (actions.length > 0 ? 1 : 0)}
                   className="text-center"
                 >
                   Loading...
@@ -139,23 +146,54 @@ function DynamicTable({
             ) : currentData.length > 0 ? (
               currentData.map((row, i) => (
                 <tr key={i}>
-                  {actions && (
-                    <td>
-                      <span
-                        style={{
-                          marginRight: '10px',
-                          cursor: 'pointer',
-                          color: '#555',
-                        }}
-                      >
-                        <Edit size={16} />
-                      </span>
-                      <span
-                        style={{ cursor: 'pointer', color: '#555' }}
-                        onClick={() => onView?.(row)}
-                      >
-                        <Eye size={16} />
-                      </span>
+                  {/* ✅ DYNAMIC ACTION COLUMN */}
+                  {actions.length > 0 && (
+                    <td style={{ padding: '8px', whiteSpace: 'nowrap' }}>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        {actions.map((action, actionIndex) => (
+                          <button
+                            key={actionIndex}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (!action.disabled) action.onClick(row);
+                            }}
+                            disabled={action.disabled}
+                            title={action.tooltip}
+                            style={{
+                              border: 'none',
+                              background: 'transparent',
+                              cursor: action.disabled ? 'not-allowed' : 'pointer',
+                              padding: '6px',
+                              borderRadius: '6px',
+                              opacity: action.disabled ? 0.5 : 1,
+                              color: '#555',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: '32px',
+                              height: '32px',
+                              transition: 'all 0.2s ease',
+                            }}
+                            // ✅ PROPER HOVER EFFECTS
+                            onMouseEnter={(e) => {
+                              if (!action.disabled) {
+                                e.currentTarget.style.backgroundColor = '#f8f9fa';
+                                e.currentTarget.style.color = '#007bff';
+                                e.currentTarget.style.transform = 'scale(1.05)';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = 'transparent';
+                              e.currentTarget.style.color = '#555';
+                              e.currentTarget.style.transform = 'scale(1)';
+                            }}
+                          >
+                            {action.icon}
+                          </button>
+                        ))}
+
+                      </div>
                     </td>
                   )}
                   {columns.map((col) => (

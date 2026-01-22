@@ -11,9 +11,10 @@ import ItemTable, {
 } from '../../../../components/Table/ItemTable/ItemTable';
 import { FeatherUpload } from '../../Customers/AddCustomer/Add';
 import api from '../../../../services/api/apiConfig';
-import type { Customer } from '../../SalesOrders/AddOrderSales/AddSalesOrders';
+// import type { Customer } from '../../SalesOrders/AddOrderSales/AddSalesOrders';
 import { createTCS, getTCS, getTDS } from '../../../../services/api/taxService';
-import SalesPersonSelect from '../../../../components/SalesPersonSelect/SalesPersonSelect';
+import SalesPersonSelect from '../../../../components/Masters/SalesPersonsMaster/SalesPersonSelect';
+import CustomerSelect from '../../../../components/Masters/CustomerMaster/CustomerSelector';
 
 interface ItemRow {
   itemDetails: string;
@@ -54,9 +55,6 @@ export default function AddInvoice() {
   const [nextNumber, setNextNumber] = useState('');
   const [restartYear, setRestartYear] = useState(false);
   const [prefixPattern, setPrefixPattern] = useState('');
-
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loadingCustomers, setLoadingCustomers] = useState(true);
 
 
   /* ---------------- TAX STATE ---------------- */
@@ -228,23 +226,6 @@ export default function AddInvoice() {
   }, [formData.itemTable, taxInfo.type, taxInfo.selectedTax, taxInfo.adjustment, tcsOptions]);
 
 
-  // ---------------- Load customers ----------------
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const res = await api.get<Customer[]>('customers/');
-        setCustomers(res.data);
-      } catch {
-        showToast('Failed to load customers', 'error');
-      } finally {
-        setLoadingCustomers(false);
-      }
-    };
-    fetchCustomers();
-  }, [showToast]);
-
-
-
   // CURRENT DATE
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -413,7 +394,7 @@ export default function AddInvoice() {
         ...prev,
         invoice: {
           ...prev.invoice,
-          invoiceNo: fullNumber, 
+          invoiceNo: fullNumber,
         },
       }));
     }
@@ -438,24 +419,11 @@ export default function AddInvoice() {
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Customer:
                   </label>
-                  <select
+                  <CustomerSelect
                     name="customerId"
-                    className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                     value={formData.invoice.customerId}
                     onChange={handleChange}
-                    disabled={loadingCustomers}
-                  >
-
-                    <option value="" >
-                      {loadingCustomers ? "Loading customers..." : "Select Customer"}
-                    </option>
-
-                    {customers.map((c) => (
-                      <option key={c.customerId} value={c.customerId}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
 
                 </div>
 
@@ -673,123 +641,125 @@ export default function AddInvoice() {
               </button>
             </div>
           </div>
-        </form>
-      </div>
+        </form >
+      </div >
 
       {/* ---------------- Settings Modal ---------------- */}
-      {showSettings && (
-        <div className="settings-overlay" onClick={closePopup}>
-          <div
-            className={`settings-modal ${closing ? 'closing' : 'opening'}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="modal-header custom-header">
-              <h4 className="mb-0" style={{ fontSize: 17 }}>Configure Invoice Number Preferences</h4>
-              <X
-                size={20}
-                style={{ cursor: 'pointer', color: '#fc0404ff' }}
-                onClick={closePopup}
-              />
-            </div>
-
-            <div className="modal-body mt-3">
-              <p style={{ fontSize: 13, color: '#555' }}>
-                Your Invoices are currently set to auto-generate numbers. Change settings if needed.
-              </p>
-
-              {/* Auto mode */}
-              <div className="form-check mb-3">
-                <input
-                  type="radio"
-                  name="mode"
-                  className="form-check-input"
-                  checked={mode === 'auto'}
-                  onChange={() => setMode('auto')}
+      {
+        showSettings && (
+          <div className="settings-overlay" onClick={closePopup}>
+            <div
+              className={`settings-modal ${closing ? 'closing' : 'opening'}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-header custom-header">
+                <h4 className="mb-0" style={{ fontSize: 17 }}>Configure Invoice Number Preferences</h4>
+                <X
+                  size={20}
+                  style={{ cursor: 'pointer', color: '#fc0404ff' }}
+                  onClick={closePopup}
                 />
-                <label className="form-check-label fw-normal">Continue auto-generating Invoice Numbers</label>
-                <Info size={13} />
               </div>
 
-              {mode === 'auto' && (
-                <div className="auto-settings">
-                  <div className="auto-settings-row">
-                    {/* PREFIX PATTERN SELECT */}
-                    <div style={{ flex: 1, fontSize: 13 }}>
-                      <label className="so-label text-sm text-muted-foreground fw-bold">Prefix pattern</label>
-                      <select
-                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
-                        value={prefixPattern}
-                        onChange={(e) => setPrefixPattern(e.target.value)}
-                        style={{ fontSize: 13 }}
-                      >
-                        <option value="" disabled>
-                          -- Select prefix --
-                        </option>
-                        <option value="YEAR">Current year (YYYY-)</option>
-                        <option value="YEAR_MONTH">Current year + month (YYYYMM-)</option>
-                        <option value="DATE_DDMMYYYY">Current date (DDMMYYYY-)</option>
-                        <option value="YEAR_SLASH_MONTH">Year/Month (YYYY/MM-)</option>
-                      </select>
-                      <small className="text-muted d-block mt-1">
-                        Example prefix: {buildPrefixFromPattern(prefixPattern)}
-                      </small>
-                    </div>
+              <div className="modal-body mt-3">
+                <p style={{ fontSize: 13, color: '#555' }}>
+                  Your Invoices are currently set to auto-generate numbers. Change settings if needed.
+                </p>
 
-                    {/* NEXT NUMBER */}
-                    <div style={{ flex: 1, fontSize: 13 }} className="so-form-group mb-4">
-                      <label className="so-label text-sm text-muted-foreground fw-bold">Next Number</label>
-                      <input
-                        value={nextNumber}
-                        onChange={(e) => setNextNumber(e.target.value)}
-                        className="form-control so-control border"
-                        placeholder="001"
-                        style={{ fontSize: 13 }}
-                      />
-                      <small className="text-muted d-block mt-1">
-                        Full example: {buildPrefixFromPattern(prefixPattern)}
-                        {nextNumber || '001'}
-                      </small>
-                    </div>
-                  </div>
-
-                  <div className="mt-3">
-                    <label style={{ fontSize: 13 }}>
-                      <input
-                        type="checkbox"
-                        checked={restartYear}
-                        onChange={(e) => setRestartYear(e.target.checked)}
-                        className="me-2"
-                      />
-                      Restart numbering every fiscal year.
-                    </label>
-                  </div>
+                {/* Auto mode */}
+                <div className="form-check mb-3">
+                  <input
+                    type="radio"
+                    name="mode"
+                    className="form-check-input"
+                    checked={mode === 'auto'}
+                    onChange={() => setMode('auto')}
+                  />
+                  <label className="form-check-label fw-normal">Continue auto-generating Invoice Numbers</label>
+                  <Info size={13} />
                 </div>
-              )}
 
-              {/* Manual mode */}
-              <div className="form-check mt-4">
-                <input
-                  type="radio"
-                  name="mode"
-                  className="form-check-input"
-                  checked={mode === 'manual'}
-                  onChange={() => setMode('manual')}
-                />
-                <label className="form-check-label">Enter Invoice Numbers manually</label>
-              </div>
+                {mode === 'auto' && (
+                  <div className="auto-settings">
+                    <div className="auto-settings-row">
+                      {/* PREFIX PATTERN SELECT */}
+                      <div style={{ flex: 1, fontSize: 13 }}>
+                        <label className="so-label text-sm text-muted-foreground fw-bold">Prefix pattern</label>
+                        <select
+                          className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                          value={prefixPattern}
+                          onChange={(e) => setPrefixPattern(e.target.value)}
+                          style={{ fontSize: 13 }}
+                        >
+                          <option value="" disabled>
+                            -- Select prefix --
+                          </option>
+                          <option value="YEAR">Current year (YYYY-)</option>
+                          <option value="YEAR_MONTH">Current year + month (YYYYMM-)</option>
+                          <option value="DATE_DDMMYYYY">Current date (DDMMYYYY-)</option>
+                          <option value="YEAR_SLASH_MONTH">Year/Month (YYYY/MM-)</option>
+                        </select>
+                        <small className="text-muted d-block mt-1">
+                          Example prefix: {buildPrefixFromPattern(prefixPattern)}
+                        </small>
+                      </div>
 
-              <div className="d-flex justify-content-center mt-4" style={{ gap: 10 }}>
-                <button className="btn border me-3 px-4" onClick={closePopup}>
-                  Cancel
-                </button>
-                <button className="btn me-2 px-4" style={{ background: '#7991BB', color: '#FFF' }} onClick={applyAutoSO}>
-                  Save
-                </button>
+                      {/* NEXT NUMBER */}
+                      <div style={{ flex: 1, fontSize: 13 }} className="so-form-group mb-4">
+                        <label className="so-label text-sm text-muted-foreground fw-bold">Next Number</label>
+                        <input
+                          value={nextNumber}
+                          onChange={(e) => setNextNumber(e.target.value)}
+                          className="form-control so-control border"
+                          placeholder="001"
+                          style={{ fontSize: 13 }}
+                        />
+                        <small className="text-muted d-block mt-1">
+                          Full example: {buildPrefixFromPattern(prefixPattern)}
+                          {nextNumber || '001'}
+                        </small>
+                      </div>
+                    </div>
+
+                    <div className="mt-3">
+                      <label style={{ fontSize: 13 }}>
+                        <input
+                          type="checkbox"
+                          checked={restartYear}
+                          onChange={(e) => setRestartYear(e.target.checked)}
+                          className="me-2"
+                        />
+                        Restart numbering every fiscal year.
+                      </label>
+                    </div>
+                  </div>
+                )}
+
+                {/* Manual mode */}
+                <div className="form-check mt-4">
+                  <input
+                    type="radio"
+                    name="mode"
+                    className="form-check-input"
+                    checked={mode === 'manual'}
+                    onChange={() => setMode('manual')}
+                  />
+                  <label className="form-check-label">Enter Invoice Numbers manually</label>
+                </div>
+
+                <div className="d-flex justify-content-center mt-4" style={{ gap: 10 }}>
+                  <button className="btn border me-3 px-4" onClick={closePopup}>
+                    Cancel
+                  </button>
+                  <button className="btn me-2 px-4" style={{ background: '#7991BB', color: '#FFF' }} onClick={applyAutoSO}>
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
     </>
   );
 }

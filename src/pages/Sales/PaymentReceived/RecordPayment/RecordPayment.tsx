@@ -5,7 +5,7 @@ import Toast, { useToast } from '../../../../components/Toast/Toast';
 import './recordPayment.css';
 import { Info, Settings, X } from 'react-feather';
 import api from '../../../../services/api/apiConfig';
-import type { Customer } from '../../SalesOrders/AddOrderSales/AddSalesOrders';
+import CustomerSelect from '../../../../components/Masters/CustomerMaster/CustomerSelector';
 
 // ------------------- Interfaces -------------------
 
@@ -74,9 +74,6 @@ export default function AddPayment() {
   const [restartYear, setRestartYear] = useState(false);
   const [closing, setClosing] = useState(false);
   const [prefixPattern, setPrefixPattern] = useState<string>('CUSTOM');
-
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loadingCustomers, setLoadingCustomers] = useState(true);
 
   // const [applyFullAmount, setApplyFullAmount] = useState(false);
   const [receivedFullAmount, setReceivedFullAmount] = useState(false);
@@ -330,23 +327,6 @@ export default function AddPayment() {
 
 
 
-  // ---------------- Load customers ----------------
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const res = await api.get<Customer[]>('customers/');
-        setCustomers(res.data);
-      } catch {
-        showToast('Failed to load customers', 'error');
-      } finally {
-        setLoadingCustomers(false);
-      }
-    };
-    fetchCustomers();
-  }, [showToast]);
-
-
-
   // ---------------- Auto fill today's date ----------------
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
@@ -501,23 +481,11 @@ export default function AddPayment() {
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Customer:
                   </label>
-                  <select
-                    name="paymentRecord.customerId"
-                    className="form-select so-control"
+                  <CustomerSelect
+                    name="customerId"
                     value={formData.paymentRecord.customerId}
                     onChange={handleChange}
-                    disabled={loadingCustomers}
-                  >
-                    <option value="" >
-                      {loadingCustomers ? "Loading customers..." : "Select Customer"}
-                    </option>
-
-                    {customers.map((customer) => (
-                      <option key={customer.customerId} value={customer.customerId}>
-                        {customer.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
 
                 <div className="so-form-group mb-4">
@@ -724,7 +692,7 @@ export default function AddPayment() {
                     <small className="text-muted text-center" style={{ fontSize: 12, opacity: 0.8 }}>
                       Choose the account where deducted tax will be tracked
                     </small>
-                  </div>  
+                  </div>
                 )}
 
 

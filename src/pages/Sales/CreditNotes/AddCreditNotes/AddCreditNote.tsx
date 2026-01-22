@@ -12,10 +12,10 @@ import ItemTable, {
 
 import './creditNotes.css';
 import { FeatherUpload } from '../../Customers/AddCustomer/Add';
-import type { Customer } from '../../SalesOrders/AddOrderSales/AddSalesOrders';
 import api from '../../../../services/api/apiConfig';
 import { createTCS, getTCS, getTDS } from '../../../../services/api/taxService';
-import SalesPersonSelect from '../../../../components/SalesPersonSelect/SalesPersonSelect';
+import SalesPersonSelect from '../../../../components/Masters/SalesPersonsMaster/SalesPersonSelect';
+import CustomerSelect from '../../../../components/Masters/CustomerMaster/CustomerSelector';
 
 interface ItemRow {
   itemDetails: string;
@@ -56,10 +56,6 @@ export default function AddCreditNote() {
   const [nextNumber, setNextNumber] = useState('');
   const [restartYear, setRestartYear] = useState(false);
   const [closing, setClosing] = useState(false);
-
-
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loadingCustomers, setLoadingCustomers] = useState(true);
 
 
   /* ---------------- TAX STATE ---------------- */
@@ -220,21 +216,6 @@ export default function AddCreditNote() {
   }, [formData.itemTable, taxInfo.type, taxInfo.selectedTax, taxInfo.adjustment]);
 
 
-  // ---------------- Load customers ----------------
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const res = await api.get<Customer[]>('customers/');
-        setCustomers(res.data);
-      } catch {
-        showToast('Failed to load customers', 'error');
-      } finally {
-        setLoadingCustomers(false);
-      }
-    };
-    fetchCustomers();
-  }, [showToast]);
-
 
   // CURRENT DATE
   useEffect(() => {
@@ -311,21 +292,35 @@ export default function AddCreditNote() {
     setFormData((prev) => ({ ...prev, itemTable: updated }));
   };
 
+
+  const validateForm = () => {
+    if (!formData.credit.customerId) return showToast('Select a customer', 'warning'), false;
+    if (!formData.credit.creditNoteNo) return showToast('Credit Note number required', 'warning'), false;
+    if (!formData.credit.creditDate) return showToast('Credit Note date required', 'warning'), false;
+    if (!formData.itemTable.length) return showToast('Add items', 'warning'), false;
+    return true;
+  };
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
+
     const payload = {
-      customer: formData.credit.customerId,  // ID string → FK
+      customer: formData.credit.customerId,
       credit_note_number: formData.credit.creditNoteNo,
       credit_date: formData.credit.creditDate,
       reference_no: formData.credit.referenceNo,
       payment_term: formData.credit.paymentTerm,
-      sales_person: formData.credit.salesperson || null,  // FK ID or null
+      sales_person: formData.credit.salesperson || null,
       subject: formData.credit.subject,
-      customer_notes: formData.credit.notes,  // Map notes → customer_notes
-      terms_and_conditions: formData.credit.terms,  // Map terms → terms_and_conditions
+      customer_notes: formData.credit.notes,
+      terms_and_conditions: formData.credit.terms,
       subtotal: totals.subtotal,
       adjustment: taxInfo.adjustment,
       grand_total: totals.grandTotal,
+      status: submitType,  
       items: formData.itemTable.map((row) => ({
         item_details: row.itemDetails,
         quantity: parseFloat(row.quantity as string) || 0,
@@ -337,17 +332,30 @@ export default function AddCreditNote() {
       tax_info: taxInfo.type ? {
         tax_type: taxInfo.type,
         ...(taxInfo.type === 'TDS' && { tds_rate: taxInfo.taxRate }),
-        ...(taxInfo.type === 'TCS' && { tcs: taxInfo.selectedTax }),  // TCS ID string
+        ...(taxInfo.type === 'TCS' && { tcs: taxInfo.selectedTax }),
         tax_amount: taxInfo.taxAmount,
       } : undefined,
       // documents: [] if file handling later
     };
     try {
+      console.log('FINAL PAYLOAD', payload);
       await api.post('credit-notes/create/', payload);
+      showToast('Credit Note created successfully', 'success');
       sessionStorage.setItem('formSuccess', `Credit note ${submitType}d successfully`);
-      navigate('/sales/credit-notes');
+
+      setTimeout(() => {
+        navigate('/sales/credit-notes');
+
+      }, 800);
     } catch (error: any) {
-      showToast(error.response?.data?.detail || 'Failed to create credit note', 'error');
+      console.log(error);
+
+      const message =
+        error.response?.data?.detail ||
+        error.response?.data?.non_field_errors?.[0] ||
+        'Failed to create Credit note';
+
+      showToast(message, 'error');
     }
   };
 
@@ -387,24 +395,11 @@ export default function AddCreditNote() {
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Customer:
                   </label>
-                  <select
+                  <CustomerSelect
                     name="customerId"
-                    className="form-select so-control"
                     value={formData.credit.customerId}
                     onChange={handleChange}
-                    disabled={loadingCustomers}
-
-                  >
-                    <option value="" >
-                      {loadingCustomers ? "Loading customers..." : "Select Customer"}
-                    </option>
-
-                    {customers.map((c) => (
-                      <option key={c.customerId} value={c.customerId}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
 
                 <div className="so-form-group mb-4">

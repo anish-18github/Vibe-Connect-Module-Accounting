@@ -12,13 +12,8 @@ import ItemTable, {
 import { FeatherUpload } from '../../Customers/AddCustomer/Add';
 import api from '../../../../services/api/apiConfig';
 import { createTCS, getTCS, getTDS } from '../../../../services/api/taxService';
-import SalesPersonSelect from '../../../../components/SalesPersonSelect/SalesPersonSelect';
-
-interface Customer {
-  customerId: number;
-  name: string;
-}
-
+import SalesPersonSelect from '../../../../components/Masters/SalesPersonsMaster/SalesPersonSelect';
+import CustomerSelect from '../../../../components/Masters/CustomerMaster/CustomerSelector';
 
 interface ItemRow {
   itemDetails: string;
@@ -59,17 +54,11 @@ export default function AddQuotes() {
   const [restartYear, setRestartYear] = useState(false);
   const [closing, setClosing] = useState(false);
 
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loadingCustomers, setLoadingCustomers] = useState(true);
-
   const [submitType, setSubmitType] = useState<SubmitType>('draft');
-
 
   const [tdsOptions, setTdsOptions] = useState<TdsOption[]>([]);
   const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([]);
   const [loadingTax, setLoadingTax] = useState(false);
-
-
 
 
   const buildPrefixFromPattern = (pattern: string) => {
@@ -151,7 +140,6 @@ export default function AddQuotes() {
   });
 
 
-
   // ---------- taxInfo & totals ----------
   const [taxInfo, setTaxInfo] = useState({
     type: '' as TaxType,
@@ -212,21 +200,6 @@ export default function AddQuotes() {
     taxInfo.adjustment,
     tcsOptions,
   ]);
-
-  // ---------------- Load customers ----------------
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const res = await api.get<Customer[]>('customers/');
-        setCustomers(res.data);
-      } catch {
-        showToast('Failed to load customers', 'error');
-      } finally {
-        setLoadingCustomers(false);
-      }
-    };
-    fetchCustomers();
-  }, [showToast]);
 
 
   // CURRENT DATE
@@ -320,7 +293,7 @@ export default function AddQuotes() {
     });
   };
 
-  
+
   const validateForm = () => {
     if (!formData.quote.customerId) return showToast('Select a customer', 'warning'), false;
     if (!formData.quote.quote) return showToast('Quote number required', 'warning'), false;
@@ -433,24 +406,12 @@ export default function AddQuotes() {
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Customer name:
                   </label>
-                  <select
+
+                  <CustomerSelect
                     name="customerId"
-                    className="form-select so-control"
                     value={formData.quote.customerId}
                     onChange={handleQuoteChange}
-                    disabled={loadingCustomers}
-                  >
-                    <option value="" >
-                      {loadingCustomers ? "Loading customers..." : "Select Customer"}
-                    </option>
-
-                    {customers.map((customer) => (
-                      <option key={customer.customerId} value={customer.customerId}>
-                        {customer.name}
-                      </option>
-                    ))}
-                  </select>
-
+                  />
 
 
                 </div>
@@ -516,7 +477,6 @@ export default function AddQuotes() {
                     value={formData.quote.salesPerson}
                     onChange={handleQuoteChange}
                   />
-
 
                 </div>
 

@@ -179,7 +179,7 @@ const DeliveryChallans = () => {
             columns={columns}
             data={challans}
             loading={loading}
-            actions={true}
+            actions={actions}
             rowsPerPage={10}
             onAdd={() => navigate('/sales/add-deliveryChallans')}
             onView={(row) =>

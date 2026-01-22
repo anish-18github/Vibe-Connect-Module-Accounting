@@ -11,8 +11,8 @@ import ItemTable, {
 } from '../../../../components/Table/ItemTable/ItemTable';
 import { FeatherUpload } from '../../Customers/AddCustomer/Add';
 import api from '../../../../services/api/apiConfig';
-import type { Customer } from '../../SalesOrders/AddOrderSales/AddSalesOrders';
 import { createTCS, getTCS, getTDS } from '../../../../services/api/taxService';
+import CustomerSelect from '../../../../components/Masters/CustomerMaster/CustomerSelector';
 
 
 interface ItemRow {
@@ -54,9 +54,6 @@ export default function AddDeliveryChallan() {
   const [closing, setClosing] = useState(false);
   const [prefixPattern, setPrefixPattern] = useState('');
 
-
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loadingCustomers, setLoadingCustomers] = useState(true);
 
   /* ---------------- TAX STATE ---------------- */
   const [tdsOptions, setTdsOptions] = useState<TdsOption[]>([]);
@@ -200,22 +197,6 @@ export default function AddDeliveryChallan() {
       grandTotal: grand,
     });
   }, [formData.itemTable, taxInfo.type, taxInfo.selectedTax, taxInfo.adjustment, tcsOptions]);
-
-
-  // ---------------- Load customers ----------------
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const res = await api.get<Customer[]>('customers/');
-        setCustomers(res.data);
-      } catch {
-        showToast('Failed to load customers', 'error');
-      } finally {
-        setLoadingCustomers(false);
-      }
-    };
-    fetchCustomers();
-  }, [showToast]);
 
 
 
@@ -412,23 +393,11 @@ export default function AddDeliveryChallan() {
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Customer:
                   </label>
-                  <select
+                  <CustomerSelect
                     name="customerId"
-                    className="form-select so-control"
                     value={formData.challan.customerId}
                     onChange={handleChange}
-                    disabled={loadingCustomers}
-                  >
-                    <option value="" >
-                      {loadingCustomers ? "Loading customers..." : "Select Customer"}
-                    </option>
-
-                    {customers.map((c) => (
-                      <option key={c.customerId} value={c.customerId}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
 
                 <div className="so-form-group mb-4">

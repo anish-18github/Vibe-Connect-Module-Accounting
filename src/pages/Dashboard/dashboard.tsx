@@ -307,7 +307,7 @@ function Dashboard() {
           {/* Total Payables */}
           <Card title="Total Payables" actionMenu={payableActions}>
             <p>
-              Total Unpaid Invoice <span>₹ 0.00</span>
+              Total Unpaid Bills <span>₹ 0.00</span>
             </p>
             <div className="bar"></div>
             <div className="row-values">

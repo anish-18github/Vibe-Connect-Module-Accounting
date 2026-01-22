@@ -14,8 +14,9 @@ import ItemTable, {
 } from '../../../../components/Table/ItemTable/ItemTable';
 import { FeatherUpload } from '../../Customers/AddCustomer/Add';
 import api from '../../../../services/api/apiConfig';
-import SalesPersonSelect from '../../../../components/SalesPersonSelect/SalesPersonSelect';
+import SalesPersonSelect from '../../../../components/Masters/SalesPersonsMaster/SalesPersonSelect';
 import { createTCS, getTCS, getTDS } from '../../../../services/api/taxService';
+import CustomerSelect from '../../../../components/Masters/CustomerMaster/CustomerSelector';
 
 export interface Customer {
   customerId: number;
@@ -55,8 +56,6 @@ export default function AddSalesOrder() {
   const [closing, setClosing] = useState(false);
   const [prefixPattern, setPrefixPattern] = useState('');
 
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loadingCustomers, setLoadingCustomers] = useState(true);
 
   /* ---------------- TAX STATE ---------------- */
   const [tdsOptions, setTdsOptions] = useState<TdsOption[]>([]);
@@ -273,21 +272,6 @@ export default function AddSalesOrder() {
     tcsOptions,
   ]);
 
-  // ---------------- Load customers ----------------
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const res = await api.get<Customer[]>('customers/');
-        setCustomers(res.data);
-      } catch {
-        showToast('Failed to load customers', 'error');
-      } finally {
-        setLoadingCustomers(false);
-      }
-    };
-    fetchCustomers();
-  }, [showToast]);
-
 
   // CURRENT DATE
   useEffect(() => {
@@ -473,23 +457,11 @@ export default function AddSalesOrder() {
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Customer Name:
                   </label>
-                  <select
+                  <CustomerSelect
                     name="customerId"
-                    className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                     value={formData.salesOrder.customerId}
                     onChange={handleChange}
-                    disabled={loadingCustomers}
-                  >
-                    <option value="" >
-                      {loadingCustomers ? "Loading customers..." : "Select Customer"}
-                    </option>
-
-                    {customers.map((customer) => (
-                      <option key={customer.customerId} value={customer.customerId}>
-                        {customer.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
 
                 {/* Sales Order Date */}

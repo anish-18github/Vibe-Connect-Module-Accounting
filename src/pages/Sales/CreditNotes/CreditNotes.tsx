@@ -9,7 +9,8 @@ import useFormSuccess from '../../../components/Toast/useFormSuccess';
 import { Toast } from '../../../components/Toast/Toast';
 import { useGlobalToast } from '../../../components/Toast/ToastContext';
 import api from '../../../services/api/apiConfig';
-
+import RestorePageOutlinedIcon from '@mui/icons-material/RestorePageOutlined';
+import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 
 interface CreditNote {
   id: number;
@@ -29,6 +30,45 @@ const CreditNote = () => {
   const { toast, setToast } = useGlobalToast();
   const [loading, setLoading] = useState(true);
   const [creditNotes, setCreditNotes] = useState<CreditNote[]>([]);
+
+
+
+
+  // ✅ NEW: Action handlers
+  const handleRefund = (row: any) => {
+    console.log('Refund clicked for:', row);
+    // Navigate to refund form
+    navigate(`/sales/credit-note/${row.id}/refund`);
+  };
+
+  const handleView = (row: any) => {
+    navigate(`/sales/credit-note/${row.id}`);
+  };
+
+  // const handleEdit = (row: any) => {
+  //   if (row.status === 'draft') {
+  //     navigate(`/sales/edit-credit-note/${row.id}`);
+  //   } else {
+  //     toast({ type: 'warning', message: 'Only draft credit notes can be edited' });
+  //   }
+  // };
+
+  // ✅ Define actions array
+  const actions = [
+    {
+      icon: <RemoveRedEyeOutlinedIcon sx={{ fontSize: 20 }} />,
+      onClick: handleView,
+      tooltip: 'View Details',
+    },
+    {
+      icon: <RestorePageOutlinedIcon sx={{ fontSize: 20 }} />, // Add DollarSign from react-feather
+      onClick: handleRefund,
+      tooltip: 'Record Refund',
+    },
+  ];
+
+
+
 
   const getStatusStyle = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -110,6 +150,8 @@ const CreditNote = () => {
     const fetchCreditNote = async () => {
       try {
         const response = await api.get<CreditNote[]>('credit-notes/');
+        // console.log(response);
+
         setCreditNotes(response.data);
       } catch (error: any) {
         setToast({
@@ -141,10 +183,10 @@ const CreditNote = () => {
             columns={columns}
             data={creditNotes}
             loading={loading}
-            actions={false}
+            actions={actions}
             rowsPerPage={10}
             onAdd={() => navigate('/sales/add-creditNote')} //May be change it latter. "/add-customer"
-            onView={(row) => navigate(`/view-customer/${row.id}`)}
+            onView={handleView}
           />
         </div>
       </div>

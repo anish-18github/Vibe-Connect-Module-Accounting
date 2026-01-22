@@ -13,10 +13,10 @@ import ItemTable, {
 
 import { FeatherUpload } from '../../Customers/AddCustomer/Add';
 import api from '../../../../services/api/apiConfig';
-import type { Customer } from '../../SalesOrders/AddOrderSales/AddSalesOrders';
-import SalesPersonSelect from '../../../../components/SalesPersonSelect/SalesPersonSelect';
+import SalesPersonSelect from '../../../../components/Masters/SalesPersonsMaster/SalesPersonSelect';
 import { createTCS, getTCS, getTDS } from '../../../../services/api/taxService';
 import { Info, Settings, X } from 'react-feather';
+import CustomerSelect from '../../../../components/Masters/CustomerMaster/CustomerSelector';
 
 interface ItemRow {
   itemDetails: string;
@@ -62,9 +62,7 @@ export default function AddRecurringInvoices() {
 
 
   const { toast, setToast, showToast } = useToast();
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loadingCustomers, setLoadingCustomers] = useState(true);
-
+ 
   /* ---------------- TAX STATE ---------------- */
   const [tdsOptions, setTdsOptions] = useState<TdsOption[]>([]);
   const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([]);
@@ -265,26 +263,6 @@ export default function AddRecurringInvoices() {
   }, []);
 
 
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const res = await api.get<Customer[]>('customers/');
-        setCustomers(res.data);
-      } catch {
-        setToast({
-          stage: 'enter',
-          type: 'error',
-          message: 'Failed to load customers',
-        });
-      } finally {
-        setLoadingCustomers(false);
-      }
-    };
-
-    fetchCustomers();
-  }, []);
-
-
 
   // ---------------- Handlers ----------------
   const handleTaxChange = (field: any, value: any) => {
@@ -465,24 +443,11 @@ export default function AddRecurringInvoices() {
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Customer:
                   </label>
-                  <select
+                  <CustomerSelect
                     name="customerId"
-                    className="form-select so-control"
                     value={formData.invoice.customerId}
                     onChange={handleChange}
-                    disabled={loadingCustomers}
-                  >
-                    <option value="">
-                      {loadingCustomers ? 'Loading customers...' : 'Select Customer'}
-                    </option>
-
-                    {customers.map((c) => (
-                      <option key={c.customerId} value={c.customerId}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-
+                  />
 
                 </div>
 
