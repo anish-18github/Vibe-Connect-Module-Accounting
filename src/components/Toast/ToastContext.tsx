@@ -25,16 +25,16 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   });
 
   const showToast = useCallback(
-    (message: string, type: ToastType = 'info', duration: number = 3000) => {
+    (message: string, type: ToastType = 'info', duration: number = 4000) => {
       setToast({ message, type, stage: 'enter' });
 
       // Exit animation
-      const exitTimer = window.setTimeout(() => {
+      const exitTimer = setTimeout(() => {
         setToast((prev) => ({ ...prev, stage: 'exit' }));
       }, duration);
 
       // Reset to hidden
-      const resetTimer = window.setTimeout(() => {
+      const resetTimer = setTimeout(() => {
         setToast((prev) => ({ ...prev, stage: 'hidden' }));
       }, duration + 350);
 

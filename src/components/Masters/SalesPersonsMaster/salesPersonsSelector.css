@@ -1,0 +1,36 @@
+.salesperson-select-container {
+    width: 100%;
+}
+
+.salesperson-select__control {
+    transition: all 0.15s ease-in-out;
+    border-radius: 10px !important;
+}
+
+.salesperson-select__menu {
+    border: 1px solid #d9d9d9;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.salesperson-select__menu-list {
+    max-height: 200px;
+    padding: 0;
+}
+
+.salesperson-select__menu-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.salesperson-select__menu-list::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 3px;
+}
+
+.salesperson-select__menu-list::-webkit-scrollbar-thumb {
+    background: #adb5bd;
+    border-radius: 3px;
+}
+
+.salesperson-select__menu-list::-webkit-scrollbar-thumb:hover {
+    background: #6c757d;
+}

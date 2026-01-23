@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../../../../components/Header/Header';
-import Toast, { useToast } from '../../../../components/Toast/Toast';
+import { Toast } from '../../../../components/Toast/Toast';
+import { useGlobalToast } from '../../../../components/Toast/ToastContext';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -51,7 +52,7 @@ const AddRecurringExpense: React.FC = () => {
 
 
   });
-  const { toast, setToast, showToast } = useToast();
+const { toast, setToast, showToast } = useGlobalToast();
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];

@@ -1,8 +1,17 @@
-import React, { useState, useCallback } from 'react';
-import './toast.css';
+import React from 'react';
+import {
+  Alert,
+  Snackbar,
+} from '@mui/material';
+import {
+  CheckCircle,
+  Error,
+  Info,
+  Warning,
+} from '@mui/icons-material';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
-export type ToastStage = 'hidden' | 'enter' | 'exit';
+export type ToastStage = 'enter' | 'exit' | 'hidden';
 
 export interface ToastState {
   message: string;
@@ -15,70 +24,64 @@ interface ToastProps {
   setToast: React.Dispatch<React.SetStateAction<ToastState>>;
 }
 
-/**
- * Reusable Toast Component
- * Displays notifications with smooth animations
- * Use with useToast hook or manage state manually
- */
 export const Toast: React.FC<ToastProps> = ({ toast, setToast }) => {
-  if (toast.stage === 'hidden') return null;
+  // ✅ FIXED: Type-safe visibility check
+  const isVisible = toast.message && toast.stage !== 'hidden';
+  if (!isVisible) return null;
 
   const handleClose = () => {
     setToast((prev) => ({ ...prev, stage: 'exit' }));
-    window.setTimeout(() => setToast((prev) => ({ ...prev, stage: 'hidden' })), 350);
+    setTimeout(() => {
+      setToast((prev) => ({ ...prev, stage: 'hidden' }));
+    }, 350);
+  };
+
+  const severityMap: Record<ToastType, 'success' | 'error' | 'warning' | 'info'> = {
+    success: 'success',
+    error: 'error',
+    warning: 'warning',
+    info: 'info',
+  };
+
+  const severity = severityMap[toast.type];
+
+  const iconMap: Record<ToastType, React.ReactNode> = {
+    success: <CheckCircle />,
+    error: <Error />,
+    warning: <Warning />,
+    info: <Info />,
   };
 
   return (
-    <div
-      className={`custom-toast custom-toast-${toast.type} ${toast.stage}`}
-      role="alert"
-      aria-live="polite"
+    <Snackbar
+      open={isVisible}  // ✅ FIXED: No TypeScript warning
+      autoHideDuration={4000}
+      onClose={handleClose}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      sx={{
+        '& .MuiSnackbarContent-root': {
+          minWidth: 400,
+          maxWidth: 500,
+        },
+      }}
     >
-      <div className="toast-body">{toast.message}</div>
-      <button className="toast-close btn btn-sm" onClick={handleClose} aria-label="Close">
-        ×
-      </button>
-    </div>
+      <Alert
+        onClose={handleClose}
+        severity={severity}
+        variant="filled"
+        sx={{
+          width: '100%',
+          fontWeight: 500,
+          '& .MuiAlert-icon': {
+            fontSize: '1.25rem',
+          },
+        }}
+        icon={iconMap[toast.type]}
+      >
+        {toast.message}
+      </Alert>
+    </Snackbar>
   );
-};
-
-/**
- * useToast Hook
- * Provides state management and helper functions for toast notifications
- * Usage:
- *   const { toast, setToast, showToast } = useToast();
- *   showToast('Success!', 'success');
- */
-export const useToast = () => {
-  const [toast, setToast] = useState<ToastState>({
-    message: '',
-    type: 'info',
-    stage: 'hidden',
-  });
-
-  const showToast = useCallback(
-    (message: string, type: ToastType = 'info', duration: number = 3000) => {
-      setToast({ message, type, stage: 'enter' });
-
-      // Exit animation
-      const exitTimer = window.setTimeout(() => {
-        setToast((prev) => ({ ...prev, stage: 'exit' }));
-      }, duration);
-
-      // Reset to hidden
-      const resetTimer = window.setTimeout(() => {
-        setToast((prev) => ({ ...prev, stage: 'hidden' }));
-      }, duration + 350);
-
-      return () => {
-        clearTimeout(exitTimer);
-        clearTimeout(resetTimer);
-      };
-    },
-    [],
-  );
-
-  return { toast, setToast, showToast };
 };
 
 export default Toast;

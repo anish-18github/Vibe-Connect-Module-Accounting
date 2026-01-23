@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../../../../components/Header/Header';
-import Toast, { useToast } from '../../../../components/Toast/Toast';
+import { Toast } from '../../../../components/Toast/Toast';
+import { useGlobalToast } from '../../../../components/Toast/ToastContext';
 import ItemTable, {
   SummaryBox,
   type TcsOption,
@@ -38,7 +39,7 @@ type TaxType = 'TDS' | 'TCS' | '';
 
 export default function AddBill() {
   const navigate = useNavigate();
-  const { toast, setToast, showToast } = useToast();
+const { toast, setToast, showToast } = useGlobalToast();
 
   const [formData, setFormData] = useState<BillForm>({
     billHeader: {

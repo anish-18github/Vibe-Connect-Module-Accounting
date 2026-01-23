@@ -3,7 +3,8 @@ import Header from '../../../../components/Header/Header';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './addCustomer.css';
 import { Plus, X } from 'react-feather';
-import Toast, { useToast } from '../../../../components/Toast/Toast';
+import { Toast } from '../../../../components/Toast/Toast';
+import { useGlobalToast } from '../../../../components/Toast/ToastContext';
 import api from '../../../../services/api/apiConfig';
 // import Customers from '../Customers';
 
@@ -117,7 +118,7 @@ const getDisplayNameSuggestions = (
 
 
 const Add = () => {
-  const { toast, setToast, showToast } = useToast();
+const { toast, setToast, showToast } = useGlobalToast();
 
   // const [showDisplayNameOptions, setShowDisplayNameOptions] = useState(false);
 

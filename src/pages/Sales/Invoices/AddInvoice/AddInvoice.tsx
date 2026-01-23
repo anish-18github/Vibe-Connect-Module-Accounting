@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../../../components/Header/Header';
-import Toast, { useToast } from '../../../../components/Toast/Toast';
+import { Toast } from '../../../../components/Toast/Toast';
+import { useGlobalToast } from '../../../../components/Toast/ToastContext';
 import { Info, Settings, X } from 'react-feather';
 import './addInvoice.css';
 import ItemTable, {
@@ -46,7 +47,7 @@ type TaxType = 'TDS' | 'TCS' | '';
 
 export default function AddInvoice() {
   const navigate = useNavigate();
-  const { toast, setToast, showToast } = useToast();
+const { toast, setToast, showToast } = useGlobalToast();
 
   // ---------------- Modal + Settings ----------------
   const [showSettings, setShowSettings] = useState(false);

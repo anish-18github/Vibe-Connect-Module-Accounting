@@ -1,0 +1,36 @@
+.customer-select-container {
+    width: 100%;
+}
+
+.customer-select__control {
+    transition: all 0.15s ease-in-out;
+}
+
+.customer-select__menu {
+    border: 1px solid #ced4da;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.customer-select__menu-list {
+    max-height: 200px;
+    padding: 0;
+}
+
+/* Perfect scrollbar */
+.customer-select__menu-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.customer-select__menu-list::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 3px;
+}
+
+.customer-select__menu-list::-webkit-scrollbar-thumb {
+    background: #adb5bd;
+    border-radius: 3px;
+}
+
+.customer-select__menu-list::-webkit-scrollbar-thumb:hover {
+    background: #6c757d;
+}

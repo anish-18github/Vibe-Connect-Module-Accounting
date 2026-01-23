@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Header from '../../../../components/Header/Header';
-import Toast, { useToast } from '../../../../components/Toast/Toast';
+import { Toast } from '../../../../components/Toast/Toast';
+import { useGlobalToast } from '../../../../components/Toast/ToastContext';
 import { useNavigate } from 'react-router-dom';
 import { Plus, X } from 'react-feather';
 import './addVendor.css'; // you may keep a separate CSS or reuse addCustomer.css
@@ -226,7 +227,7 @@ const AddVendor = () => {
 
   // UseNavigate hook for navigation
   const navigate = useNavigate();
-  const { toast, setToast, showToast } = useToast();
+const { toast, setToast, showToast } = useGlobalToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

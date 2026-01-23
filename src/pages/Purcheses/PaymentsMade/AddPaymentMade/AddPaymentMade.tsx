@@ -1,6 +1,7 @@
 import type React from 'react';
 import Header from '../../../../components/Header/Header';
-import Toast, { useToast } from '../../../../components/Toast/Toast';
+import { Toast } from '../../../../components/Toast/Toast';
+import { useGlobalToast } from '../../../../components/Toast/ToastContext';
 import Tabs from '../../../../components/Tab/Tabs';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -86,7 +87,7 @@ export interface VendorAdvanceRecord {
 const AddPaymentMade: React.FC = () => {
   const [activeTab, setActiveKey] = useState('record-expense');
   const navigate = useNavigate();
-  const { toast, setToast, showToast } = useToast();
+const { toast, setToast, showToast } = useGlobalToast();
 
   // Bill Payment Form State
   const [formData, setFormData] = useState<BillPaymentFormData>({

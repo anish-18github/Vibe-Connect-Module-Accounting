@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../../../components/Header/Header';
-import Toast, { useToast } from '../../../../components/Toast/Toast';
+import { Toast } from '../../../../components/Toast/Toast';
+import { useGlobalToast } from '../../../../components/Toast/ToastContext';
 import './recordPayment.css';
 import { Info, Settings, X } from 'react-feather';
 import api from '../../../../services/api/apiConfig';
@@ -65,7 +66,7 @@ interface PaymentUsageRow {
 
 export default function AddPayment() {
   const navigate = useNavigate();
-  const { toast, setToast, showToast } = useToast();
+const { toast, setToast, showToast } = useGlobalToast();
 
   const [showSettings, setShowSettings] = useState(false);
   const [mode, setMode] = useState<'auto' | 'manual'>('auto');

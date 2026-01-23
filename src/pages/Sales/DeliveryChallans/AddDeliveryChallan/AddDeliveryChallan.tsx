@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../../../components/Header/Header';
-import Toast, { useToast } from '../../../../components/Toast/Toast';
+import { Toast } from '../../../../components/Toast/Toast';
+import { useGlobalToast } from '../../../../components/Toast/ToastContext';
 import { Info, Settings, X } from 'react-feather';
 import './addDeliveryChallan.css';
 import ItemTable, {
@@ -43,7 +44,7 @@ type SubmitType = 'draft';
 
 export default function AddDeliveryChallan() {
   const navigate = useNavigate();
-  const { toast, setToast, showToast } = useToast();
+const { toast, setToast, showToast } = useGlobalToast();
 
   // ---------------- Modal + Small UI State ----------------
   const [showSettings, setShowSettings] = useState(false);

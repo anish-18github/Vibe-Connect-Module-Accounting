@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Plus, X } from 'react-feather';
 import Header from '../../../../components/Header/Header';
-import Toast, { useToast } from '../../../../components/Toast/Toast';
+import { Toast } from '../../../../components/Toast/Toast';
+import { useGlobalToast } from '../../../../components/Toast/ToastContext';
 import React, { useState } from 'react';
 import './addJournal.css';
 import { FeatherUpload } from '../../../Sales/Customers/AddCustomer/Add';
@@ -16,7 +17,7 @@ interface JournalRow {
 
 export default function AddJournal() {
   const navigate = useNavigate();
-  const { toast, setToast, showToast } = useToast();
+const { toast, setToast, showToast } = useGlobalToast();
 
   // Main form state
   const [formData, setFormData] = useState({

@@ -10,6 +10,9 @@ import { useNavigate } from 'react-router-dom';
 import './customers.css';
 import type { Customer } from '../../../types/customer';
 import api from '../../../services/api/apiConfig';
+import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
+import { Edit } from 'react-feather';
+
 
 export const salesTabs = [
   { label: 'Customers', path: '/sales/customers' },
@@ -21,6 +24,8 @@ export const salesTabs = [
   { label: 'Payment Received', path: '/sales/payment-received' },
   { label: 'Credit Notes', path: '/sales/credit-notes' },
 ];
+
+
 
 const columns = [
   { key: 'name', label: 'Name' },
@@ -68,6 +73,21 @@ function Customers() {
     fetchCustomers();
   }, []);
 
+
+  const actions = [
+    {
+      icon: <RemoveRedEyeOutlinedIcon sx={{ fontSize: 20 }} />,
+      onClick: handleViewCustomer,
+      tooltip: 'View Details',
+    },
+    {
+      icon: <Edit size={ 18 } />,
+      onClick: "",
+      tooltip: 'Record Refund',
+    },
+  ];
+
+
   return (
     <>
       <Toast toast={toast} setToast={setToast} />
@@ -82,10 +102,9 @@ function Customers() {
             columns={columns}
             data={customers}
             loading={loading}
-            actions
+            actions={actions}
             rowsPerPage={10}
             onAdd={() => navigate('/sales/add-customer')}
-            onView={handleViewCustomer}
           />
         </div>
       </div>
