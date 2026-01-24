@@ -82,8 +82,8 @@ function Customers() {
     },
     {
       icon: <Edit size={ 18 } />,
-      onClick: "",
-      tooltip: 'Record Refund',
+      onClick: handleViewCustomer,
+      tooltip: 'Edit data',
     },
   ];
 

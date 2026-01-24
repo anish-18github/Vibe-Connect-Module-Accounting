@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../../../../components/Header/Header';
 import { Toast } from '../../../../components/Toast/Toast';
 import { useGlobalToast } from '../../../../components/Toast/ToastContext';
@@ -48,7 +48,8 @@ type SubmitType = 'draft' | 'sent';
 
 export default function AddSalesOrder() {
   const navigate = useNavigate();
-const { toast, setToast, showToast } = useGlobalToast();
+  const location = useLocation();
+  const { toast, setToast, showToast } = useGlobalToast();
 
   const [showSettings, setShowSettings] = useState(false);
   const [mode, setMode] = useState<'auto' | 'manual'>('auto');
@@ -274,17 +275,53 @@ const { toast, setToast, showToast } = useGlobalToast();
   ]);
 
 
-  // CURRENT DATE
+  // ✅ CURRENT DATE + QUOTE PREFILL
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
-    setFormData((prev) => ({
-      ...prev,
-      salesOrder: {
-        ...prev.salesOrder,
-        salesOrderDate: today,
-      },
-    }));
-  }, []);
+
+    // ✅ Check if coming from quote conversion
+    const quoteData = location.state?.quoteData;
+    const quoteItems = location.state?.quoteItems;
+
+    console.log('🎯 Location state:', location.state);      // DEBUG 1
+    console.log('🎯 Quote data:', quoteData);               // DEBUG 2
+
+    if (quoteData && quoteData.customerId && quoteData.customerId !== 0) {
+      console.log('🎯 PREFILLING FROM QUOTE:', quoteData);
+      setFormData({
+        salesOrder: {
+          customerId: String(quoteData.customerId),      // "6"
+          salesOrderNo: '',
+          referenceNumber: quoteData.referenceNumber,    // "9876"
+          salesOrderDate: quoteData.salesOrderDate,      // "2026-01-24"
+          expectedShipmentDate: quoteData.expectedShipmentDate,
+          paymentTerms: quoteData.paymentTerms,
+          salesPerson: String(quoteData.salesPerson),    // "1"
+          deliveryMethod: quoteData.deliveryMethod,
+          customerNotes: quoteData.customerNotes,        // "test"
+          termsAndConditions: quoteData.termsAndConditions, // "test"
+        },
+        itemTable: quoteItems.map((item: any) => ({
+          itemDetails: item.description,
+          quantity: String(item.quantity),
+          rate: String(item.rate),
+          discount: '0',
+          amount: String(item.quantity * item.rate),
+        })),
+      });
+    }
+    else {
+      // ✅ Normal form (no quote data)
+      setFormData(prev => ({
+        ...prev,
+        salesOrder: {
+          ...prev.salesOrder,
+          salesOrderDate: today,
+        }
+      }));
+    }
+  }, []);  // ✅ Empty deps - runs once on mount
+
 
 
   /* ---------------- HANDLERS ---------------- */
@@ -465,16 +502,16 @@ const { toast, setToast, showToast } = useGlobalToast();
                   />
                 </div>
 
-                {/* Sales Order Date */}
+                {/* Expected Shipment Date */}
                 <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Sales Order Date:
+                    Expected Shipment:
                   </label>
                   <input
                     type="date"
                     className="form-control so-control"
-                    name="salesOrderDate"
-                    value={formData.salesOrder.salesOrderDate}
+                    name="expectedShipmentDate"
+                    value={formData.salesOrder.expectedShipmentDate}
                     onChange={handleChange}
                   />
                 </div>
@@ -573,16 +610,18 @@ const { toast, setToast, showToast } = useGlobalToast();
 
               {/* COLUMN 3 */}
               <div className="col-lg-4">
-                {/* Expected Shipment Date */}
+
+
+                {/* Sales Order Date */}
                 <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Expected Shipment:
+                    Sales Order Date:
                   </label>
                   <input
                     type="date"
                     className="form-control so-control"
-                    name="expectedShipmentDate"
-                    value={formData.salesOrder.expectedShipmentDate}
+                    name="salesOrderDate"
+                    value={formData.salesOrder.salesOrderDate}
                     onChange={handleChange}
                   />
                 </div>

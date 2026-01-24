@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../../../../components/Header/Header';
 import { Toast } from '../../../../components/Toast/Toast';
 import { useGlobalToast } from '../../../../components/Toast/ToastContext';
@@ -48,7 +48,11 @@ type TaxType = 'TDS' | 'TCS' | '';
 
 export default function AddCreditNote() {
   const navigate = useNavigate();
-const { toast, setToast, showToast } = useGlobalToast();
+  const location = useLocation();
+  const { toast, setToast, showToast } = useGlobalToast();
+
+  const [invoiceId, setInvoiceId] = useState<number | null>(null);
+  const [invoiceNumber, setInvoiceNumber] = useState<string | null>(null);
 
   // ---------------- Modal ----------------
   const [showSettings, setShowSettings] = useState(false);
@@ -220,15 +224,42 @@ const { toast, setToast, showToast } = useGlobalToast();
 
   // CURRENT DATE
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
-    setFormData((prev) => ({
-      ...prev,
-      credit: {
-        ...prev.credit,
-        creditDate: today,
-      },
-    }));
-  }, []);
+    // const today = new Date().toISOString().split('T')[0];
+    const invoiceData = location.state?.invoiceData;
+    const invoiceItems = location.state?.invoiceItems;
+    const invoiceNumber = location.state?.invoiceNumber;
+    const invoiceId = location.state?.invoiceId;
+
+    console.log('🎯 Credit Note from Invoice:', location.state);
+
+    if (invoiceData && invoiceData.customerId) {
+      setFormData({
+        credit: {
+          customerId: String(invoiceData.customerId),
+          referenceNo: invoiceData.referenceNo || '',
+          salesperson: String(invoiceData.salesperson || ''),
+          creditDate: invoiceData.creditDate || new Date().toISOString().split('T')[0],
+          paymentTerm: invoiceData.paymentTerm || 'Net 30',
+          subject: invoiceData.subject || '',
+          notes: invoiceData.notes || '',
+          terms: invoiceData.terms || '',
+          creditNoteNo: '', // Auto-generate
+        },
+        itemTable: invoiceItems?.map((item: any) => ({
+          itemDetails: item.description || '',
+          quantity: String(item.quantity || ''),
+          rate: String(item.rate || ''),
+          discount: '0',
+          amount: String((item.quantity || 0) * (item.rate || 0)),
+        })) || [{
+          itemDetails: '', quantity: '', rate: '', discount: '', amount: ''
+        }],
+      });
+      setInvoiceId(invoiceId)
+      setInvoiceNumber(invoiceNumber);
+      showToast('Invoice data loaded successfully!', 'success');
+    }
+  }, [location.state]);
 
 
   // ---------------- Handlers ----------------
@@ -321,7 +352,9 @@ const { toast, setToast, showToast } = useGlobalToast();
       subtotal: totals.subtotal,
       adjustment: taxInfo.adjustment,
       grand_total: totals.grandTotal,
-      status: submitType,  
+      status: submitType,
+      reference_invoice: invoiceId || null,
+      // invoiceNumber: invoiceNumber,
       items: formData.itemTable.map((row) => ({
         item_details: row.itemDetails,
         quantity: parseFloat(row.quantity as string) || 0,

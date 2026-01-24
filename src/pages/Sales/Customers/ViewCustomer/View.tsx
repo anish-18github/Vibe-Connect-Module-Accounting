@@ -179,7 +179,7 @@ const ViewCustomer: React.FC = () => {
   useEffect(() => {
     const fetchCustomer = async () => {
       try {
-        const res = await api.get<Customer>(`sales/customers/${id}/`);
+        const res = await api.get<Customer>(`customers/${id}/`);
         setCustomer(res.data);
       } catch (error) {
         console.error('Failed to fetch customer', error);
@@ -200,27 +200,27 @@ const ViewCustomer: React.FC = () => {
     <div>
       {/* ================= Payment Info ================= */}
       <div className="mb-2">
-        <p style={{ color: '#5E5E5E', margin: 0, fontSize: '14px' }}>
+        <p style={{ color: '#5E5E5E', margin: 0, fontSize: 14 }}>
           Payment Due Period
         </p>
-        <p style={{ margin: 0, fontSize: '15px', fontWeight: 500 }}>
+        <p style={{ margin: 0, fontSize: 15, fontWeight: 500 }}>
           Due on Receipt
         </p>
       </div>
 
       {/* ================= Receivables ================= */}
-      <h5 className="fw-bold">Receivables</h5>
+      <h5 className="fw-bold" style={{ fontSize: 17 }}>Receivables</h5>
 
       <table className="table mt-3 rounded-table">
         <thead className="table-light">
-          <tr>
+          <tr style={{ fontSize: 14 }}>
             <th>Currency</th>
             <th>Outstanding Receivables</th>
             <th>Unused Credits</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr style={{ fontSize: 13 }}>
             <td>INR - Indian Rupee</td>
             <td>₹0.00</td>
             <td>₹0.00</td>
@@ -229,7 +229,7 @@ const ViewCustomer: React.FC = () => {
       </table>
 
       {/* ================= Income Chart ================= */}
-      <h4 className="chart-header">Customer Income</h4>
+      {/* <h4 className="chart-header">Customer Income</h4> */}
 
       <Card title="Income Overview"
         selectable
@@ -242,7 +242,7 @@ const ViewCustomer: React.FC = () => {
             <h6 className="fw-bold mb-0">Income</h6>
             <p
               className="text-muted mb-0"
-              style={{ fontSize: '13px', whiteSpace: 'nowrap' }}
+              style={{ fontSize: '13px', whiteSpace: 'nowrap', opacity: 0.8 }}
             >
               This chart is displayed in the organization base currency.
             </p>
@@ -637,7 +637,7 @@ const ViewCustomer: React.FC = () => {
                         ? new Date(customer.created_on).toLocaleDateString()
                         : "—"}
                     </p>
-                    <p>Created By: {customer?.created_by || "System"}</p>
+                    <p>Created By: {customer?.createdBy || "System"}</p>
                   </div>
                 </div>
 

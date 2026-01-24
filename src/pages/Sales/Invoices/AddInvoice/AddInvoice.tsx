@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../../../../components/Header/Header';
 import { Toast } from '../../../../components/Toast/Toast';
 import { useGlobalToast } from '../../../../components/Toast/ToastContext';
@@ -47,7 +47,8 @@ type TaxType = 'TDS' | 'TCS' | '';
 
 export default function AddInvoice() {
   const navigate = useNavigate();
-const { toast, setToast, showToast } = useGlobalToast();
+  const location = useLocation();
+  const { toast, setToast, showToast } = useGlobalToast();
 
   // ---------------- Modal + Settings ----------------
   const [showSettings, setShowSettings] = useState(false);
@@ -229,15 +230,42 @@ const { toast, setToast, showToast } = useGlobalToast();
 
   // CURRENT DATE
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
-    setFormData((prev) => ({
-      ...prev,
-      invoice: {
-        ...prev.invoice,
-        invoiceDate: today,
-      },
-    }));
-  }, []);
+    // const today = new Date().toISOString().split('T')[0];
+    const soData = location.state?.salesOrderData;
+    const soItems = location.state?.soItems;
+
+    console.log('🎯 Invoice from SalesOrder:', location.state);
+
+
+
+    if (soData && soData.customerId) {
+      setFormData({
+        invoice: {
+          customerId: String(soData.customerId),
+          salesOrderNumber: soData.salesOrderNumber || '',
+          salesPerson: String(soData.salesPerson || ''),
+          invoiceDate: soData.invoiceDate || new Date().toISOString().split('T')[0],
+          dueDate:'',
+          paymentTerms: soData.paymentTerms || 'Net 30',
+          customerNotes: soData.customerNotes || '',
+          termsAndConditions: soData.termsAndConditions || '',
+          invoiceNo: '', // Auto-generate
+        },
+        itemTable: soItems?.map((item: any) => ({
+          itemDetails: item.description || '',
+          quantity: String(item.quantity || ''),
+          rate: String(item.rate || ''),
+          discount: '0',
+          amount: String((item.quantity || 0) * (item.rate || 0)),
+        })) || [{
+          itemDetails: '', quantity: '', rate: '', discount: '', amount: ''
+        }],
+      });
+
+      // ✅ Show success toast
+      // showToast('SalesOrder data loaded successfully!', 'success');
+    }
+  }, [location.state]);
 
 
   // ---------------- Handlers ----------------
