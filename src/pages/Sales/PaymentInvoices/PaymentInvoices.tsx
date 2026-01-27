@@ -13,12 +13,12 @@ import api from '../../../services/api/apiConfig';
 
 interface RecurringInvoice {
   id: number;
-  recurringInvoiceNumber: string;
   customerName: string;
+  profileName: string;
   salesPersonName: string;
-  repeatEvery: string;
-  startOn: string;
-  endOn: string;
+  frequency: string;
+  lastInvoiceDate: string | null;
+  nextInvoiceDate: string | null;
   status: string;
   amount: number;
   isActive: boolean;
@@ -50,7 +50,7 @@ const PaymentInvoices = () => {
       case 'overdue':
         return { bg: '#fee2e2', color: '#b91c1c' }; // red
 
-      case 'deactivated':
+      case 'suspended':
         return { bg: '#fef2f2', color: '#7f1d1d' }; // muted red
 
       case 'archived':
@@ -64,12 +64,20 @@ const PaymentInvoices = () => {
 
 
   const columns = [
-    { key: 'recurringInvoiceNumber', label: 'Recurring Invoice No' },
     { key: 'customerName', label: 'Customer Name' },
+    { key: 'profileName', label: 'Profile Name' },
     { key: 'salesPersonName', label: 'Sales Person' },
-    { key: 'repeatEvery', label: 'Frequency' },
-    { key: 'startOn', label: 'Start On' },
-    { key: 'endOn', label: 'End On' },
+    { key: 'frequency', label: 'Frequency' },
+    {
+      key: 'lastInvoiceDate',
+      label: 'Last Invoice',
+      render: (value: string | null) => value || '-'  // Empty → dash
+    },
+    {
+      key: 'nextInvoiceDate',
+      label: 'Next Invoice',  
+      render: (value: string | null) => value || '-'  // Empty → dash
+    },
     {
       key: 'status',
       label: 'Status',

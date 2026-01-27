@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../../../../components/Header/Header';
 import { Toast } from '../../../../components/Toast/Toast';
 import { useGlobalToast } from '../../../../components/Toast/ToastContext';
+
 // import { Info, Settings, X } from "react-feather";
 import './addRecurringInvoice.css';
 
@@ -16,7 +17,7 @@ import { FeatherUpload } from '../../Customers/AddCustomer/Add';
 import api from '../../../../services/api/apiConfig';
 import SalesPersonSelect from '../../../../components/Masters/SalesPersonsMaster/SalesPersonSelect';
 import { createTCS, getTCS, getTDS } from '../../../../services/api/taxService';
-import { Info, Settings, X } from 'react-feather';
+// import { Info, Settings, X } from 'react-feather';
 import CustomerSelect from '../../../../components/Masters/CustomerMaster/CustomerSelector';
 
 interface ItemRow {
@@ -30,7 +31,7 @@ interface ItemRow {
 interface RecurringInvoiceForm {
   invoice: {
     customerId: string;
-    invoiceNo: string;
+    // invoiceNo: string;
     orderNumber: string;
     profileName: string;
     repeatEvery: string;
@@ -52,62 +53,19 @@ type TaxType = 'TDS' | 'TCS' | '';
 
 export default function AddRecurringInvoices() {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // ---------------- Modal + Settings ----------------
-  const [showSettings, setShowSettings] = useState(false);
-  const [closing, setClosing] = useState(false);
-  const [mode, setMode] = useState<'auto' | 'manual'>('auto');
-  const [nextNumber, setNextNumber] = useState('');
-  const [restartYear, setRestartYear] = useState(false);
-  const [prefixPattern, setPrefixPattern] = useState('');
+  const { toast, setToast, showToast } = useGlobalToast();
 
+  const [invoiceId, setInvoiceId] = useState<number | null>(null);
+  const [invoiceNumber, setInvoiceNumber] = useState<string | null>(null);
 
-  const { toast, setToast, showToast } = useToast();
- 
   /* ---------------- TAX STATE ---------------- */
   const [tdsOptions, setTdsOptions] = useState<TdsOption[]>([]);
   const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([]);
   const [loadingTax, setLoadingTax] = useState(false);
 
   const [submitType, setSubmitType] = useState<SubmitType>('draft');
-
-
-  const buildPrefixFromPattern = (pattern: string) => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-
-    switch (pattern) {
-      case 'YEAR':
-        return `RINV-${year}-`;
-      case 'YEAR_MONTH':
-        return `RINV-${year}${month}-`;
-      case 'DATE_DDMMYYYY':
-        return `RINV-${day}${month}${year}-`;
-      case 'YEAR_SLASH_MONTH':
-        return `RINV-${year}/${month}-`;
-      default:
-        return 'RINV-';
-    }
-  };
-
-
-  const closePopup = () => {
-    setClosing(true);
-    setTimeout(() => {
-      setShowSettings(false);
-      setClosing(false);
-    }, 250);
-  };
-
-  useEffect(() => {
-    document.body.style.overflow = showSettings ? 'hidden' : 'auto';
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, [showSettings]);
-
 
 
 
@@ -149,36 +107,10 @@ export default function AddRecurringInvoices() {
     loadTaxes();
   }, []);
 
-
-
-  // ---------------- Modal + Small UI State ----------------
-
-  // const [showSettings, setShowSettings] = useState(false);
-  // const [prefix, setPrefix] = useState("");
-  // const [nextNumber, setNextNumber] = useState("");
-  // const [restartYear, setRestartYear] = useState(false);
-  // const [closing, setClosing] = useState(false);
-
-  // const closePopup = () => {
-  //     setClosing(true);
-  //     setTimeout(() => {
-  //         setShowSettings(false);
-  //         setClosing(false);
-  //     }, 250);
-  // };
-
-  // useEffect(() => {
-  //     document.body.style.overflow = showSettings ? "hidden" : "auto";
-  //     return () => {
-  //         document.body.style.overflow = "auto";
-  //     };
-  // }, [showSettings]);
-
   // ---------------- Form State ----------------
   const [formData, setFormData] = useState<RecurringInvoiceForm>({
     invoice: {
       customerId: '',
-      invoiceNo: '',
       orderNumber: '',
       profileName: '',
       repeatEvery: '',
@@ -264,6 +196,39 @@ export default function AddRecurringInvoices() {
   }, []);
 
 
+  // PRE-FILLED FROM INVOICE 
+  // In RecurringInvoice form (useEffect)
+  useEffect(() => {
+    const invoiceData = location.state?.invoiceData;
+    const invoiceItems = location.state?.invoiceItems || location.state?.itemTable;
+    const invoiceNumber = location.state?.invoiceNumber;
+    const invoiceId = location.state?.invoiceId;
+
+    if (invoiceData && invoiceData.customerId) {
+      setFormData({
+        invoice: {
+          customerId: String(invoiceData.customerId),
+          orderNumber: invoiceData.orderNumber || '',
+          paymentTerms: invoiceData.paymentTerms || '',
+          profileName: invoiceData.profileName || '',
+          repeatEvery: invoiceData.repeatEvery || '',
+          startOn: invoiceData.startOn || '',
+          endOn: invoiceData.endOn || '',
+          salesPerson: String(invoiceData.salesPerson || ''),
+          subject: invoiceData.subject || '',
+          customerNotes: invoiceData.customerNotes || '',
+          termsAndConditions: invoiceData.termsAndConditions || '',
+        },
+        itemTable: invoiceItems || [/* empty row */],
+      });
+      setInvoiceId(invoiceId)
+      setInvoiceNumber(invoiceNumber);
+      showToast('Invoice data loaded for recurring setup!', 'success');
+    }
+  }, [location.state]);
+
+
+
 
   // ---------------- Handlers ----------------
   const handleTaxChange = (field: any, value: any) => {
@@ -340,42 +305,43 @@ export default function AddRecurringInvoices() {
     });
   };
 
+  const validateForm = () => {
+    if (!formData.invoice.customerId) return showToast('Select a customer', 'warning'), false;
+    if (!formData.invoice.profileName) return showToast('Enter a suitable profile name.', 'warning'), false;
+    if (!formData.invoice.repeatEvery) return showToast('Frequency is required', 'warning'), false;
+    if (!formData.itemTable.length) return showToast('Add items', 'warning'), false;
+    return true;
+  };
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if(!validateForm()) return;
 
     try {
       const payload = {
         customer: Number(formData.invoice.customerId),
-
         order_number: formData.invoice.orderNumber
           ? Number(formData.invoice.orderNumber)
           : null,
-
-        recurring_invoice_number: formData.invoice.invoiceNo,
         profile_name: formData.invoice.profileName,
         repeat_every: formData.invoice.repeatEvery,
         start_on: formData.invoice.startOn,
         end_on: formData.invoice.endOn || null,
         payment_terms: formData.invoice.paymentTerms,
-
         sales_person: formData.invoice.salesPerson
           ? Number(formData.invoice.salesPerson)
           : null,
-
         subject: formData.invoice.subject,
-
         status: submitType,
-
         customer_notes: formData.invoice.customerNotes,
         terms_and_conditions: formData.invoice.termsAndConditions,
-
         subtotal: totals.subtotal,
         adjustment: taxInfo.adjustment,
         tax_amount: taxInfo.taxAmount,
         grand_total: totals.grandTotal,
-
         is_active: true,
-
         items: formData.itemTable.map((row) => ({
           item_details: row.itemDetails,
           quantity: Number(row.quantity),
@@ -385,45 +351,38 @@ export default function AddRecurringInvoices() {
         })),
       };
 
+      console.log("FINAL RECURRING INVOICE PAYLOAD", payload);
 
+      // ✅ API CALL
       await api.post('recurring-invoices/create/', payload);
 
-      sessionStorage.setItem(
-        'formSuccess',
-        'Recurring invoice created successfully'
-      );
+      // ✅ SUCCESS TOAST (like invoice ✅)
+      const today = new Date().toISOString().split('T')[0];
+      const message = formData.invoice.startOn === today
+        ? 'Recurring invoice created + First invoice generated today!'
+        : `Recurring invoice created! First invoice scheduled for ${formData.invoice.startOn}`;
 
-      navigate('/sales/payment-invoices');
+      showToast(message, 'success');  // ✅ SHOW SUCCESS
+
+      // ✅ NAVIGATE with delay (like invoice ✅)
+      setTimeout(() => {
+        navigate('/sales/payment-invoices');
+      }, 800);
+
     } catch (error: any) {
       console.error('RECURRING INVOICE ERROR RESPONSE:', error.response?.data);
 
+      // ✅ ERROR TOAST (like invoice ✅)
       setToast({
         stage: 'enter',
         type: 'error',
-        message:
-          error.response?.data?.detail ||
+        message: error.response?.data?.detail ||
           JSON.stringify(error.response?.data) ||
           'Failed to create recurring invoice',
       });
     }
   };
 
-
-  const applyAutoSO = () => {
-    if (mode === 'auto') {
-      const prefix = buildPrefixFromPattern(prefixPattern);
-      const fullNumber = `${prefix}${nextNumber || '001'}`;
-
-      setFormData((prev) => ({
-        ...prev,
-        invoice: {
-          ...prev.invoice,
-          invoiceNo: fullNumber,
-        },
-      }));
-    }
-    closePopup();
-  };
 
 
   return (
@@ -442,7 +401,7 @@ export default function AddRecurringInvoices() {
               <div className="col-lg-4">
                 <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Customer:
+                    Customer <span className='text-danger'>*</span> :
                   </label>
                   <CustomerSelect
                     name="customerId"
@@ -452,7 +411,7 @@ export default function AddRecurringInvoices() {
 
                 </div>
 
-                <div className="so-form-group mb-4">
+                {/* <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
                     Invoice No:
                   </label>
@@ -479,7 +438,7 @@ export default function AddRecurringInvoices() {
                       <Settings size={16} />
                     </span>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
@@ -506,21 +465,20 @@ export default function AddRecurringInvoices() {
                     onChange={handleChange}
                   >
                     <option value="">Select</option>
+                    <option value="Due on Receipt">Due on Receipt</option>
                     <option value="Advance">Advance</option>
                     <option value="Net 15">Net 15</option>
                     <option value="Net 30">Net 30</option>
                     <option value="Net 45">Net 45</option>
                   </select>
                 </div>
-
-
               </div>
 
               {/* COLUMN 2: 3 fields (Subject textarea + Profile Name + Start/End dates) */}
               <div className="col-lg-4">
                 <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Profile Name:
+                    Profile Name <span className='text-danger'>*</span> :
                   </label>
                   <input
                     type="text"
@@ -535,7 +493,7 @@ export default function AddRecurringInvoices() {
 
                 <div className="so-form-group mb-4">
                   <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Repeat Every:
+                    Repeat Every <span className='text-danger'>*</span> :
                   </label>
                   <select
                     name="repeatEvery"
@@ -722,121 +680,6 @@ export default function AddRecurringInvoices() {
           </div>
         </form>
       </div>
-
-      {/* ---------------- Settings Modal ---------------- */}
-      {showSettings && (
-        <div className="settings-overlay" onClick={closePopup}>
-          <div
-            className={`settings-modal ${closing ? 'closing' : 'opening'}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="modal-header custom-header">
-              <h4 className="mb-0" style={{ fontSize: 17 }}>Configure Recurring Invoice Number Preferences</h4>
-              <X
-                size={20}
-                style={{ cursor: 'pointer', color: '#fc0404ff' }}
-                onClick={closePopup}
-              />
-            </div>
-
-            <div className="modal-body mt-3">
-              <p style={{ fontSize: 13, color: '#555' }}>
-                Your Recurring Invoices are currently set to auto-generate numbers. Change settings if needed.
-              </p>
-
-              {/* Auto mode */}
-              <div className="form-check mb-3">
-                <input
-                  type="radio"
-                  name="mode"
-                  className="form-check-input"
-                  checked={mode === 'auto'}
-                  onChange={() => setMode('auto')}
-                />
-                <label className="form-check-label fw-normal">Continue auto-generating Recurring Invoice Numbers</label>
-                <Info size={13} />
-              </div>
-
-              {mode === 'auto' && (
-                <div className="auto-settings">
-                  <div className="auto-settings-row">
-                    {/* PREFIX PATTERN SELECT */}
-                    <div style={{ flex: 1, fontSize: 13 }}>
-                      <label className="so-label text-sm text-muted-foreground fw-bold">Prefix pattern</label>
-                      <select
-                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
-                        value={prefixPattern}
-                        onChange={(e) => setPrefixPattern(e.target.value)}
-                        style={{ fontSize: 13 }}
-                      >
-                        <option value="" disabled>
-                          -- Select prefix --
-                        </option>
-                        <option value="YEAR">Current year (YYYY-)</option>
-                        <option value="YEAR_MONTH">Current year + month (YYYYMM-)</option>
-                        <option value="DATE_DDMMYYYY">Current date (DDMMYYYY-)</option>
-                        <option value="YEAR_SLASH_MONTH">Year/Month (YYYY/MM-)</option>
-                      </select>
-                      <small className="text-muted d-block mt-1">
-                        Example prefix: {buildPrefixFromPattern(prefixPattern)}
-                      </small>
-                    </div>
-
-                    {/* NEXT NUMBER */}
-                    <div style={{ flex: 1, fontSize: 13 }} className="so-form-group mb-4">
-                      <label className="so-label text-sm text-muted-foreground fw-bold">Next Number</label>
-                      <input
-                        value={nextNumber}
-                        onChange={(e) => setNextNumber(e.target.value)}
-                        className="form-control so-control border"
-                        placeholder="001"
-                        style={{ fontSize: 13 }}
-                      />
-                      <small className="text-muted d-block mt-1">
-                        Full example: {buildPrefixFromPattern(prefixPattern)}
-                        {nextNumber || '001'}
-                      </small>
-                    </div>
-                  </div>
-
-                  <div className="mt-3">
-                    <label style={{ fontSize: 13 }}>
-                      <input
-                        type="checkbox"
-                        checked={restartYear}
-                        onChange={(e) => setRestartYear(e.target.checked)}
-                        className="me-2"
-                      />
-                      Restart numbering every fiscal year.
-                    </label>
-                  </div>
-                </div>
-              )}
-
-              {/* Manual mode */}
-              <div className="form-check mt-4">
-                <input
-                  type="radio"
-                  name="mode"
-                  className="form-check-input"
-                  checked={mode === 'manual'}
-                  onChange={() => setMode('manual')}
-                />
-                <label className="form-check-label">Enter Invoice Numbers manually</label>
-              </div>
-
-              <div className="d-flex justify-content-center mt-4" style={{ gap: 10 }}>
-                <button className="btn border me-3 px-4" onClick={closePopup}>
-                  Cancel
-                </button>
-                <button className="btn me-2 px-4" style={{ background: '#7991BB', color: '#FFF' }} onClick={applyAutoSO}>
-                  Save
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

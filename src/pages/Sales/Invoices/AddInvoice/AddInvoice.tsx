@@ -230,7 +230,7 @@ export default function AddInvoice() {
 
   // CURRENT DATE
   useEffect(() => {
-    // const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().split('T')[0];
     const soData = location.state?.salesOrderData;
     const soItems = location.state?.soItems;
 
@@ -244,7 +244,7 @@ export default function AddInvoice() {
           customerId: String(soData.customerId),
           salesOrderNumber: soData.salesOrderNumber || '',
           salesPerson: String(soData.salesPerson || ''),
-          invoiceDate: soData.invoiceDate || new Date().toISOString().split('T')[0],
+          invoiceDate: soData.invoiceDate || new Date().toISOString().split('T')[0] || today,
           dueDate:'',
           paymentTerms: soData.paymentTerms || 'Net 30',
           customerNotes: soData.customerNotes || '',
@@ -264,6 +264,14 @@ export default function AddInvoice() {
 
       // ✅ Show success toast
       // showToast('SalesOrder data loaded successfully!', 'success');
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        invoice: {
+          ...prev.invoice,
+          invoiceDate:today,
+        }
+      }))
     }
   }, [location.state]);
 

@@ -11,6 +11,7 @@ import { useLoading } from '../../../Contexts/Loadingcontext';
 import api from '../../../services/api/apiConfig';
 import RequestQuoteOutlinedIcon from '@mui/icons-material/RequestQuoteOutlined';
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
+import RestorePageOutlinedIcon from '@mui/icons-material/RestorePageOutlined';
 import { Edit } from 'react-feather';
 import Toast from '../../../components/Toast/Toast';
 
@@ -36,12 +37,20 @@ const Invoices = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
 
   const getStatusStyle = (status: string) => {
+
+    if (status.toLowerCase().startsWith('overdue by')) {
+      return { bg: '#fee2e2', color: '#b91c1c' }; // Red for overdue
+    }
+
     switch (status?.toLowerCase()) {
-      case 'sent': return { bg: '#e0f0ff', color: '#1d4ed8' };
-      case 'draft': return { bg: '#e6f9ed', color: '#15803d' };
+      case 'sent': return { bg: '#e0f0ff', color: '#1d4ed8' };     // Blue
+      case 'draft': return { bg: '#f3f4f6', color: '#374151' };     // Grey
+      case 'paid': return { bg: '#dcfce7', color: '#166534' };      // Green
+      case 'partially paid': return { bg: '#fff7db', color: '#a16207' }; // Yellow
+      case 'cancelled': return { bg: '#fef2f2', color: '#7f1d1d' }; // Muted red
       case 'expired': return { bg: '#fde8e8', color: '#b91c1c' };
-      case 'accepted': return { bg: '#fff7db', color: '#a16207' };
-      default: return { bg: '#f3f4f6', color: '#374151' };
+      case 'accepted': return { bg: '#e6f9ed', color: '#15803d' };
+      default: return { bg: '#f3f4f6', color: '#374151' };          // Default grey
     }
   };
 
@@ -51,10 +60,10 @@ const Invoices = () => {
     { key: 'orderNumber', label: 'Order Number' },
     { key: 'customerName', label: 'Customer Name' },
     {
-      key: 'status',
+      key: 'displayStatus',
       label: 'Status',
       render: (value: string) => {
-        const { bg, color } = getStatusStyle(value);
+        const { bg, color } = getStatusStyle(value || '');
         return (
           <span
             style={{
@@ -64,7 +73,7 @@ const Invoices = () => {
               display: 'inline-block', textAlign: 'center',
             }}
           >
-            {value}
+            {value || 'Unknown'}
           </span>
         );
       },
@@ -166,22 +175,88 @@ const Invoices = () => {
     }
   }, [navigate, setToast, showLoading, hideLoading]);
 
+
+  // ✅ FIXED: Add async + params
+  const handleRecurringInvoice = useCallback(async (row: Invoice) => {
+    try {
+      showLoading();
+
+      // ✅ VALIDATION: Check if Recurring Invoice already exists
+      // const recurringCheck = await api.get(`recurring-invoices/?source_invoice=${row.id}`);
+
+      // if (recurringCheck.data.length > 0) {
+      //   hideLoading();
+      //   setToast({
+      //     stage: 'enter',
+      //     type: 'warning',
+      //     message: `Recurring Invoice already exists for Invoice ${row.invoiceNumber}: ${recurringCheck.data[0].profileName}`,
+      //   });
+      //   return; // ✅ STOP
+      // }
+
+      // ✅ FETCH FULL Invoice details
+      const response = await api.get(`/invoices/${row.id}/`);
+      const fullInvoice = response.data;
+
+      // ✅ Pre-fill Recurring Invoice (MATCH recurring form fields)
+      const recurringState = {
+        fromInvoice: true,
+        invoiceData: {
+          customerId: fullInvoice.customer,
+          orderNumber: fullInvoice.sales_order_number || row.orderNumber,
+          paymentTerms: fullInvoice.payment_terms,
+          profileName: `${fullInvoice.customerName}`, // ✅ Profile name
+          repeatEvery: 'Month', // ✅ Default monthly
+          startOn: new Date().toISOString().split('T')[0], // ✅ Today → Auto-generate first invoice
+          endOn: '', // Leave empty (ongoing)
+          salesPerson: fullInvoice.sales_person,
+          subject: `Recurring Invoice for ${fullInvoice.invoice_number}`,
+          customerNotes: fullInvoice.customer_notes,
+          termsAndConditions: fullInvoice.terms_and_conditions,
+        },
+        itemTable: fullInvoice.items.map((item: any) => ({
+          itemDetails: item.item_details,
+          quantity: String(item.quantity),
+          rate: String(item.rate),
+          discount: '0',
+          amount: String(item.amount),
+        })),
+        invoiceNumber: row.invoiceNumber, // Display
+        invoiceId: row.id, // Backend reference
+      };
+
+      console.log('🚀 Passing Recurring data:', recurringState);
+      navigate('/sales/add-recurringInvoice', { state: recurringState });
+    } catch (error: any) {
+      console.error('Failed to fetch Invoice:', error);
+      setToast({
+        stage: 'enter',
+        type: 'error',
+        message: 'Failed to load Invoice details',
+      });
+    } finally {
+      hideLoading();
+    }
+  }, [navigate, setToast, showLoading, hideLoading]);
+
+
+
   const actions = [
-    {
-      icon: <RequestQuoteOutlinedIcon sx={{ fontSize: 20 }} />,
-      onClick: handleCreditNoteConversion,
-      tooltip: 'Convert to Credit Note',
-    },
     {
       icon: <RemoveRedEyeOutlinedIcon sx={{ fontSize: 20 }} />,
       onClick: (row: Invoice) => navigate(`/sales/view-invoice/${row.id}`),
       tooltip: 'View Details',
     },
-    // {
-    //   icon: <Edit size={18} />,
-    //   onClick: (row: Invoice) => navigate(`/sales/edit-invoice/${row.id}`),
-    //   tooltip: 'Edit Invoice',
-    // },
+    {
+      icon: <RestorePageOutlinedIcon sx={{ fontSize: 20 }} />,
+      onClick: handleRecurringInvoice,
+      tooltip: 'Make Recurring',
+    },
+    {
+      icon: <RequestQuoteOutlinedIcon sx={{ fontSize: 20 }} />,
+      onClick: handleCreditNoteConversion,
+      tooltip: 'Convert to Credit Note',
+    },
   ];
 
   return (
