@@ -221,13 +221,8 @@ export function SummaryBox({
     setShowModal(true);
   };
 
-  /* ---------- OPEN EDIT MODAL ---------- */
-  // const openEditModal = (opt: TcsOption) => {
-  //   setEditId(opt.id);
-  //   setName(opt.name);
-  //   setRate(opt.rate);
-  //   setShowModal(true);
-  // };
+  const safeNumber = (v: any) => Number(v || 0);
+
 
   /* ---------- SAVE TCS ---------- */
   const handleSave = () => {
@@ -305,7 +300,7 @@ export function SummaryBox({
                   }}
                   onChange={(e) => onTaxChange('selectedTax', e.target.value)}
                 >
-                  <option value="">Select TDS</option>
+                  <option value="" disabled>Select TDS</option>
                   {tdsOptions.map((t) => (
                     <option key={t.id} value={t.rate}>
                       {t.name} – {t.rate}%
@@ -355,7 +350,7 @@ export function SummaryBox({
           {/* Total */}
           <div className="d-flex justify-content-between mt-3">
             <strong>Total (₹)</strong>
-            <strong>{totals.grandTotal.toFixed(2)}</strong>
+            <strong>{safeNumber(totals.grandTotal).toFixed(2)}</strong>
           </div>
         </div>
       </div>

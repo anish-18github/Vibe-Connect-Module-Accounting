@@ -40,6 +40,7 @@ function DynamicTable({
   const endIndex = startIndex + rowsPerPage;
   const currentData = data.slice(startIndex, endIndex);
 
+
   const goToPage = (page: number) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };

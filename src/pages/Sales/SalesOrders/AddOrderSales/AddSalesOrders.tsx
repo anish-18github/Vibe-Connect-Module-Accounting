@@ -204,12 +204,6 @@ export default function AddSalesOrder() {
     ],
   });
 
-  // const [tcsOptions, setTcsOptions] = useState<TcsOption[]>([
-  //   { id: 'tcs_5', name: 'TCS Standard', rate: 5 },
-  //   { id: 'tcs_12', name: 'TCS Standard', rate: 12 },
-  //   { id: 'tcs_18', name: 'TCS Standard', rate: 18 },
-  // ]);
-
   // TAX STATE
 
   const [taxInfo, setTaxInfo] = useState({
@@ -221,12 +215,18 @@ export default function AddSalesOrder() {
     total: 0,
   });
 
-  const [totals, setTotals] = useState({
+  const [totals, setTotals] = useState<{
+    subtotal: number;
+    tax: number;
+    total: number;
+    grandTotal: number;
+  }>({
     subtotal: 0,
     tax: 0,
     total: 0,
     grandTotal: 0,
   });
+
 
   /* ---------------- TAX CALCULATION ---------------- */
 
@@ -234,24 +234,28 @@ export default function AddSalesOrder() {
   const computeSubtotal = (items: ItemRow[]) =>
     items.reduce((acc, r) => acc + Number(r.amount || 0), 0);
 
+
   useEffect(() => {
     const subtotal = computeSubtotal(formData.itemTable);
+
 
     let rate = 0;
     if (taxInfo.type === 'TDS') {
       rate = Number(taxInfo.selectedTax || 0);
     } else if (taxInfo.type === 'TCS') {
       const opt = tcsOptions.find(
-        (o) => String(o.id) === taxInfo.selectedTax,
+        (o) => String(o.id) === String(taxInfo.selectedTax),
       );
       rate = opt ? opt.rate : 0;
     }
 
     const taxAmount = subtotal * (rate / 100);
+    const adjustment = Number(taxInfo.adjustment || 0);
+
     const grand =
       taxInfo.type === 'TDS'
-        ? subtotal - taxAmount + taxInfo.adjustment
-        : subtotal + taxAmount + taxInfo.adjustment;
+        ? subtotal - taxAmount + adjustment
+        : subtotal + taxAmount + adjustment;
 
     setTaxInfo((p) => ({
       ...p,
@@ -266,12 +270,21 @@ export default function AddSalesOrder() {
       total: grand,
       grandTotal: grand,
     });
+
+    // console.log('✅ TOTALS FINAL', {
+    //   subtotal,
+    //   taxAmount,
+    //   adjustment,
+    //   grand,
+    // });
+
   }, [
     formData.itemTable,
     taxInfo.type,
     taxInfo.selectedTax,
     taxInfo.adjustment,
     tcsOptions,
+    tdsOptions,
   ]);
 
 
@@ -285,6 +298,8 @@ export default function AddSalesOrder() {
 
     console.log('🎯 Location state:', location.state);      // DEBUG 1
     console.log('🎯 Quote data:', quoteData);               // DEBUG 2
+    console.log('TOTALS TYPE CHECK', totals);
+
 
     if (quoteData && quoteData.customerId && quoteData.customerId !== 0) {
       console.log('🎯 PREFILLING FROM QUOTE:', quoteData);
@@ -309,6 +324,31 @@ export default function AddSalesOrder() {
           amount: String(item.quantity * item.rate),
         })),
       });
+
+      // ✅ PREFILL TAX STATE
+      if (quoteData.taxes?.length) {
+        const tax = quoteData.taxes[0]; // for now single tax
+
+        setTaxInfo({
+          type: tax.tax_type.toUpperCase(), // "TCS" | "TDS"
+          selectedTax:
+            tax.tax_type.toUpperCase() === 'TDS'
+              ? String(tax.tax_rate) // ✅ IMPORTANT
+              : '',
+          adjustment: Number(quoteData.adjustment || 0),
+          taxRate: Number(tax.tax_rate),
+          taxAmount: Number(tax.tax_amount),
+          total: Number(quoteData.grandTotal),
+        });
+
+        setTotals({
+          subtotal: Number(quoteData.subtotal),
+          tax: Number(tax.tax_amount || 0),
+          total: Number(quoteData.grandTotal),
+          grandTotal: Number(quoteData.grandTotal),
+        });
+      }
+
     }
     else {
       // ✅ Normal form (no quote data)
@@ -320,7 +360,31 @@ export default function AddSalesOrder() {
         }
       }));
     }
-  }, []);  // ✅ Empty deps - runs once on mount
+  }, []);
+
+
+  useEffect(() => {
+    if (
+      location.state?.quoteData &&
+      taxInfo.type === 'TCS' &&
+      !taxInfo.selectedTax &&
+      tcsOptions.length
+    ) {
+      const tax = location.state.quoteData.taxes?.[0];
+      if (!tax) return;
+
+      const matched = tcsOptions.find(
+        (t) => Number(t.rate) === Number(tax.tax_rate)
+      );
+
+      if (matched) {
+        setTaxInfo((prev) => ({
+          ...prev,
+          selectedTax: String(matched.id),
+        }));
+      }
+    }
+  }, [tcsOptions, taxInfo.type]);
 
 
 

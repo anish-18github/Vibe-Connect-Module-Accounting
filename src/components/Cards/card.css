@@ -72,3 +72,24 @@
   overflow: visible;
 }
 
+
+/* ------------------ SKELETON ------------------ */
+.receivables-skeleton .skeleton-line {
+  margin-bottom: 8px;
+}
+
+.receivables-skeleton .skeleton-bar {
+  margin: 12px 0;
+}
+
+.receivables-skeleton .row-values {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.receivables-skeleton .skeleton-value {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}

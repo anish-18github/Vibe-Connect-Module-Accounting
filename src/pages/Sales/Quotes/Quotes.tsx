@@ -23,14 +23,14 @@ interface Quote {
   expiredOn: string;
   createdBy: string;
   amount: number;
-  customerId: number;        // ✅ For prefill
-  salesPersonName: string;       // ✅ For prefill
-  quoteDate: string;         // ✅ For prefill
-  expiryDate: string;        // ✅ For prefill
-  projectName: string;       // ✅ For prefill
-  customerNotes?: string;    // ✅ For prefill
-  termsAndConditions?: string; // ✅ For prefill
-  items: Array<{            // ✅ Item table data
+  customerId: number;
+  salesPersonName: string;
+  quoteDate: string;
+  expiryDate: string;
+  projectName: string;
+  customerNotes?: string;
+  termsAndConditions?: string;
+  items: Array<{
     description: string;
     quantity: number;
     rate: number;
@@ -147,7 +147,7 @@ const Quotes = () => {
         type: 'warning',
         message: `Only ACCEPTED quotes can be converted.`,
       });
-      return;   
+      return;
     }
 
     try {
@@ -159,6 +159,7 @@ const Quotes = () => {
 
       const quoteState = {
         fromQuote: true,
+
         quoteData: {
           customerId: fullQuote.customer,
           customerName: fullQuote.customerName,
@@ -170,14 +171,21 @@ const Quotes = () => {
           deliveryMethod: 'Courier',
           customerNotes: fullQuote.customer_notes,
           termsAndConditions: fullQuote.terms_and_conditions,
+
+          // ✅ NEW
+          subtotal: fullQuote.subtotal,
+          adjustment: fullQuote.adjustment,
+          taxes: fullQuote.taxes || [],
+          grandTotal: fullQuote.grand_total,
         },
+
         quoteItems: fullQuote.items.map((item: any) => ({
           description: item.item_details,
           quantity: parseFloat(item.quantity),
           rate: parseFloat(item.rate),
-          taxRate: 0,
         })),
       };
+
 
       console.log('🚀 Passing quote data:', quoteState);
       navigate(`/sales/add-salesOrders`, { state: quoteState });

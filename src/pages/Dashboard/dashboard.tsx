@@ -8,6 +8,9 @@ import { Bar, Line, Doughnut } from 'react-chartjs-2';
 import chartData from '../../data/incomeExpense.json';
 import topExpenses from '../../data/topExpenses.json';
 import cashFlow from '../../data/cashFlow.json';
+import { useGlobalToast } from '../../components/Toast/ToastContext';
+import { useEffect, useState } from 'react';
+import { Skeleton } from '@mui/material';
 
 
 export const dashboardTabs = [
@@ -40,7 +43,43 @@ const topExpensesTyped: TopExpenseEntry[] = topExpenses as TopExpenseEntry[];
 const cashFlowTyped: CashFlowEntry[] = cashFlow as CashFlowEntry[];
 
 function Dashboard() {
-  // Original formatted data
+
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const { showToast } = useGlobalToast();
+
+
+  // LOAD BACKEND DATA 
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        setError(false);  // ← NOW WORKS
+        await new Promise((resolve, reject) => {
+          setTimeout(() => {
+            if (Math.random() < 0.1) reject(new Error('Backend unavailable'));
+            else resolve(true);
+          }, 2500 + Math.random() * 1500);
+        });
+      } catch (err) {
+        setError(true);  // ← NOW WORKS
+        showToast('Failed to load dashboard data. Using mock data.', 'warning');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [showToast]);
+
+
+
+
+  // DATA FORMATTING 
+
   const formattedIncomeExpense = {
     labels: chartDataTyped.map((i) => i.Income.Label),
     datasets: [
@@ -57,16 +96,10 @@ function Dashboard() {
     ],
   };
 
-  // const formattedTopExpenses = {
-  //   labels: topExpensesTyped.map((item) => item.Category),
-  //   datasets: [
-  //     {
-  //       label: 'Top Expenses',
-  //       data: topExpensesTyped.map((item) => item.Amount),
-  //       backgroundColor: 'rgba(255, 159, 64, 0.6)',
-  //     },
-  //   ],
-  // };
+  const totalTopExpenses = topExpensesTyped.reduce(
+    (sum, item) => sum + item.Amount,
+    0
+  );
 
   const formattedTopExpenses = {
     labels: topExpensesTyped.map(item =>
@@ -91,8 +124,6 @@ function Dashboard() {
       },
     ],
   };
-
-
 
 
   const formattedCashFlow = {
@@ -183,8 +214,15 @@ function Dashboard() {
       tooltip: {
         callbacks: {
           label: function (context: any) {
+            const label = context.label || '';
             const value = context.raw || 0;
-            return ` ₹${value.toLocaleString()}`;
+
+            const percentage = totalTopExpenses
+              ? ((value / totalTopExpenses) * 100).toFixed(1)
+              : 0;
+
+            return `${label}: ₹${value.toLocaleString()} (${percentage}%)`;
+
           },
         },
       },
@@ -221,22 +259,6 @@ function Dashboard() {
     ],
   };
 
-  // const brightTopExpenses = {
-  //   ...formattedTopExpenses,
-  //   datasets: [
-  //     {
-  //       ...formattedTopExpenses.datasets[0],
-  //       backgroundColor: 'rgba(59, 130, 246, 0.8)', // Bright blue
-  //       borderColor: 'rgba(59, 130, 246, 1)',
-  //       borderWidth: 2,
-  //       borderRadius: 8,
-  //       borderSkipped: false,
-  //     },
-  //   ],
-  // };
-
-  // ✅ UPDATED: Cash Flow line chart with alternate colors
-
   const brightCashFlow = {
     ...formattedCashFlow,
     datasets: [
@@ -269,6 +291,25 @@ function Dashboard() {
     ],
   };
 
+
+  // const ReceivablesSkeleton = () => (
+  //   <>
+  //     <p><Skeleton variant="text" width="80%" /> <Skeleton variant="text" width="40%" sx={{ display: 'inline-block' }} /></p>
+  //     <div className="bar"><Skeleton variant="rectangular" height={4} /></div>
+  //     <div className="row-values">
+  //       <h2><Skeleton variant="text" width="60%" height={32} /></h2>
+  //       <h2><Skeleton variant="text" width="60%" height={32} /></h2>
+  //     </div>
+  //   </>
+  // );
+
+  const ChartSkeleton = ({ height = 350 }: { height?: number }) => (
+    <div className="dataCard customerCard" style={{ height }}>
+      <Skeleton variant="rectangular" height="100%" />
+    </div>
+  );
+
+
   const receivableActions = [
     { label: 'New Invoice', path: '/sales/add-invoice' },
     { label: 'New Recurring Invoice', path: '/sales/add-recurringInvoice' },
@@ -280,6 +321,69 @@ function Dashboard() {
     { label: 'New Vendor Payment', path: '/purchases/add-paymentMade' },
     { label: 'New Recurring Bill', path: '/purchases/add-recurringBill' },
   ];
+
+  // LOADING SKELETON
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <div style={{ padding: '56px 0px 0px' }}>
+          <Navbar tabs={dashboardTabs} />
+          <div className="dashboard-container">
+            {/* FIXED: Add empty children for Card loading */}
+            <Card title="Total Receivables" loading />
+            <Card title="Total Payables" loading />
+
+            <Card title="Income and Expense" selectable>
+              <div className="chart-toggle">
+                <Skeleton variant="rounded" width={80} height={32} />
+                <Skeleton variant="rounded" width={80} height={32} sx={{ ml: 2 }} />
+              </div>
+              <ChartSkeleton />
+              <div className="chart-summary">
+                <div className="summary-item">
+                  <Skeleton variant="circular" width={12} height={12} sx={{ display: 'inline-block', mr: 1 }} />
+                  <Skeleton width="60%" />
+                </div>
+                <div className="summary-item">
+                  <Skeleton variant="circular" width={12} height={12} sx={{ display: 'inline-block', mr: 1 }} />
+                  <Skeleton width="60%" />
+                </div>
+              </div>
+            </Card>
+
+            <Card title="Top Expenses" selectable>
+              <div className="dataCard customerCard donut-wrapper" style={{ height: 350, paddingTop: '20px', paddingBottom: '10px' }}>
+                <Skeleton variant="circular" width={200} height={200} sx={{ mx: 'auto' }} />
+              </div>
+            </Card>
+
+            <Card title="Cash Flow" selectable className="wide-card">
+              <div className="cashflow-content">
+                <div style={{ height: '350px', flex: 1 }}>
+                  <ChartSkeleton />
+                </div>
+                <div className="cashflow-summary">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="summary-item">
+                      <Skeleton width="80%" height={24} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+
+  if (error) {
+    // Fallback to mock data (your current json/static values)
+    showToast('Backend failed - showing cached/mock data.', 'info');
+  }
+
 
   return (
     <>

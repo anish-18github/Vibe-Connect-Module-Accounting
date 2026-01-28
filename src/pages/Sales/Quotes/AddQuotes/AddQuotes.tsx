@@ -45,7 +45,7 @@ type SubmitType = 'draft' | 'sent';
 
 export default function AddQuotes() {
   const navigate = useNavigate();
-const { toast, setToast, showToast } = useGlobalToast();
+  const { toast, setToast, showToast } = useGlobalToast();
 
   // ------------- modal + small UI state -------------
   const [showSettings, setShowSettings] = useState(false);
@@ -307,6 +307,38 @@ const { toast, setToast, showToast } = useGlobalToast();
     Number(Number(value).toFixed(2));
 
 
+  const buildTaxesPayload = () => {
+    if (!taxInfo.type || taxInfo.taxAmount === 0) return [];
+
+    if (taxInfo.type === 'TDS') {
+      return [
+        {
+          tax_type: 'tds',
+          tax_name: `TDS @${taxInfo.taxRate}%`,
+          tax_rate: round2(taxInfo.taxRate),
+          tax_amount: round2(taxInfo.taxAmount),
+        },
+      ];
+    }
+
+    if (taxInfo.type === 'TCS') {
+      const opt = tcsOptions.find(
+        (o) => String(o.id) === taxInfo.selectedTax,
+      );
+
+      return [
+        {
+          tax_type: 'tcs',
+          tax_name: opt ? opt.name : `TCS @${taxInfo.taxRate}%`,
+          tax_rate: round2(taxInfo.taxRate),
+          tax_amount: round2(taxInfo.taxAmount),
+        },
+      ];
+    }
+
+    return [];
+  };
+
 
 
   // submit
@@ -332,9 +364,8 @@ const { toast, setToast, showToast } = useGlobalToast();
 
       //  ROUND EVERYTHING
       subtotal: round2(totals.subtotal),
-      tax_type: taxInfo.type,
-      tax_rate: round2(taxInfo.taxRate),
-      tax_amount: round2(taxInfo.taxAmount),
+      
+      taxes: buildTaxesPayload(),
 
       adjustment: round2(taxInfo.adjustment),
       grand_total: round2(totals.grandTotal),

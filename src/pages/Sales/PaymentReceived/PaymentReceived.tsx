@@ -9,6 +9,8 @@ import useFormSuccess from '../../../components/Toast/useFormSuccess';
 import { Toast } from '../../../components/Toast/Toast';
 import { useGlobalToast } from '../../../components/Toast/ToastContext';
 import api from '../../../services/api/apiConfig';
+import { useLoading } from '../../../Contexts/Loadingcontext';
+import { Copy, Pause, Trash2 } from 'react-feather';
 
 
 interface Payments {
@@ -29,6 +31,7 @@ const PaymentReceived = () => {
   const [payments, setPayments] = useState<Payments[]>([]);
   const { toast, setToast } = useGlobalToast();
   const [loading, setLoading] = useState(true);
+  const { showLoading, hideLoading } = useLoading();
 
 
   const getStatusStyle = (status: string) => {
@@ -100,6 +103,7 @@ const PaymentReceived = () => {
   useEffect(() => {
     const fetchPayments = async () => {
       try {
+        showLoading();
         const response = await api.get<Payments[]>('payments/');
         setPayments(response.data);
       } catch (error: any) {
@@ -110,12 +114,14 @@ const PaymentReceived = () => {
             error.response?.data?.detail || 'Unable to load Recoreded payments',
         });
       } finally {
+        hideLoading();
         setLoading(false);
       }
     };
-
     fetchPayments();
   }, []);
+
+
 
 
 
@@ -133,10 +139,9 @@ const PaymentReceived = () => {
             columns={columns}
             data={payments}
             loading={loading}
-            actions={false}
+            actions={true}
             rowsPerPage={10}
             onAdd={() => navigate('/sales/record-payment')} //May be change it latter. "/add-customer"
-            onView={(row) => navigate(`/view-customer/${row.customerId}`)}
           />
         </div>
       </div>

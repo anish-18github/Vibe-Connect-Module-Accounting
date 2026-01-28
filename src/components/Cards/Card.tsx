@@ -3,6 +3,7 @@ import './card.css';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getLastFiveFYs } from '../../utils/financialYear';
+import { Skeleton } from '@mui/material';
 
 interface ActionItem {
   label: string;
@@ -11,10 +12,11 @@ interface ActionItem {
 
 interface CardProps {
   title: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   selectable?: boolean;
   className?: string;
   actionMenu?: ActionItem[];
+  loading?: boolean;
 
   // ✅ NEW (for FY dropdown)
   selectedFY?: string;
@@ -29,8 +31,8 @@ function Card({
   className,
   actionMenu,
   selectedFY,
-  onFYChange
-
+  onFYChange,  // ← comma
+  loading,     // ← now properly destructured
 }: CardProps) {
   const [open, setOpen] = useState(false);
 
@@ -92,7 +94,31 @@ function Card({
         </div>
       </div>
 
-      <div className="card-body">{children}</div>
+      <div className="card-body">
+        {loading ? (
+          <div className="receivables-skeleton">
+            <div className="skeleton-line">
+              <Skeleton variant="text" width="70%" />
+            </div>
+            <div className="skeleton-bar">
+              <Skeleton variant="rectangular" height={4} />
+            </div>
+            <div className="row-values">
+              <div className="skeleton-value">
+                <Skeleton variant="text" width="50%" height={32} />
+              </div>
+              <div className="skeleton-value">
+                <Skeleton variant="text" width="50%" height={32} />
+              </div>
+            </div>
+          </div>
+        ) : (
+          children  // ← Just `children`, no extra {}
+        )}
+      </div>
+
+
+
     </div>
   );
 }
