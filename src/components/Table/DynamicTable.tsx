@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import './dynamicTable.css';
 import { ChevronLeft, ChevronRight, Search } from 'react-feather';
 import { TableSkeleton } from '../Skeleton/TableSkeleton';  // ✅ YOUR SKELETON
@@ -10,7 +10,7 @@ interface Column {
 }
 
 interface ActionConfig {
-  icon: React.ReactNode;
+  icon: React.ReactNode | ((row: any) => React.ReactNode);
   onClick: (row: any) => void;
   tooltip?: string;
   disabled?: boolean;
@@ -102,47 +102,62 @@ function DynamicTable({
                   {actions.length > 0 && (
                     <td style={{ padding: '8px', whiteSpace: 'nowrap' }}>
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        {actions.map((action, actionIndex) => (
-                          <button
-                            key={actionIndex}
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (!action.disabled) action.onClick(row);
-                            }}
-                            disabled={action.disabled}
-                            title={action.tooltip}
-                            style={{
-                              border: 'none',
-                              background: 'transparent',
-                              cursor: action.disabled ? 'not-allowed' : 'pointer',
-                              padding: '6px',
-                              borderRadius: '6px',
-                              opacity: action.disabled ? 0.5 : 1,
-                              color: '#555',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              width: '32px',
-                              height: '32px',
-                              transition: 'all 0.2s ease',
-                            }}
-                            onMouseEnter={(e) => {
-                              if (!action.disabled) {
-                                e.currentTarget.style.backgroundColor = '#f8f9fa';
-                                e.currentTarget.style.color = '#007bff';
-                                e.currentTarget.style.transform = 'scale(1.05)';
-                              }
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = 'transparent';
-                              e.currentTarget.style.color = '#555';
-                              e.currentTarget.style.transform = 'scale(1)';
-                            }}
-                          >
-                            {action.icon}
-                          </button>
-                        ))}
+                        {actions.map((action, actionIndex) => {
+                          // ✅ DYNAMIC SUPPORT
+                          const icon = typeof action.icon === 'function'
+                            ? (action.icon as (row: any) => React.ReactNode)(row)
+                            : action.icon;
+
+                          const tooltip = typeof action.tooltip === 'function'
+                            ? (action.tooltip as (row: any) => string)(row)
+                            : action.tooltip;
+
+                          const disabled = typeof action.disabled === 'function'
+                            ? (action.disabled as (row: any) => boolean)(row)
+                            : !!action.disabled;
+
+                          return (
+                            <button
+                              key={actionIndex}
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (!disabled) action.onClick(row);
+                              }}
+                              disabled={disabled}
+                              title={tooltip}
+                              style={{
+                                border: 'none',
+                                background: 'transparent',
+                                cursor: disabled ? 'not-allowed' : 'pointer',
+                                padding: '6px',
+                                borderRadius: '6px',
+                                opacity: disabled ? 0.5 : 1,
+                                color: '#555',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '32px',
+                                height: '32px',
+                                transition: 'all 0.2s ease',
+                              }}
+                              onMouseEnter={(e) => {
+                                if (!disabled) {
+                                  e.currentTarget.style.backgroundColor = '#f8f9fa';
+                                  e.currentTarget.style.color = '#007bff';
+                                  e.currentTarget.style.transform = 'scale(1.05)';
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = 'transparent';
+                                e.currentTarget.style.color = '#555';
+                                e.currentTarget.style.transform = 'scale(1)';
+                              }}
+                            >
+                              {icon}
+                            </button>
+                          );
+                        })}
                       </div>
                     </td>
                   )}

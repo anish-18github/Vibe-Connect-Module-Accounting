@@ -83,10 +83,13 @@ const Invoices = () => {
       key: 'amount',
       label: 'Amount',
       render: (value: number) => (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '4px', whiteSpace: 'nowrap' }}>
+        <div style={{ display: 'flex', gap: '4px', whiteSpace: 'nowrap' }}>
           <span style={{ fontSize: '0.8rem', color: '#6c757d' }}>₹</span>
           <span style={{ fontWeight: 600 }}>
-            {value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {value.toLocaleString('en-IN', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </span>
         </div>
       ),
