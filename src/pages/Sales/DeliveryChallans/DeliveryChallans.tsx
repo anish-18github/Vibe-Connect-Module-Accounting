@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Header from '../../../components/Header/Header';
@@ -12,6 +12,8 @@ import { Toast } from '../../../components/Toast/Toast';
 import { useGlobalToast } from '../../../components/Toast/ToastContext';
 
 import api from '../../../services/api/apiConfig';
+import { AlertTriangle, Copy, Eye, Trash2 } from 'react-feather';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fade, Slide, Snackbar } from '@mui/material';
 
 interface DeliveryChallan {
   id: number;
@@ -24,12 +26,31 @@ interface DeliveryChallan {
   amount: number;
 }
 
+const Transition = React.forwardRef((props: any, ref: React.Ref<unknown>) => {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
+interface DeleteDialogState {
+  open: boolean;
+  challan: DeliveryChallan | null;
+}
+interface DeletedChallan {
+  challan: DeliveryChallan;
+  originalIndex: number;
+  previousStatus: string;
+  timestamp: number;
+}
+
 const DeliveryChallans = () => {
   const navigate = useNavigate();
   const { toast, setToast } = useGlobalToast();
 
   const [loading, setLoading] = useState(true);
   const [challans, setChallans] = useState<DeliveryChallan[]>([]);
+  const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({ open: false, challan: null });
+
+  const [recentlyDeleted, setRecentlyDeleted] = useState<DeletedChallan[]>([]);
+
 
   useFormSuccess();
 
@@ -165,9 +186,172 @@ const DeliveryChallans = () => {
     fetchDeliveryChallans();
   }, []);
 
+
+
+  const openDeleteDialog = (challan: DeliveryChallan) => {
+    setDeleteDialog({ open: true, challan });
+  }
+
+  const executeDelete = async () => {
+    const challan = deleteDialog.challan!;
+    setDeleteDialog({ open: false, challan: null });
+
+    const originalIndex = challans.findIndex(c => c.id === challan.id);
+
+    setRecentlyDeleted(prev => [{
+      challan,
+      originalIndex,
+      previousStatus: challan.status,
+      timestamp: Date.now(),
+    }, ...prev.slice(0, 4)]);
+
+    // Optimistic UI
+    setChallans(prev => prev.filter(c => c.id !== challan.id));
+
+    try {
+      await api.patch(`delivery-challans/${challan.id}/status/`, {
+        is_active: false,
+      });
+    } catch {
+      setToast({
+        stage: 'enter',
+        type: 'error',
+        message: 'Failed to delete delivery challan',
+      });
+    }
+  };
+
+  const handleUndo = async () => {
+    const toRestore = recentlyDeleted[0];
+    if (!toRestore) return;
+
+    try {
+      await api.patch(`delivery-challans/${toRestore.challan.id}/status/`, {
+        is_active: true,
+        status: toRestore.previousStatus,
+      });
+
+      setChallans(prev => {
+        const copy = [...prev];
+        copy.splice(toRestore.originalIndex, 0, toRestore.challan);
+        return copy;
+      });
+
+      setRecentlyDeleted(prev => prev.slice(1));
+    } catch {
+      setToast({
+        stage: 'enter',
+        type: 'error',
+        message: 'Failed to restore delivery challan',
+      });
+    }
+  };
+
+
+  const actions = [
+    {
+      icon: <Eye size={17} />,
+      onClick: (row: DeliveryChallan) => navigate(`/sales/delivery-challan/${row.id}`),
+      tooltip: 'View Details',
+    },
+    {
+      icon: <Copy size={17} color='#3b2ada' />,
+      onClick: (row: DeliveryChallan) => console.log('Clone:', row.id),
+      tooltip: 'Copy Challan',
+    },
+    {
+      icon: <Trash2 size={17} color="red" />,
+      onClick: (row: DeliveryChallan) => openDeleteDialog(row),
+      tooltip: 'Delete Challan',
+    },
+  ];
+
+
+
   return (
     <>
+      <Snackbar
+        open={recentlyDeleted.length > 0}
+        autoHideDuration={6000}
+        onClose={() => setRecentlyDeleted(prev => prev.slice(1))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        message={`Delivery challan deleted`}
+        action={
+          <Button color="inherit" size="small" onClick={handleUndo}>
+            UNDO
+          </Button>
+        }
+        TransitionComponent={Fade}
+      />
       <Toast toast={toast} setToast={setToast} />
+
+
+      <Dialog
+        open={deleteDialog.open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() =>
+          setDeleteDialog({ ...deleteDialog, open: false })
+        }
+        aria-describedby="delete-dialog-description"
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ color: 'error.main', fontWeight: 'bold' }}>
+          Delete Delivery Challan
+        </DialogTitle>
+
+        <DialogContent sx={{ pt: 2 }}>
+          <DialogContentText
+            id="delete-dialog-description"
+            sx={{ color: 'text.secondary' }}
+          >
+            {deleteDialog.challan && (
+              <>
+                Are you sure you want to delete
+                <strong> "{deleteDialog.challan.deliveryChallanNo}"</strong>?
+                <br /><br />
+                <span style={{ color: 'error.main' }}>
+                  <AlertTriangle
+                    size={17}
+                    style={{
+                      display: 'inline',
+                      verticalAlign: 'middle',
+                      marginRight: 8,
+                    }}
+                  />
+                  This action can be undone only before refresh.
+                </span>
+              </>
+            )}
+          </DialogContentText>
+        </DialogContent>
+
+        <DialogActions sx={{ p: 2, pt: 1 }}>
+          <Button
+            onClick={() =>
+              setDeleteDialog({ ...deleteDialog, open: false })
+            }
+            color="inherit"
+            sx={{ fontWeight: 600, color: 'text.secondary' }}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            onClick={executeDelete}
+            variant="contained"
+            color="error"
+            disableElevation
+            sx={{ fontWeight: 700 }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
+
       <Header />
 
       <div style={{ padding: '56px 0px 0px' }}>
@@ -179,12 +363,9 @@ const DeliveryChallans = () => {
             columns={columns}
             data={challans}
             loading={loading}
-            actions
+            actions={actions}
             rowsPerPage={10}
             onAdd={() => navigate('/sales/add-deliveryChallans')}
-            onView={(row) =>
-              navigate(`/sales/view-deliveryChallan/${row.id}`)
-            }
           />
         </div>
       </div>

@@ -14,7 +14,6 @@ import Invoices from '../pages/Sales/Invoices/Invoices';
 import AddInvoice from '../pages/Sales/Invoices/AddInvoice/AddInvoice';
 import PaymentReceived from '../pages/Sales/PaymentReceived/PaymentReceived';
 // import AddRecurringInvoices from '../pages/Sales/PaymentInvoices/AddRecurringInvoive/AddRecurringInvoice';
-import PaymentInvoices from '../pages/Sales/PaymentInvoices/PaymentInvoices';
 import CreditNote from '../pages/Sales/CreditNotes/CreditNotes';
 import AddCreditNote from '../pages/Sales/CreditNotes/AddCreditNotes/AddCreditNote';
 import RecordPayment from '../pages/Sales/PaymentReceived/RecordPayment/RecordPayment';
@@ -61,6 +60,7 @@ import Reporting from '../pages/Reporting/Reporting';
 // import CreateReport from '../pages/Reporting/CreateReport/CreateReport';
 import CreateCustomReport from '../pages/Reporting/CreateReport/CreateCustomReport';
 import FinalReport from '../pages/Reporting/FinalReport/FinalReport';
+import RecurringInvoices from '../pages/Sales/PaymentInvoices/RecurringInvoices';
 
 function AppRouter() {
   return (
@@ -93,7 +93,7 @@ function AppRouter() {
       <Route path="/sales/payment-received" element={<PaymentReceived />} />
       <Route path="/sales/record-payment" element={<RecordPayment />} />
 
-      <Route path="/sales/payment-invoices" element={<PaymentInvoices />} />
+      <Route path="/sales/recurring-invoices" element={<RecurringInvoices />} />
       <Route path="/sales/add-recurringInvoice" element={<AddRecurringInvoices />} />
 
       <Route path="/sales/credit-notes" element={<CreditNote />} />

@@ -10,7 +10,6 @@ import { Toast } from '../../../components/Toast/Toast';
 import { useGlobalToast } from '../../../components/Toast/ToastContext';
 import api from '../../../services/api/apiConfig';
 import { useLoading } from '../../../Contexts/Loadingcontext';
-import { Copy, Pause, Trash2 } from 'react-feather';
 
 
 interface Payments {
@@ -106,7 +105,7 @@ const PaymentReceived = () => {
         showLoading();
         const response = await api.get<Payments[]>('payments/');
         setPayments(response.data);
-      } catch (error: any) {
+      } catch (error: any) {z
         setToast({
           stage: 'enter',
           type: 'error',

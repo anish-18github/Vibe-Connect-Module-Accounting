@@ -19,7 +19,7 @@ export const salesTabs = [
   { label: 'Quotes', path: '/sales/quotes' },
   { label: 'Sales Orders', path: '/sales/sales-orders' },
   { label: 'Invoices', path: '/sales/invoices' },
-  { label: 'Recurring Invoices', path: '/sales/payment-invoices' },
+  { label: 'Recurring Invoices', path: '/sales/recurring-invoices' },
   { label: 'Delivery Challans', path: '/sales/delivery-challans' },
   { label: 'Payment Received', path: '/sales/payment-received' },
   { label: 'Credit Notes', path: '/sales/credit-notes' },

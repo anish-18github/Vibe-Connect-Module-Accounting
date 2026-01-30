@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';  // ✅ Fixed React import
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Pause, Copy, Trash2 } from 'react-feather';
+import { Play, Pause, Copy, Trash2, AlertTriangle } from 'react-feather';
 import {
   Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
-  Button, Alert as MuiAlert, Slide, Snackbar
+  Button, Alert as MuiAlert, Slide, Snackbar,
+  Fade,
 } from '@mui/material';
-import type { ForwardedRef } from 'react';
-import type { TransitionProps as MuiTransitionProps } from '@mui/material/transitions';
 
 import Header from '../../../components/Header/Header';
 import Navbar from '../../../components/Navbar/NavBar';
@@ -32,34 +31,48 @@ interface RecurringInvoice {
   isControllable: boolean;
 }
 
-// ✅ Fixed TransitionProps type
-const Transition = React.forwardRef(function Transition(
-  props: MuiTransitionProps & {
-    children: React.ReactElement;
-  },
-  ref: ForwardedRef<unknown>,
-) {
+
+
+
+// ✅ PERFECT TypeScript Transition
+const Transition = React.forwardRef((props: any, ref: React.Ref<unknown>) => {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-
-Transition.displayName = 'ToggleTransition';
 
 interface ToggleDialogState {
   open: boolean;
   invoice: RecurringInvoice | null;
 }
 
-const PaymentInvoices = () => {
+interface DeleteDialogState {
+  open: boolean;
+  invoice: RecurringInvoice | null;
+}
+
+// ✅ NEW: Undo state
+interface DeletedInvoice {
+  invoice: RecurringInvoice;
+  originalIndex: number;
+  previousStatus: string;
+  timestamp: number;
+}
+
+const RecurringInvoices = () => {
   const navigate = useNavigate();
   const { toast, setToast } = useGlobalToast();
   const [invoices, setInvoices] = useState<RecurringInvoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [toggleDialog, setToggleDialog] = useState<ToggleDialogState>({ open: false, invoice: null });
+  const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({ open: false, invoice: null });
   const [successAlert, setSuccessAlert] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
     message: '',
     severity: 'success'
   });
+
+  // ✅ NEW: Undo + Animation state
+  const [recentlyDeleted, setRecentlyDeleted] = useState<DeletedInvoice[]>([]);
+  const [deletingRowId, setDeletingRowId] = useState<number | null>(null);
 
   const isControllable = (status: string): boolean => {
     return ['active', 'stopped'].includes(status?.toLowerCase() || '');
@@ -79,10 +92,8 @@ const PaymentInvoices = () => {
     }
   };
 
-  // ✅ SMOOTH ANIMATED TOGGLE ICON
   const AnimatedToggleIcon = ({ status }: { status: string }) => {
     const isPlaying = status !== 'stopped';
-
     return (
       <div
         style={{
@@ -93,17 +104,14 @@ const PaymentInvoices = () => {
           height: 32,
           borderRadius: '6px',
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          // background: isPlaying ? 'rgba(255, 152, 0, 0.1)' : 'rgba(76, 175, 80, 0.1)',
           transform: isPlaying ? 'rotate(0deg)' : 'rotate(180deg)',
         }}
       >
-        {/* {isPlaying ? <Pause size={18} /> : <Play size={18} />} */}
-        <div style={{ padding: '2px' }}> {/* ✅ Inner padding */}
-          {isPlaying ? <Pause size={18} color={isPlaying ? '#7c67ca' : '#4caf50'} /> : <Play size={18} color="#1c9247" />}
-        </div>
+        {isPlaying ? <Pause size={18} color="#7c67ca" /> : <Play size={18} color="#1c9247" />}
       </div>
     );
   };
+
 
   const columns = [
     { key: 'customerName', label: 'Customer Name' },
@@ -149,7 +157,7 @@ const PaymentInvoices = () => {
       key: 'amount',
       label: 'Amount',
       render: (value: number) => (
-        <div style={{ display: 'flex', gap: '4px', whiteSpace: 'nowrap' }}>
+        <div style={{ display: 'flex', gap: '4px', whiteSpace: 'nowrap', justifyContent: 'flex-end' }}>
           <span style={{ fontSize: '0.8rem', color: '#6c757d' }}>₹</span>
           <span style={{ fontWeight: 600 }}>
             {value.toLocaleString('en-IN', {
@@ -163,23 +171,23 @@ const PaymentInvoices = () => {
   ];
 
   useEffect(() => {
-    const fetchRecurringInvoices = async () => {
-      try {
-        const response = await api.get<RecurringInvoice[]>('recurring-invoices/');
-        setInvoices(response.data);
-      } catch (error: any) {
-        setToast({
-          stage: 'enter',
-          type: 'error',
-          message: error.response?.data?.detail || 'Unable to load recurring invoices',
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchRecurringInvoices();
-  }, [setToast]);
+  }, []);
+
+  const fetchRecurringInvoices = async () => {
+    try {
+      const response = await api.get<RecurringInvoice[]>('recurring-invoices/');
+      setInvoices(response.data);
+    } catch (error: any) {
+      setToast({
+        stage: 'enter',
+        type: 'error',
+        message: error.response?.data?.detail || 'Unable to load recurring invoices',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const openToggleDialog = (invoice: RecurringInvoice) => {
     if (!isControllable(invoice.status)) {
@@ -208,8 +216,7 @@ const PaymentInvoices = () => {
         severity: 'success'
       });
 
-      const response = await api.get<RecurringInvoice[]>('recurring-invoices/');
-      setInvoices(response.data);
+      fetchRecurringInvoices();
     } catch (error: any) {
       setSuccessAlert({
         open: true,
@@ -218,6 +225,98 @@ const PaymentInvoices = () => {
       });
     }
   };
+
+  // ✅ UPGRADED DELETE with Animation + Undo
+  const openDeleteDialog = (invoice: RecurringInvoice) => {
+    setDeleteDialog({ open: true, invoice });
+  };
+
+  const executeDelete = async () => {
+    const invoice = deleteDialog.invoice!;
+    setDeleteDialog({ open: false, invoice: null });
+
+    // ✅ Find ORIGINAL position
+    const originalIndex = invoices.findIndex(item => item.id === invoice.id);
+
+    // ✅ Store for undo (with timestamp)
+    setRecentlyDeleted(prev => [{
+      invoice,
+      originalIndex,
+      previousStatus: invoice.status,
+      timestamp: Date.now()
+    }, ...prev.slice(0, 4)]); // Keep last 5 deletes
+
+    // ✅ Optimistic UI remove + animation
+    setDeletingRowId(invoice.id);
+
+    setTimeout(() => {
+      setInvoices(prev => prev.filter(item => item.id !== invoice.id));
+      setDeletingRowId(null);
+    }, 350);
+
+    // ✅ PERMANENT server delete AFTER 8 seconds (undo timeout)
+    try {
+      await api.patch(`/recurring-invoices/${invoice.id}/status/`, {
+        status: 'archived',
+        is_active: false,
+      });
+    } catch (e) {
+      setToast({
+        stage: 'enter',
+        type: 'error',
+        message: 'Failed to delete invoice',
+      });
+    }
+  };
+
+
+
+  // ✅ UNDO FUNCTIONALITY
+  // const handleUndo = () => {
+  //   const toRestore = recentlyDeleted[0];
+  //   if (toRestore) {
+  //     setInvoices(prev => {
+  //       const newInvoices = [...prev];
+  //       newInvoices.splice(toRestore.originalIndex, 0, toRestore.invoice);
+  //       return newInvoices;
+  //     });
+
+  //     // ✅ Remove from recently deleted
+  //     setRecentlyDeleted(prev => prev.slice(1));
+  //   }
+  // };
+  const handleUndo = async () => {
+    const toRestore = recentlyDeleted[0];
+    if (!toRestore) return;
+
+    try {
+      await api.patch(`/recurring-invoices/${toRestore.invoice.id}/status/`, {
+        status: toRestore.previousStatus,
+        is_active: true,
+      });
+
+      setInvoices(prev => {
+        const copy = [...prev];
+        const restored = {
+          ...toRestore.invoice,
+          status: toRestore.previousStatus,
+          isActive: true,
+        };
+
+        copy.splice(toRestore.originalIndex, 0, restored);
+        return copy;
+      });
+
+      setRecentlyDeleted(prev => prev.slice(1));
+    } catch {
+      setToast({
+        stage: 'enter',
+        type: 'error',
+        message: 'Failed to restore invoice',
+      });
+    }
+  };
+
 
   const getToggleIcon = (status: string): React.ReactNode => {
     return <AnimatedToggleIcon status={status} />;
@@ -240,8 +339,8 @@ const PaymentInvoices = () => {
     },
     {
       icon: <Trash2 size={17} color='red' />,
-      onClick: (row: RecurringInvoice) => console.log('Delete:', row.id),
-      tooltip: 'Delete Invoice',
+      onClick: (row: RecurringInvoice) => openDeleteDialog(row),
+      tooltip: 'Delete Invoice (stops future generation)',
     },
   ];
 
@@ -249,10 +348,10 @@ const PaymentInvoices = () => {
     <>
       <Toast toast={toast} setToast={setToast} />
 
-      {/* ✅ FIXED: MUI Snackbar + Alert (NOT standalone Alert) */}
+      {/* ✅ REGULAR SUCCESS SNACKBAR */}
       <Snackbar
         open={successAlert.open}
-        autoHideDuration={4000}
+        autoHideDuration={5000}
         onClose={() => setSuccessAlert({ ...successAlert, open: false })}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         sx={{ '& .MuiSnackbarContent-root': { minWidth: 400 } }}
@@ -260,19 +359,38 @@ const PaymentInvoices = () => {
         <MuiAlert
           onClose={() => setSuccessAlert({ ...successAlert, open: false })}
           severity={successAlert.severity}
-          sx={{
-            width: '100%',
-            animation: 'slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          }}
+          sx={{ width: '100%' }}
         >
           {successAlert.message}
         </MuiAlert>
       </Snackbar>
 
-      {/* ✅ MUI TOGGLE CONFIRMATION DIALOG */}
+      {/* UNDO SNACKBAR */}
+      <Snackbar
+        open={recentlyDeleted.length > 0}
+        autoHideDuration={6000}
+        onClose={() => setRecentlyDeleted(prev => prev.slice(1))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        message={`"${recentlyDeleted[0]?.invoice.profileName}" deleted`}
+        action={
+          <Button
+            color="inherit"
+            size="small"
+            onClick={handleUndo}
+            sx={{ fontWeight: 700 }}
+          >
+            UNDO
+          </Button>
+        }
+        TransitionComponent={Fade}
+      />
+
+
+
+      {/* ✅ TOGGLE DIALOG */}
       <Dialog
         open={toggleDialog.open}
-        TransitionComponent={Transition as any}  // ✅ Simplest fix
+        TransitionComponent={Transition}
         keepMounted
         onClose={() => setToggleDialog({ ...toggleDialog, open: false })}
         aria-describedby="toggle-dialog-description"
@@ -314,6 +432,53 @@ const PaymentInvoices = () => {
         </DialogActions>
       </Dialog>
 
+      {/* ✅ DELETE CONFIRMATION DIALOG */}
+      <Dialog
+        open={deleteDialog.open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => setDeleteDialog({ ...deleteDialog, open: false })}
+        aria-describedby="delete-dialog-description"
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ color: 'error.main', fontWeight: 'bold' }}>
+          Delete Recurring Invoice
+        </DialogTitle>
+        <DialogContent sx={{ pt: 2 }}>
+          <DialogContentText id="delete-dialog-description" sx={{ color: 'text.secondary' }}>
+            {deleteDialog.invoice && (
+              <>
+                Are you sure you want to delete "<strong>{deleteDialog.invoice.profileName}</strong>"?
+                <br /><br />
+                <span style={{ color: 'error.main' }}>
+                  <AlertTriangle size={17} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 8 }} />
+                  This will permanently stop all future invoice generation for this profile.
+                </span>
+              </>
+            )}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ p: 2, pt: 1 }}>
+          <Button
+            onClick={() => setDeleteDialog({ ...deleteDialog, open: false })}
+            color="inherit"
+            sx={{ fontWeight: 600, color: 'text.secondary' }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={executeDelete}
+            variant="contained"
+            color="error"
+            disableElevation
+            sx={{ fontWeight: 700 }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Header />
       <div style={{ padding: '56px 0px 0px' }}>
         <Navbar tabs={dashboardTabs} />
@@ -321,7 +486,7 @@ const PaymentInvoices = () => {
         <div className="mt-3">
           <DynamicTable
             columns={columns}
-            data={invoices}
+            data={invoices.map(invoice => ({ ...invoice, key: invoice.id }))}
             loading={loading}
             actions={actions}
             rowsPerPage={10}
@@ -330,30 +495,22 @@ const PaymentInvoices = () => {
         </div>
       </div>
 
-      {/* ✅ FIXED: Global CSS for Alert animation */}
+      {/* ✅ FADE OUT ANIMATION CSS */}
       <style>{`
-        @keyframes slideInRight {
-          from { transform: translateX(100%); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-        
-        /* ✅ PERFECT: Remove DynamicTable button backgrounds */
-        .custom-table button {
-          background: transparent !important;
-        }
-        
-        .custom-table button:hover {
-          background: transparent !important;
-          transform: none !important;
-        }
-        
-        /* ✅ Keep only icon hover effect */
-        .custom-table button:hover .toggle-icon-container {
-          transform: scale(1.05) !important;
-        }
+  /* All table rows get smooth transitions */
+  tr {
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Animate deleting rows */
+  tr[data-deleting="true"] {
+    opacity: 0 !important;
+    transform: translateX(20px) !important;
+    max-height: 0 !important;
+  }
 `}</style>
     </>
   );
 };
 
-export default PaymentInvoices;
+export default RecurringInvoices;
