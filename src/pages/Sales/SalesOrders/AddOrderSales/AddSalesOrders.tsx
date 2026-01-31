@@ -310,7 +310,7 @@ export default function AddSalesOrder() {
           referenceNumber: quoteData.referenceNumber,    // "9876"
           salesOrderDate: quoteData.salesOrderDate,      // "2026-01-24"
           expectedShipmentDate: quoteData.expectedShipmentDate,
-          paymentTerms: quoteData.paymentTerms,
+          paymentTerms: '',
           salesPerson: String(quoteData.salesPerson),    // "1"
           deliveryMethod: quoteData.deliveryMethod,
           customerNotes: quoteData.customerNotes,        // "test"

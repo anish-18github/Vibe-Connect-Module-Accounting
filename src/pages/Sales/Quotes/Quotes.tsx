@@ -6,7 +6,7 @@ import DynamicTable from '../../../components/Table/DynamicTable';
 import { useGlobalToast } from '../../../components/Toast/ToastContext';
 import PublishedWithChangesOutlinedIcon from '@mui/icons-material/PublishedWithChangesOutlined';
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
-import { Edit } from 'react-feather';
+// import { Edit } from 'react-feather';
 import { salesTabs } from '../Customers/Customers';
 import { dashboardTabs } from '../../Dashboard/dashboard';
 import api from '../../../services/api/apiConfig';
@@ -167,7 +167,7 @@ const Quotes = () => {
           salesPerson: fullQuote.sales_person,
           salesOrderDate: fullQuote.quote_date,
           expectedShipmentDate: fullQuote.quote_date,
-          paymentTerms: 'Net 30',
+          // paymentTerms: 'Net 30',
           deliveryMethod: 'Courier',
           customerNotes: fullQuote.customer_notes,
           termsAndConditions: fullQuote.terms_and_conditions,

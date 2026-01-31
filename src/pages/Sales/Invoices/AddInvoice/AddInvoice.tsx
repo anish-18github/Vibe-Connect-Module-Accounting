@@ -228,7 +228,7 @@ export default function AddInvoice() {
   }, [formData.itemTable, taxInfo.type, taxInfo.selectedTax, taxInfo.adjustment, tcsOptions]);
 
 
-  // CURRENT DATE
+  // FETCH DATA FRON SALESORDER PREFILL useEffect
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
     const soData = location.state?.salesOrderData;
@@ -245,7 +245,7 @@ export default function AddInvoice() {
           salesOrderNumber: soData.salesOrderNumber || '',
           salesPerson: String(soData.salesPerson || ''),
           invoiceDate: soData.invoiceDate || new Date().toISOString().split('T')[0] || today,
-          dueDate:'',
+          dueDate: '',
           paymentTerms: soData.paymentTerms || 'Net 30',
           customerNotes: soData.customerNotes || '',
           termsAndConditions: soData.termsAndConditions || '',
@@ -269,11 +269,71 @@ export default function AddInvoice() {
         ...prev,
         invoice: {
           ...prev.invoice,
-          invoiceDate:today,
+          invoiceDate: today,
         }
       }))
     }
   }, [location.state]);
+
+
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const dcData = location.state?.dcData;
+    const dcItems = location.state?.dcItems;
+
+    if (dcData && dcData.customerId) {
+      setFormData({
+        invoice: {
+          customerId: String(dcData.customerId),
+          invoiceNo: '',
+          invoiceDate: dcData.invoiceDate || today,
+          dueDate: '',
+          paymentTerms: '',
+          salesPerson: '',
+          salesOrderNumber: dcData.referenceNumber,
+          customerNotes: dcData.customerNotes || '',
+          termsAndConditions: dcData.termsAndConditions || '',
+        },
+        itemTable: dcItems.map((item: any) => ({
+          itemDetails: item.description,
+          quantity: String(item.quantity),
+          rate: String(item.rate),
+          discount: String(item.discount || 0),
+          amount: String(item.quantity * item.rate),
+        })),
+      });
+
+      // ✅ TAX PREFILL (same logic as SO)
+      if (dcData.taxes?.length) {
+        const tax = dcData.taxes[0];
+
+        setTaxInfo({
+          type: tax.tax_type.toUpperCase(),
+          selectedTax: '',
+          adjustment: Number(dcData.adjustment || 0),
+          taxRate: Number(tax.tax_rate),
+          taxAmount: Number(tax.tax_amount),
+          total: Number(dcData.grandTotal),
+        });
+
+        setTotals({
+          subtotal: Number(dcData.subtotal),
+          tax: Number(tax.tax_amount || 0),
+          total: Number(dcData.grandTotal),
+          grandTotal: Number(dcData.grandTotal),
+        });
+      }
+
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        invoice: {
+          ...prev.invoice,
+          invoiceDate: today,
+        },
+      }));
+    }
+  }, []);
 
 
   // ---------------- Handlers ----------------

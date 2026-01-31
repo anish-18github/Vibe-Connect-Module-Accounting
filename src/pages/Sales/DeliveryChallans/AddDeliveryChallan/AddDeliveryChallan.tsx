@@ -44,7 +44,7 @@ type SubmitType = 'draft';
 
 export default function AddDeliveryChallan() {
   const navigate = useNavigate();
-const { toast, setToast, showToast } = useGlobalToast();
+  const { toast, setToast, showToast } = useGlobalToast();
 
   // ---------------- Modal + Small UI State ----------------
   const [showSettings, setShowSettings] = useState(false);
@@ -310,6 +310,40 @@ const { toast, setToast, showToast } = useGlobalToast();
 
   const round2 = (v: number) => Number(Number(v).toFixed(2));
 
+
+  const buildTaxesPayload = () => {
+    if (!taxInfo.type || taxInfo.taxAmount === 0) return [];
+
+    if (taxInfo.type === 'TDS') {
+      return [
+        {
+          tax_type: 'tds',
+          tax_name: `TDS @${taxInfo.taxRate}%`,
+          tax_rate: round2(taxInfo.taxRate),
+          tax_amount: round2(taxInfo.taxAmount),
+        },
+      ];
+    }
+
+    if (taxInfo.type === 'TCS') {
+      const opt = tcsOptions.find(
+        (o) => String(o.id) === taxInfo.selectedTax,
+      );
+
+      return [
+        {
+          tax_type: 'tcs',
+          tax_name: opt ? opt.name : `TCS @${taxInfo.taxRate}%`,
+          tax_rate: round2(taxInfo.taxRate),
+          tax_amount: round2(taxInfo.taxAmount),
+        },
+      ];
+    }
+
+    return [];
+  };
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -329,6 +363,9 @@ const { toast, setToast, showToast } = useGlobalToast();
       terms_and_conditions: formData.challan.termsAndConditions,
 
       subtotal: round2(totals.subtotal),
+
+      taxes: buildTaxesPayload(),
+
       adjustment: round2(taxInfo.adjustment),
       grand_total: round2(totals.grandTotal),
 

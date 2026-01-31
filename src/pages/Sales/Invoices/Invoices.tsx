@@ -67,10 +67,16 @@ const Invoices = () => {
         return (
           <span
             style={{
-              backgroundColor: bg, color, padding: '4px 10px',
-              borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600,
-              textTransform: 'capitalize', minWidth: '80px',
-              display: 'inline-block', textAlign: 'center',
+              backgroundColor: bg,
+              color,
+              padding: '4px 10px',
+              borderRadius: '12px',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              textTransform: 'capitalize',
+              minWidth: '80px',
+              display: 'inline-block',
+              textAlign: 'center',
             }}
           >
             {value || 'Unknown'}
