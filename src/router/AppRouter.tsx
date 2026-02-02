@@ -19,7 +19,7 @@ import AddCreditNote from '../pages/Sales/CreditNotes/AddCreditNotes/AddCreditNo
 import RecordPayment from '../pages/Sales/PaymentReceived/RecordPayment/RecordPayment';
 import AddVendor from '../pages/Purcheses/Vendors/AddVendor/AddVendor';
 import Vendors from '../pages/Purcheses/Vendors/Vendors';
-import ViewVendor from '../pages/Purcheses/Vendors/ViewVendor/ViewVerndor';
+import ViewVendor from '../pages/Purcheses/Vendors/ViewVendor/ViewVendor';
 import ManualJournal from '../pages/Accountant/ManualJournal/ManualJournal';
 import AddJournal from '../pages/Accountant/ManualJournal/AddManualJournal/AddJournal';
 import ViewJournal from '../pages/Accountant/ManualJournal/ViewJournal/ViewJournal';

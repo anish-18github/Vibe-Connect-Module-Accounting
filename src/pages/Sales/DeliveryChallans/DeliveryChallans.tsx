@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import Header from '../../../components/Header/Header';
 import Navbar from '../../../components/Navbar/NavBar';
@@ -77,6 +77,7 @@ interface DeletedChallan {
 
 const DeliveryChallans = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast, setToast } = useGlobalToast();
   const { showLoading, hideLoading } = useLoading();
 
@@ -187,23 +188,32 @@ const DeliveryChallans = () => {
     },
   ];
 
+  const fetchDeliveryChallans = async () => {
+    console.log('Fetching delivery challans...');
+    try {
+      const response = await api.get<DeliveryChallan[]>('delivery-challans/');
+      console.log('API response:', response.data);
+      setChallans(response.data);
+    } catch (error: any) {
+      setToast({
+        stage: 'enter',
+        type: 'error',
+        message: error.response?.data?.detail || 'Unable to load delivery challans',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchDeliveryChallans = async () => {
-      try {
-        const response = await api.get<DeliveryChallan[]>('delivery-challans/');
-        setChallans(response.data);
-      } catch (error: any) {
-        setToast({
-          stage: 'enter',
-          type: 'error',
-          message: error.response?.data?.detail || 'Unable to load delivery challans',
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchDeliveryChallans();
   }, []);
+
+  //   useEffect(() => {
+  //   if ((location.state as any)?.refresh) {
+  //     fetchDeliveryChallans();
+  //   }
+  // }, [location.state]);
 
   // ==================== ACTION HANDLERS ====================
 
@@ -292,15 +302,23 @@ const DeliveryChallans = () => {
 
   const handleConvertToInvoice = async (row: DeliveryChallan) => {
     handleMenuClose();
-    // navigate(`/sales/add-invoice?from=dc&id=${row.id}`);
+
+    // 🚫 Extra safety (UI-level)
+    if (row.invoiceStatus?.toLowerCase() === 'invoiced') {
+      setToast({
+        stage: 'enter',
+        type: 'error',
+        message: 'This Delivery Challan is already invoiced',
+      });
+      return;
+    }
+
     try {
       showLoading();
 
       // ✅ FETCH FULL DC
       const response = await api.get(`/delivery-challans/${row.id}/`);
       const fullDc = response.data;
-      // console.log(fullDc);
-      
 
       const dcState = {
         fromDeliveryChallan: true,
@@ -316,18 +334,19 @@ const DeliveryChallans = () => {
 
           subtotal: fullDc.subtotal,
           adjustment: fullDc.adjustment,
-          taxes: fullDc.taxes || [],
+          tax: fullDc.tax || null,
           grandTotal: fullDc.grand_total,
         },
 
         dcItems: fullDc.items.map((item: any) => ({
           description: item.item_details,
-          quantity: parseFloat(item.quantity),
-          rate: parseFloat(item.rate),
+          quantity: Number(item.quantity),
+          rate: Number(item.rate),
           discount: item.discount || 0,
         })),
       };
 
+      // ✅ ONLY NAVIGATE
       navigate('/sales/add-invoice', { state: dcState });
 
     } catch (err) {
@@ -335,12 +354,13 @@ const DeliveryChallans = () => {
       setToast({
         stage: 'enter',
         type: 'error',
-        message: 'Failed to load Delivery challan details',
+        message: 'Failed to load Delivery Challan details',
       });
     } finally {
       hideLoading();
     }
   };
+
 
   const openDeleteDialog = (row: DeliveryChallan) => {
     handleMenuClose();
@@ -394,9 +414,12 @@ const DeliveryChallans = () => {
     return row.invoiceStatus?.toLowerCase() === 'invoiced';
   };
 
+
   const getMenuItems = (row: DeliveryChallan) => {
     const status = row.status?.toLowerCase();
     const items: React.ReactNode[] = [];
+    const canConvertToInvoice = !isInvoiced(row);
+
 
     // DRAFT actions
     if (status === 'draft') {
@@ -442,7 +465,7 @@ const DeliveryChallans = () => {
     if (status === 'delivered') {
       if (!isInvoiced(row)) {
         items.push(
-          <MenuItem key="convert-invoice" onClick={() => handleConvertToInvoice(row)}>
+          <MenuItem key="convert-invoice" onClick={() => handleConvertToInvoice(row)} disabled={!canConvertToInvoice}>
             <ListItemIcon><ReceiptOutlinedIcon fontSize="small" sx={{ color: '#1d4ed8' }} /></ListItemIcon>
             <ListItemText>Convert to Invoice</ListItemText>
           </MenuItem>
@@ -576,6 +599,18 @@ const DeliveryChallans = () => {
             '& .MuiMenuItem-root': {
               py: 1,
               px: 2,
+              borderRadius: 1,
+              mx: 0.5,
+              transition: 'background-color 0.2s ease',
+
+              '&:hover': {
+                backgroundColor: '#556fc4',   // 🔥 hover bg #eef2ff
+                color: '#fefeff',             // 🔥 hover text #1d4ed8'
+              },
+
+              '&:hover svg': {
+                color: '#fdfdfd',             // 🔥 icon color #1d4ed8
+              },
             },
           },
         }}

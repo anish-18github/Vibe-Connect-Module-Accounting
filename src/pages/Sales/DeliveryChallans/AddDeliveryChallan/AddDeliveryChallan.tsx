@@ -312,36 +312,33 @@ export default function AddDeliveryChallan() {
 
 
   const buildTaxesPayload = () => {
-    if (!taxInfo.type || taxInfo.taxAmount === 0) return [];
+    if (!taxInfo.type || taxInfo.taxAmount === 0) return null;
 
     if (taxInfo.type === 'TDS') {
-      return [
-        {
-          tax_type: 'tds',
-          tax_name: `TDS @${taxInfo.taxRate}%`,
-          tax_rate: round2(taxInfo.taxRate),
-          tax_amount: round2(taxInfo.taxAmount),
-        },
-      ];
+      return {
+        tax_type: 'tds',
+        tax_name: `TDS @${taxInfo.taxRate}%`,
+        tax_rate: round2(taxInfo.taxRate),
+        tax_amount: round2(taxInfo.taxAmount),
+      };
     }
 
     if (taxInfo.type === 'TCS') {
       const opt = tcsOptions.find(
-        (o) => String(o.id) === taxInfo.selectedTax,
+        (o) => String(o.id) === taxInfo.selectedTax
       );
 
-      return [
-        {
-          tax_type: 'tcs',
-          tax_name: opt ? opt.name : `TCS @${taxInfo.taxRate}%`,
-          tax_rate: round2(taxInfo.taxRate),
-          tax_amount: round2(taxInfo.taxAmount),
-        },
-      ];
+      return {
+        tax_type: 'tcs',
+        tax_name: opt ? opt.name : `TCS @${taxInfo.taxRate}%`,
+        tax_rate: round2(taxInfo.taxRate),
+        tax_amount: round2(taxInfo.taxAmount),
+      };
     }
 
-    return [];
+    return null;
   };
+
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -364,7 +361,7 @@ export default function AddDeliveryChallan() {
 
       subtotal: round2(totals.subtotal),
 
-      taxes: buildTaxesPayload(),
+      tax: buildTaxesPayload(),
 
       adjustment: round2(taxInfo.adjustment),
       grand_total: round2(totals.grandTotal),

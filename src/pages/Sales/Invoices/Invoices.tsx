@@ -57,7 +57,7 @@ const Invoices = () => {
   const columns = [
     { key: 'date', label: 'Date' },
     { key: 'invoiceNumber', label: 'Invoice' },
-    { key: 'orderNumber', label: 'Order Number' },
+    { key: 'order_number', label: 'Order Number' },
     { key: 'customerName', label: 'Customer Name' },
     {
       key: 'displayStatus',

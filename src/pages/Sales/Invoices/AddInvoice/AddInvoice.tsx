@@ -28,7 +28,7 @@ interface ItemRow {
 interface InvoiceForm {
   invoice: {
     customerId: string;
-    salesOrderNumber: string;
+    orderNumber: string;
     invoiceNo: string;
     invoiceDate: string;
     dueDate: string;
@@ -148,7 +148,7 @@ export default function AddInvoice() {
   const [formData, setFormData] = useState<InvoiceForm>({
     invoice: {
       customerId: '',
-      salesOrderNumber: '',
+      orderNumber: '',
       invoiceNo: '',
       invoiceDate: '',
       dueDate: '',
@@ -242,7 +242,7 @@ export default function AddInvoice() {
       setFormData({
         invoice: {
           customerId: String(soData.customerId),
-          salesOrderNumber: soData.salesOrderNumber || '',
+          orderNumber: soData.salesOrderNumber || '',
           salesPerson: String(soData.salesPerson || ''),
           invoiceDate: soData.invoiceDate || new Date().toISOString().split('T')[0] || today,
           dueDate: '',
@@ -290,7 +290,7 @@ export default function AddInvoice() {
           dueDate: '',
           paymentTerms: '',
           salesPerson: '',
-          salesOrderNumber: dcData.referenceNumber,
+          orderNumber: dcData.referenceNumber,
           customerNotes: dcData.customerNotes || '',
           termsAndConditions: dcData.termsAndConditions || '',
         },
@@ -304,12 +304,35 @@ export default function AddInvoice() {
       });
 
       // ✅ TAX PREFILL (same logic as SO)
-      if (dcData.taxes?.length) {
-        const tax = dcData.taxes[0];
+      if (dcData.tax) {
+        const tax = dcData.tax;
+
+        let selectedTax = '';
+
+        if (tax.tax_type === 'tds') {
+          selectedTax = String(tax.tax_rate); // TDS uses rate
+        }
+
+        if (tax.tax_type === 'tcs') {
+          const match = tcsOptions.find(
+            (o) => Number(o.rate) === Number(tax.tax_rate)
+          );
+          selectedTax = match ? match.id : '';
+        }
+
+        // setTaxInfo({
+        //   type: tax.tax_type.toUpperCase(),
+        //   selectedTax,
+        //   adjustment: Number(dcData.adjustment || 0),
+        //   taxRate: Number(tax.tax_rate),
+        //   taxAmount: Number(tax.tax_amount),
+        //   total: Number(dcData.grandTotal),
+        // });
+
 
         setTaxInfo({
-          type: tax.tax_type.toUpperCase(),
-          selectedTax: '',
+          type: tax.tax_type.toUpperCase() as TaxType,
+          selectedTax,
           adjustment: Number(dcData.adjustment || 0),
           taxRate: Number(tax.tax_rate),
           taxAmount: Number(tax.tax_amount),
@@ -318,7 +341,7 @@ export default function AddInvoice() {
 
         setTotals({
           subtotal: Number(dcData.subtotal),
-          tax: Number(tax.tax_amount || 0),
+          tax: Number(tax.tax_amount),
           total: Number(dcData.grandTotal),
           grandTotal: Number(dcData.grandTotal),
         });
@@ -333,7 +356,7 @@ export default function AddInvoice() {
         },
       }));
     }
-  }, []);
+  }, [location.state, tcsOptions]);
 
 
   // ---------------- Handlers ----------------
@@ -415,6 +438,37 @@ export default function AddInvoice() {
     Number(Number(value).toFixed(2));
 
 
+  const buildTaxPayload = () => {
+    if (!taxInfo.type || taxInfo.taxAmount === 0) return null;
+
+    if (taxInfo.type === 'TDS') {
+      return {
+        tax_type: 'tds',
+        tax_name: `TDS @${taxInfo.taxRate}%`,
+        tax_rate: round2(taxInfo.taxRate),
+        tax_amount: round2(taxInfo.taxAmount),
+      };
+    }
+
+    if (taxInfo.type === 'TCS') {
+      const opt = tcsOptions.find(
+        (o) => String(o.id) === taxInfo.selectedTax
+      );
+
+      return {
+        tax_type: 'tcs',
+        tax_name: opt ? opt.name : `TCS @${taxInfo.taxRate}%`,
+        tax_rate: round2(taxInfo.taxRate),
+        tax_amount: round2(taxInfo.taxAmount),
+      };
+    }
+
+    return null;
+  };
+
+
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -423,20 +477,23 @@ export default function AddInvoice() {
     const payload = {
       customer: Number(formData.invoice.customerId),
 
-      sales_order_number: formData.invoice.salesOrderNumber || null, // ✅ FIX
+      order_number: formData.invoice.orderNumber || null, // ✅ FIX
 
       invoice_number: formData.invoice.invoiceNo,
       invoice_date: formData.invoice.invoiceDate,
-      due_date: formData.invoice.dueDate,
+      due_date: formData.invoice.dueDate || null,
       payment_terms: formData.invoice.paymentTerms,
 
-      sales_person: Number(formData.invoice.salesPerson),
+      sales_person: formData.invoice.salesPerson
+        ? Number(formData.invoice.salesPerson)
+        : null,
       status: submitType,
 
       customer_notes: formData.invoice.customerNotes,
       terms_and_conditions: formData.invoice.termsAndConditions,
 
       subtotal: round2(totals.subtotal),
+      tax: buildTaxPayload(),
       tax_total: round2(taxInfo.taxAmount),
       adjustment: round2(taxInfo.adjustment),
       grand_total: round2(totals.grandTotal),
@@ -530,11 +587,11 @@ export default function AddInvoice() {
                   </label>
                   <input
                     type="text"
-                    name="salesOrderNumber"
+                    name="orderNumber"
                     className="form-control so-control"
-                    value={formData.invoice.salesOrderNumber}
+                    value={formData.invoice.orderNumber}
                     onChange={handleChange}
-                    placeholder="e.g. SO-16012026-xxxx"
+                    placeholder="SO / DC / Reference No"
                   />
                 </div>
 
