@@ -11,11 +11,24 @@ import { useGlobalToast } from '../../../components/Toast/ToastContext';
 import api from '../../../services/api/apiConfig';
 import { useLoading } from '../../../Contexts/Loadingcontext';
 
+// MUI Icon Imports
+import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
+import { Trash2 } from 'react-feather';
+import KeyboardReturnOutlinedIcon from '@mui/icons-material/KeyboardReturnOutlined';
+
+// MUI Utils
+import React from 'react';
+import {
+  Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
+  Button, Snackbar, Alert as MuiAlert, Slide, Fade
+} from '@mui/material';
+import { AlertTriangle } from 'react-feather';
+
 
 interface Payments {
   id: number;
   paymnetDate: String;
-  paymentId: string;
+  payment: string;
   reference: string;
   customerName: string;
   invoiceNumber: string;
@@ -25,13 +38,44 @@ interface Payments {
 }
 
 
+interface DeleteDialogState {
+  open: boolean;
+  payment: Payments | null;
+}
+
+// ✅ NEW: Undo state
+interface DeletedPayment {
+  payment: Payments;
+  originalIndex: number;
+  previousStatus: string;
+  timestamp: number;
+}
+
+const Transition = React.forwardRef((props: any, ref: React.Ref<unknown>) => {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
+
 const PaymentReceived = () => {
   const navigate = useNavigate();
   const [payments, setPayments] = useState<Payments[]>([]);
   const { toast, setToast } = useGlobalToast();
   const [loading, setLoading] = useState(true);
   const { showLoading, hideLoading } = useLoading();
+  const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({ open: false, payment: null });
+  const [successAlert, setSuccessAlert] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
 
+
+  const [recentlyDeleted, setRecentlyDeleted] = useState<DeletedPayment[]>([]);
+  const [deletingRowId, setDeletingRowId] = useState<number | null>(null);
+
+  // const isControllable = (status: string): boolean => {
+  //   return ['paid'].includes(status?.toLowerCase() || '');
+  // };
 
   const getStatusStyle = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -105,7 +149,7 @@ const PaymentReceived = () => {
         showLoading();
         const response = await api.get<Payments[]>('payments/');
         setPayments(response.data);
-      } catch (error: any) {z
+      } catch (error: any) {
         setToast({
           stage: 'enter',
           type: 'error',
@@ -120,13 +164,201 @@ const PaymentReceived = () => {
     fetchPayments();
   }, []);
 
+  const openDeleteDialog = (payment: Payments) => {
+    setDeleteDialog({ open: true, payment });
+  };
 
 
+  const executeDelete = async () => {
+    const payment = deleteDialog.payment!;
+    setDeleteDialog({ open: false, payment: null });
+
+    const originalIndex = payments.findIndex(item => item.id === payment.id);
+
+    setRecentlyDeleted(prev => [{
+      payment,
+      originalIndex,
+      previousStatus: payment.status,
+      timestamp: Date.now()
+    }, ...prev.slice(0, 4)]);
+
+    setDeletingRowId(payment.id);
+
+    setTimeout(() => {
+      setPayments(prev => prev.filter(item => item.id !== payment.id));
+      setDeletingRowId(null);
+    }, 350);
+
+    try {
+      await api.patch(`/payments/${payment.id}/status/`, {
+        // status: 'archived',
+        is_active: false,
+      });
+    } catch (e) {
+      setToast({
+        stage: 'enter',
+        type: 'error',
+        message: 'Failed to delete payment',
+      });
+    }
+  };
+
+
+
+  const handleUndo = async () => {
+    const toRestore = recentlyDeleted[0];
+    if (!toRestore) return;
+
+    try {
+      await api.patch(`/payments/${toRestore.payment.id}/status/`, {
+        is_active: true,
+      });
+
+      setPayments(prev => {
+        const copy = [...prev];
+        copy.splice(toRestore.originalIndex, 0, toRestore.payment);
+        return copy;
+      });
+
+      setRecentlyDeleted(prev => prev.slice(1));
+    } catch {
+      setToast({
+        stage: 'enter',
+        type: 'error',
+        message: 'Failed to restore payment',
+      });
+    }
+  };
+
+
+  const handleRefund = (row: Payments) => {
+    console.log('Refund clicked for payment:', row);
+    // TODO: Implement refund logic later
+  };
+
+
+  const actions: any[] = [
+    {
+      icon: <RemoveRedEyeOutlinedIcon sx={{ fontSize: 20 }} />,
+      onClick: (row: Payments) => navigate(`/sales/view-payment/${row.id}`),
+      tooltip: 'View Details',
+    },
+
+    //  REFUND ACTION
+    {
+      icon: <KeyboardReturnOutlinedIcon sx={{ fontSize: 20, color: '#f59e0b' }} />,
+      onClick: (row: Payments) => handleRefund(row),
+      tooltip: 'Refund Payment',
+    },
+
+    //  DELETE ACTION
+    {
+      icon: <Trash2 size={17} color="red" />,
+      onClick: (row: Payments) => openDeleteDialog(row),
+      tooltip: 'Delete Payment',
+    },
+  ];
 
 
   return (
     <>
+
       <Toast toast={toast} setToast={setToast} />
+
+
+      <Snackbar
+        open={successAlert.open}
+        autoHideDuration={5000}
+        onClose={() => setSuccessAlert({ ...successAlert, open: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <MuiAlert
+          onClose={() => setSuccessAlert({ ...successAlert, open: false })}
+          severity={successAlert.severity}
+          sx={{ width: '100%' }}
+        >
+          {successAlert.message}
+        </MuiAlert>
+      </Snackbar>
+
+      {/* UNDO snackbar */}
+
+      <Snackbar
+        open={recentlyDeleted.length > 0}
+        autoHideDuration={6000}
+        onClose={() => setRecentlyDeleted(prev => prev.slice(1))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        message={`"${recentlyDeleted[0]?.payment.payment}" deleted`}
+        action={
+          <Button
+            color="inherit"
+            size="small"
+            onClick={handleUndo}
+            sx={{ fontWeight: 700 }}
+          >
+            UNDO
+          </Button>
+        }
+        TransitionComponent={Fade}
+      />
+      <Dialog
+        open={deleteDialog.open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => setDeleteDialog({ ...deleteDialog, open: false })}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ color: 'error.main', fontWeight: 'bold' }}>
+          Delete Payment
+        </DialogTitle>
+
+        <DialogContent sx={{ pt: 2 }}>
+          <DialogContentText sx={{ color: 'text.secondary' }}>
+            {deleteDialog.payment && (
+              <>
+                Are you sure you want to delete payment
+                <strong> "{deleteDialog.payment.payment}"</strong>?
+                <br /><br />
+
+                <span style={{ color: '#dc2626' }}>
+                  <AlertTriangle
+                    size={17}
+                    style={{
+                      display: 'inline',
+                      verticalAlign: 'middle',
+                      marginRight: 8
+                    }}
+                  />
+                  This will remove the recorded payment entry.
+                </span>
+              </>
+            )}
+          </DialogContentText>
+        </DialogContent>
+
+        <DialogActions sx={{ p: 2, pt: 1 }}>
+          <Button
+            onClick={() => setDeleteDialog({ ...deleteDialog, open: false })}
+            color="inherit"
+            sx={{ fontWeight: 600 }}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            onClick={executeDelete}
+            variant="contained"
+            color="error"
+            disableElevation
+            sx={{ fontWeight: 700 }}
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
       <Header />
 
       <div style={{ padding: '56px 0px 0px' }}>
@@ -136,14 +368,32 @@ const PaymentReceived = () => {
         <div className=" mt-3">
           <DynamicTable
             columns={columns}
-            data={payments}
+            // data={payments}
+            data={payments.map(p => ({
+              ...p,
+              rowProps: {
+                'data-deleting': deletingRowId === p.id
+              }
+            }))}
             loading={loading}
-            actions={true}
+            actions={actions}
             rowsPerPage={10}
             onAdd={() => navigate('/sales/record-payment')} //May be change it latter. "/add-customer"
           />
         </div>
       </div>
+      <style>{`
+tr {
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+tr[data-deleting="true"] {
+  opacity: 0 !important;
+  transform: translateX(20px) !important;
+  max-height: 0 !important;
+}
+`}</style>
+
     </>
   );
 };

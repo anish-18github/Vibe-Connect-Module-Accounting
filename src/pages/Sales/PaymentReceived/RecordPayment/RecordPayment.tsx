@@ -7,11 +7,23 @@ import './recordPayment.css';
 import { Info, Settings, X } from 'react-feather';
 import api from '../../../../services/api/apiConfig';
 import CustomerSelect from '../../../../components/Masters/CustomerMaster/CustomerSelector';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Skeleton,
+  TextField,
+  Typography,
+  Box,
+  Chip,
+} from '@mui/material';
 
 // ------------------- Interfaces -------------------
-
 export interface PaymentFormData {
-
   paymentRecord: {
     customerId: string;
     amountReceived: string;
@@ -24,14 +36,12 @@ export interface PaymentFormData {
     tdsRate: string;
     customerNotes: string;
   };
-
   paymentSummary: {
     amountReceived: number;
     amountUsed: number;
     amountRefunded: number;
     amountExcess: number;
   };
-
   paymentUsageRow: {
     date: string;
     invoiceNumber: string;
@@ -39,8 +49,7 @@ export interface PaymentFormData {
     amountDue: number;
     paymentReceivedOn: string;
     paymentUsed: number;
-  }
-
+  };
 }
 
 interface PaymentSummary {
@@ -60,46 +69,34 @@ interface PaymentUsageRow {
   paymentUsed: number;
 }
 
-
-
 // ------------------- Component -------------------
-
 export default function AddPayment() {
   const navigate = useNavigate();
-const { toast, setToast, showToast } = useGlobalToast();
+  const { toast, setToast, showToast } = useGlobalToast();
 
   const [showSettings, setShowSettings] = useState(false);
   const [mode, setMode] = useState<'auto' | 'manual'>('auto');
-  // const [prefix, setPrefix] = useState('');
   const [nextNumber, setNextNumber] = useState('');
   const [restartYear, setRestartYear] = useState(false);
   const [closing, setClosing] = useState(false);
   const [prefixPattern, setPrefixPattern] = useState<string>('CUSTOM');
-
-  // const [applyFullAmount, setApplyFullAmount] = useState(false);
   const [receivedFullAmount, setReceivedFullAmount] = useState(false);
+  const [submitAction, setSubmitAction] = useState<'paid' | 'draft'>('draft');
 
-
-  const [submitAction, setSubmitAction] = useState<"paid" | "draft">("draft");
-
-
+  // ✅ NEW: Loading state for table
+  const [tableLoading, setTableLoading] = useState(false);
 
   const calculateTotalUnpaid = () => {
-    return usageRows.reduce(
-      (sum, row) => sum + Number(row.amountDue || 0),
-      0
-    );
+    return usageRows.reduce((sum, row) => sum + Number(row.amountDue || 0), 0);
   };
 
-
   const applyReceivedFullAmount = () => {
-    const totalUnpaid = calculateTotalUnpaid(); // number
-
+    const totalUnpaid = calculateTotalUnpaid();
     setFormData((prev) => ({
       ...prev,
       paymentRecord: {
         ...prev.paymentRecord,
-        amountReceived: totalUnpaid.toFixed(2), // ✅ string
+        amountReceived: totalUnpaid.toFixed(2),
       },
       paymentSummary: {
         ...prev.paymentSummary,
@@ -112,32 +109,25 @@ const { toast, setToast, showToast } = useGlobalToast();
       ...row,
       paymentUsed: row.amountDue,
     }));
-
     setUsageRows(updatedRows);
   };
 
-
   const resetReceivedFullAmount = () => {
-    // Reset checkbox
     setReceivedFullAmount(false);
-
-    // Reset amount received
     setFormData((prev) => ({
       ...prev,
       paymentRecord: {
         ...prev.paymentRecord,
-        amountReceived: "",
+        amountReceived: '',
       },
     }));
 
-    // Reset usage rows
     const clearedRows = usageRows.map((row) => ({
       ...row,
       paymentUsed: 0,
     }));
     setUsageRows(clearedRows);
 
-    // Reset summary
     setSummary({
       amountReceived: 0,
       amountUsed: 0,
@@ -145,35 +135,6 @@ const { toast, setToast, showToast } = useGlobalToast();
       amountExcess: 0,
     });
   };
-
-
-
-  // const applyFullAmountFIFO = () => {
-  //   let remaining = Number(formData.paymentRecord.amountReceived || 0);
-
-  //   const updated = usageRows.map(row => {
-  //     if (remaining <= 0) {
-  //       return { ...row, paymentUsed: 0 };
-  //     }
-
-  //     const used = Math.min(row.amountDue, remaining);
-  //     remaining -= used;
-
-  //     return { ...row, paymentUsed: used };
-  //   });
-
-  //   setUsageRows(updated);
-
-  //   const totalUsed = updated.reduce(
-  //     (sum, r) => sum + r.paymentUsed,
-  //     0
-  //   );
-
-  //   setSummary(prev => ({
-  //     ...prev,
-  //     amountUsed: totalUsed,
-  //   }));
-  // };
 
   const buildPrefixFromPattern = (pattern: string) => {
     const now = new Date();
@@ -211,18 +172,7 @@ const { toast, setToast, showToast } = useGlobalToast();
   }, [showSettings]);
 
   // ---------------- Form State ----------------
-  // ✅ FIXED: Added missing states with proper types
-  const [usageRows, setUsageRows] = useState<PaymentUsageRow[]>([
-    {
-      date: '',
-      invoiceId: 0,
-      invoiceNumber: '',
-      invoiceAmount: 0,
-      amountDue: 0,
-      paymentReceivedOn: '',
-      paymentUsed: 0,
-    },
-  ]);
+  const [usageRows, setUsageRows] = useState<PaymentUsageRow[]>([]);
 
   const [summary, setSummary] = useState<PaymentSummary>({
     amountReceived: 0,
@@ -260,10 +210,8 @@ const { toast, setToast, showToast } = useGlobalToast();
     },
   });
 
-
   useEffect(() => {
     const customerId = formData.paymentRecord.customerId;
-
 
     setReceivedFullAmount(false);
     setSummary({
@@ -276,10 +224,9 @@ const { toast, setToast, showToast } = useGlobalToast();
       ...prev,
       paymentRecord: {
         ...prev.paymentRecord,
-        amountReceived: "",
+        amountReceived: '',
       },
     }));
-
 
     if (!customerId) {
       setUsageRows([]);
@@ -287,58 +234,50 @@ const { toast, setToast, showToast } = useGlobalToast();
     }
 
     const fetchUnpaidInvoices = async () => {
+      setTableLoading(true); // ✅ Start loading
       try {
-        const res = await api.get(
-          `invoices/unpaid/?customer=${customerId}`
-        );
-
-        // 👇 THIS IS WHERE YOUR LINE GOES
+        const res = await api.get(`invoices/unpaid/?customer=${customerId}`);
         setUsageRows(
           res.data.map((inv: any) => ({
             invoiceId: inv.id,
             date: inv.invoice_date,
             invoiceNumber: inv.invoice_number,
-            invoiceAmount: inv.grand_total,
-            amountDue: inv.balance_due,
+            invoiceAmount: Number(inv.grand_total),
+            amountDue: Number(inv.balance_due),
             paymentReceivedOn: formData.paymentRecord.paymentDate,
             paymentUsed: 0,
           }))
         );
-
-
       } catch (err) {
-        console.error("Failed to load unpaid invoices", err);
-        showToast("Failed to load unpaid invoices", "error");
+        console.error('Failed to load unpaid invoices', err);
+        showToast('Failed to load unpaid invoices', 'error');
         setUsageRows([]);
+      } finally {
+        setTableLoading(false); // ✅ Stop loading
       }
     };
 
     fetchUnpaidInvoices();
   }, [formData.paymentRecord.customerId]);
 
-
   useEffect(() => {
     if (!receivedFullAmount) return;
-
     const totalUnpaid = calculateTotalUnpaid().toFixed(2);
     if (formData.paymentRecord.amountReceived !== totalUnpaid) {
       resetReceivedFullAmount();
     }
   }, [formData.paymentRecord.amountReceived]);
 
-
-
-  // ---------------- Auto fill today's date ----------------
   useEffect(() => {
     const today = new Date().toISOString().split('T')[0];
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      paymentRecord: { ...prev.paymentRecord, paymentDate: today }
+      paymentRecord: { ...prev.paymentRecord, paymentDate: today },
     }));
   }, []);
 
   useEffect(() => {
-    setUsageRows(prev =>
+    setUsageRows((prev) =>
       prev.map((row: PaymentUsageRow) => ({
         ...row,
         paymentReceivedOn: formData.paymentRecord.paymentDate,
@@ -346,8 +285,6 @@ const { toast, setToast, showToast } = useGlobalToast();
     );
   }, [formData.paymentRecord.paymentDate]);
 
-  // ---------------- Handle Input Change ----------------
-  // ✅ FIXED: Proper typed handleChange
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -355,29 +292,20 @@ const { toast, setToast, showToast } = useGlobalToast();
 
     if (name.includes('paymentRecord.')) {
       const field = name.replace('paymentRecord.', '') as keyof typeof formData.paymentRecord;
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        paymentRecord: { ...prev.paymentRecord, [field]: value }
+        paymentRecord: { ...prev.paymentRecord, [field]: value },
       }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value } as PaymentFormData));
+      setFormData((prev) => ({ ...prev, [name]: value } as PaymentFormData));
     }
   };
-
-  // ---------------- Summary Logic ----------------
-  // const [summary, setSummary] = useState<PaymentSummary>({
-  //   amountReceived: 0,
-  //   amountUsed: 0,
-  //   amountRefunded: 0,
-  //   amountExcess: 0,
-  // });
-
 
   useEffect(() => {
     const rcv = Number(formData.paymentRecord.amountReceived || 0);
     const used = summary.amountUsed;
     const refund = summary.amountRefunded;
-    setSummary(prev => ({
+    setSummary((prev) => ({
       ...prev,
       amountReceived: rcv,
       amountUsed: rcv - used - refund,
@@ -385,7 +313,12 @@ const { toast, setToast, showToast } = useGlobalToast();
   }, [formData.paymentRecord.amountReceived, summary.amountExcess, summary.amountRefunded]);
 
 
-  // ---------------- Submit ----------------
+  const round2 = (value: number) =>
+    Number(Number(value).toFixed(2));
+
+
+
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -393,76 +326,88 @@ const { toast, setToast, showToast } = useGlobalToast();
       const payload = {
         customer: Number(formData.paymentRecord.customerId),
         payment_mode: formData.paymentRecord.paymentMode,
-        amount_received: Number(formData.paymentRecord.amountReceived),
+        amount_received: round2(Number(formData.paymentRecord.amountReceived)),
         payment_date: formData.paymentRecord.paymentDate,
         payment_id: formData.paymentRecord.paymentId || null,
-        reference: formData.paymentRecord.reference || "",
+        reference: formData.paymentRecord.reference || '',
         tax_deducted: formData.paymentRecord.taxDeducted,
         tds_account: formData.paymentRecord.tdsAccount,
         customer_notes: formData.paymentRecord.customerNotes,
-
         usages: usageRows
-          .filter(row => row.paymentUsed > 0)
-          .map(row => ({
+          .filter((row) => row.paymentUsed > 0)
+          .map((row) => ({
             invoice: row.invoiceId,
             amount_used: Number(row.paymentUsed),
           })),
-
         submit_action: submitAction,
-
       };
 
-      console.log("FINAL PAYMENT PAYLOAD", payload);
+      console.log('FINAL PAYMENT PAYLOAD', payload);
 
-      await api.post(
-        "payments/create/",
-        payload
-      );
+      await api.post('payments/create/', payload);
 
-      showToast("Payment recorded successfully", "success");
+      showToast('Payment recorded successfully', 'success');
 
       if (summary.amountUsed > Number(formData.paymentRecord.amountReceived)) {
-        showToast("Amount used cannot exceed amount received", "error");
+        showToast('Amount used cannot exceed amount received', 'error');
         return;
       }
 
       setTimeout(() => {
-
-        navigate("/sales/payment-received");
+        navigate('/sales/payment-received');
       }, 800);
-
     } catch (error: any) {
-      console.error("PAYMENT ERROR:", error.response?.data || error);
+      console.error('PAYMENT ERROR:', error.response?.data || error);
       const message =
         error.response?.data?.detail ||
         error.response?.data?.non_field_errors?.[0] ||
         'Failed to create Payment record';
-
       showToast(message, 'error');
     }
   };
 
-
-  // ---------------- Apply Auto Payment ID ----------------
   const applyAutoSO = () => {
     if (mode === 'auto') {
       const prefix = buildPrefixFromPattern(prefixPattern);
       const fullNumber = `${prefix}${nextNumber || '001'}`;
-
       setFormData((prev) => ({
         ...prev,
         paymentRecord: {
           ...prev.paymentRecord,
-          paymentId: fullNumber, // ✅ matches the input binding
+          paymentId: fullNumber,
         },
       }));
     }
     closePopup();
   };
-  // ---------------- REMOVE SPINNERS FOR NUMBER INPUT ----------------
+
   const noSpinnerStyle = {
     MozAppearance: 'textfield' as const,
   };
+
+  // ✅ Currency formatter
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
+  // ✅ Table Skeleton Component (inline)
+  const TableSkeleton = () => (
+    <>
+      {[1, 2, 3].map((index) => (
+        <TableRow key={index}>
+          <TableCell><Skeleton animation="wave" height={24} /></TableCell>
+          <TableCell><Skeleton animation="wave" height={24} /></TableCell>
+          <TableCell><Skeleton animation="wave" height={24} /></TableCell>
+          <TableCell><Skeleton animation="wave" height={24} /></TableCell>
+          <TableCell><Skeleton animation="wave" height={24} /></TableCell>
+          <TableCell><Skeleton animation="wave" height={36} /></TableCell>
+        </TableRow>
+      ))}
+    </>
+  );
 
   return (
     <>
@@ -471,7 +416,7 @@ const { toast, setToast, showToast } = useGlobalToast();
 
       <div className="sales-orders-page">
         <form onSubmit={handleSubmit} className="sales-order-form">
-          {/* TOP DETAILS CARD - 6 fields + radios in 3 columns */}
+          {/* TOP DETAILS CARD - Same as before */}
           <div className="so-details-card mx-5 mb-4">
             <h1 className="sales-order-title mb-4">Record Payment</h1>
 
@@ -479,20 +424,16 @@ const { toast, setToast, showToast } = useGlobalToast();
               {/* COLUMN 1: Customer + Payment Mode */}
               <div className="col-lg-4">
                 <div className="so-form-group mb-4">
-                  <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Customer:
-                  </label>
+                  <label className="so-label text-sm text-muted-foreground fw-bold">Customer:</label>
                   <CustomerSelect
-                    name="customerId"
+                    name="paymentRecord.customerId"
                     value={formData.paymentRecord.customerId}
                     onChange={handleChange}
                   />
                 </div>
 
                 <div className="so-form-group mb-4">
-                  <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Payment Mode:
-                  </label>
+                  <label className="so-label text-sm text-muted-foreground fw-bold">Payment Mode:</label>
                   <select
                     name="paymentRecord.paymentMode"
                     className="form-select so-control"
@@ -508,10 +449,7 @@ const { toast, setToast, showToast } = useGlobalToast();
                 </div>
 
                 <div className="so-form-group mb-4">
-                  <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Amount Received:
-                  </label>
-
+                  <label className="so-label text-sm text-muted-foreground fw-bold">Amount Received:</label>
                   <input
                     type="number"
                     name="paymentRecord.amountReceived"
@@ -521,7 +459,6 @@ const { toast, setToast, showToast } = useGlobalToast();
                     onChange={handleChange}
                     disabled={receivedFullAmount}
                   />
-
                   <div className="form-check" style={{ fontSize: 12 }}>
                     <input
                       type="checkbox"
@@ -530,7 +467,6 @@ const { toast, setToast, showToast } = useGlobalToast();
                       checked={receivedFullAmount}
                       onChange={(e) => {
                         const checked = e.target.checked;
-
                         if (checked) {
                           setReceivedFullAmount(true);
                           applyReceivedFullAmount();
@@ -538,23 +474,18 @@ const { toast, setToast, showToast } = useGlobalToast();
                           resetReceivedFullAmount();
                         }
                       }}
-
                     />
                     <label htmlFor="fullAmount" className="form-check-label">
                       Received full amount
                     </label>
                   </div>
                 </div>
-
               </div>
 
-              {/* COLUMN 2: Amount Received + Tax Deducted Radios */}
+              {/* COLUMN 2 */}
               <div className="col-lg-4">
-
                 <div className="so-form-group mb-4">
-                  <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Payment Date:
-                  </label>
+                  <label className="so-label text-sm text-muted-foreground fw-bold">Payment Date:</label>
                   <input
                     type="date"
                     name="paymentRecord.paymentDate"
@@ -565,12 +496,8 @@ const { toast, setToast, showToast } = useGlobalToast();
                 </div>
 
                 <div className="so-form-group mb-4">
-                  <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Payment ID:
-                  </label>
-
+                  <label className="so-label text-sm text-muted-foreground fw-bold">Payment ID:</label>
                   <div style={{ position: 'relative', width: '100%' }}>
-
                     <input
                       type="text"
                       name="paymentRecord.paymentId"
@@ -579,24 +506,24 @@ const { toast, setToast, showToast } = useGlobalToast();
                       onChange={handleChange}
                       style={{ paddingRight: '35px' }}
                     />
-                    <span style={{
-                      position: 'absolute',
-                      right: '10px',
-                      top: '45%',
-                      transform: 'translateY(-50%)',
-                      cursor: 'pointer',
-                      color: '#6c757d',
-                    }} onClick={() => setShowSettings(true)}>
+                    <span
+                      style={{
+                        position: 'absolute',
+                        right: '10px',
+                        top: '45%',
+                        transform: 'translateY(-50%)',
+                        cursor: 'pointer',
+                        color: '#6c757d',
+                      }}
+                      onClick={() => setShowSettings(true)}
+                    >
                       <Settings size={16} />
                     </span>
                   </div>
-
                 </div>
 
                 <div className="so-form-group mb-4">
-                  <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Reference:
-                  </label>
+                  <label className="so-label text-sm text-muted-foreground fw-bold">Reference:</label>
                   <input
                     type="text"
                     name="paymentRecord.reference"
@@ -605,17 +532,12 @@ const { toast, setToast, showToast } = useGlobalToast();
                     onChange={handleChange}
                   />
                 </div>
-
               </div>
 
-              {/* COLUMN 3: TDS Rate (conditional) + Payment Date + Payment ID + Reference */}
+              {/* COLUMN 3 */}
               <div className="col-lg-4">
-
                 <div className="so-form-group" style={{ marginBottom: 36 }}>
-                  <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Tax Deducted?
-                  </label>
-
+                  <label className="so-label text-sm text-muted-foreground fw-bold">Tax Deducted?</label>
                   <div className="radio-row">
                     <div className="form-check">
                       <input
@@ -629,7 +551,7 @@ const { toast, setToast, showToast } = useGlobalToast();
                             paymentRecord: {
                               ...prev.paymentRecord,
                               taxDeducted: false,
-                              tdsAccountId: null, // reset
+                              tdsAccount: null,
                             },
                           }))
                         }
@@ -638,7 +560,6 @@ const { toast, setToast, showToast } = useGlobalToast();
                         No tax deducted
                       </label>
                     </div>
-
                     <div className="form-check">
                       <input
                         type="radio"
@@ -662,16 +583,12 @@ const { toast, setToast, showToast } = useGlobalToast();
                   </div>
                 </div>
 
-
                 {formData.paymentRecord.taxDeducted && (
                   <div className="so-form-group mb-4">
-                    <label className="so-label text-sm text-muted-foreground fw-bold">
-                      TDS Account
-                    </label>
-
+                    <label className="so-label text-sm text-muted-foreground fw-bold">TDS Account</label>
                     <select
                       className="form-select so-control"
-                      value={formData.paymentRecord.tdsAccount || ""}
+                      value={formData.paymentRecord.tdsAccount || ''}
                       onChange={(e) =>
                         setFormData((prev) => ({
                           ...prev,
@@ -683,107 +600,216 @@ const { toast, setToast, showToast } = useGlobalToast();
                       }
                     >
                       <option value="">Select TDS Account</option>
-
-                      {/* Example static options (later API-driven) */}
                       <option value="TDS Receivable - 194J">TDS Receivable – Contractor (194C)</option>
                       <option value="TDS Receivable – Professional (194J)">TDS Receivable – Professional (194J)</option>
                       <option value="TDS Receivable – Commission">TDS Receivable – Commission</option>
                     </select>
-
                     <small className="text-muted text-center" style={{ fontSize: 12, opacity: 0.8 }}>
                       Choose the account where deducted tax will be tracked
                     </small>
                   </div>
                 )}
-
-
               </div>
             </div>
           </div>
 
-          {/* OUTSIDE CARD - Custom Payment Usage Table + Summary */}
+          {/* ✅ IMPROVED: Material UI Table with Skeleton Loading */}
           <div className="mx-5">
-            {/* Payment Usage Table */}
-            <div className="item-card mb-4">
-              <div className="item-card-header">
-                <span className="item-card-title">Unpaid Invoices</span>
-              </div>
-              <div className="item-card-body">
-                <table className="table table-sm align-middle item-table-inner">
-                  <thead>
-                    <tr>
-                      <th className="fw-medium text-dark">Date</th>
-                      <th className="fw-medium text-dark">Invoice No.</th>
-                      <th className="fw-medium text-dark">Invoice Amount</th>
-                      <th className="fw-medium text-dark">Amount Due</th>
-                      <th className="fw-medium text-dark">Payment Received On</th>
-                      <th className="fw-medium text-dark">Amount Used</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {usageRows.map((row, index) => (
-                      <tr key={index} style={{ fontSize: 12 }}>
-                        <td >{row.date}</td>
-                        <td>{row.invoiceNumber}</td>
-                        <td>₹ {row.invoiceAmount}</td>
-                        <td>₹ {row.amountDue}</td>
-                        <td>{row.paymentReceivedOn}</td>
-                        <td>
-                          <input
+            <Paper
+              elevation={0}
+              sx={{
+                mb: 4,
+                border: '1px solid #e5e7eb',
+                borderRadius: 2,
+                overflow: 'hidden'
+              }}
+            >
+              {/* Table Header */}
+              <Box
+                sx={{
+                  px: 3,
+                  py: 2,
+                  borderBottom: '1px solid #e5e7eb',
+                  bgcolor: '#fafafa'
+                }}
+              >
+                <Typography variant="subtitle1" fontWeight={600} color="text.primary">
+                  Unpaid Invoices
+                </Typography>
+              </Box>
+
+              <TableContainer>
+                <Table sx={{ minWidth: 650 }}>
+                  <TableHead>
+                    <TableRow sx={{ bgcolor: '#f8fafc' }}>
+                      <TableCell sx={{ fontWeight: 600, color: '#374151', py: 2, fontSize: 13 }}>
+                        Date
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#374151', py: 2, fontSize: 13 }}>
+                        Invoice No.
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#374151', py: 2, fontSize: 13 }}>
+                        Invoice Amount
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#374151', py: 2, fontSize: 13 }}>
+                        Amount Due
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#374151', py: 2, fontSize: 13 }}>
+                        Payment Received On
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#374151', py: 2, fontSize: 13 }}>
+                        Amount Used
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {/* Loading State */}
+                    {tableLoading && <TableSkeleton />}
+
+                    {/* Data Rows */}
+                    {!tableLoading && usageRows.length > 0 && usageRows.map((row, index) => (
+                      <TableRow
+                        key={index}
+                        sx={{
+                          '&:nth-of-type(odd)': { bgcolor: '#fafbfc' },
+                          '&:nth-of-type(even)': { bgcolor: '#ffffff' },
+                          '&:hover': { bgcolor: '#f0f7ff' },
+                          transition: 'background-color 0.15s ease',
+                        }}
+                      >
+                        <TableCell sx={{ py: 2, fontSize: 13, color: '#6b7280' }}>
+                          {row.date}
+                        </TableCell>
+                        <TableCell sx={{ py: 2, fontSize: 13 }}>
+                          <Chip
+                            label={row.invoiceNumber}
+                            size="small"
+                            sx={{
+                              bgcolor: '#e0f2fe',
+                              color: '#0369a1',
+                              fontWeight: 500,
+                              fontSize: 12,
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ py: 2, fontSize: 13, fontWeight: 500 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <Typography variant="caption" color="text.secondary">₹</Typography>
+                            <span>{formatCurrency(row.invoiceAmount)}</span>
+                          </Box>
+                        </TableCell>
+                        <TableCell sx={{ py: 2, fontSize: 13 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <Typography variant="caption" color="text.secondary">₹</Typography>
+                            <Typography
+                              component="span"
+                              sx={{
+                                fontWeight: 600,
+                                fontSize: 14,
+                                color: row.amountDue > 0 ? '#dc2626' : '#16a34a'
+                              }}
+                            >
+                              {formatCurrency(row.amountDue)}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        <TableCell sx={{ py: 2, fontSize: 13, color: '#6b7280' }}>
+                          {row.paymentReceivedOn}
+                        </TableCell>
+                        <TableCell sx={{ py: 1.5 }}>
+                          <TextField
                             type="number"
-                            style={noSpinnerStyle}
-                            className="form-control form-control-sm border-0 item-input"
+                            size="small"
+                            placeholder='0'
                             value={row.paymentUsed}
                             disabled={receivedFullAmount}
-                            min={0}
-                            max={row.amountDue}
+                            inputProps={{
+                              min: 0,
+                              max: row.amountDue,
+                              style: {
+                                fontSize: 13,
+                                padding: '8px 12px',
+                                MozAppearance: 'textfield',
+                              },
+                            }}
+                            sx={{
+                              width: 120,
+
+                              '& .MuiOutlinedInput-root': {
+                                backgroundColor: '#fff',
+
+                                '& fieldset': {
+                                  border: 'none',
+                                  borderColor: '#d1d5db',
+                                },
+
+                                '&:hover fieldset': {
+                                  borderColor: '#7991BB',
+                                },
+
+                                '&.Mui-focused fieldset': {
+                                  borderColor: '#7991BB',
+                                  borderWidth: 1.5,
+                                },
+                              },
+
+                              '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+                                display: 'none',
+                              },
+                            }}
+
                             onChange={(e) => {
                               let value = Number(e.target.value) || 0;
 
-                              // Do not exceed invoice balance
                               value = Math.min(value, row.amountDue);
 
                               const updated = [...usageRows];
                               updated[index].paymentUsed = value;
 
-                              const totalUsed = updated.reduce(
-                                (sum, r) => sum + r.paymentUsed,
-                                0
-                              );
+                              const totalUsed = updated.reduce((sum, r) => sum + r.paymentUsed, 0);
 
-                              // Do not exceed amount received
-                              if (totalUsed > Number(formData.paymentRecord.amountReceived || 0)) {
-                                return;
+                              const received = Number(formData.paymentRecord.amountReceived || 0);
+
+                              if (totalUsed > received) {
+                                const remaining = received - (totalUsed - value);
+                                updated[index].paymentUsed = Math.max(0, remaining);
                               }
 
+                              const finalTotal = updated.reduce((sum, r) => sum + r.paymentUsed, 0);
+
                               setUsageRows(updated);
-                              setSummary(prev => ({ ...prev, amountUsed: totalUsed }));
+                              setSummary((prev) => ({ ...prev, amountUsed: finalTotal }));
                             }}
 
                           />
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                    {/* EMPTY STATE */}
-                    {usageRows.length === 0 && (
-                      <tr>
-                        <td colSpan={6} className="text-center text-muted py-3">
-                          There are no unpaid invoices associated with this customer.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
 
-            {/* Summary + Notes */}
+                    {/* Empty State */}
+                    {!tableLoading && usageRows.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
+                          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                            <Typography variant="body2" color="text.secondary">
+                              {formData.paymentRecord.customerId
+                                ? 'There are no unpaid invoices associated with this customer.'
+                                : 'Select a customer to view unpaid invoices.'}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+
+            {/* Summary + Notes - Same as before */}
             <div className="notes-summary-row">
               <div className="notes-column">
                 <div className="so-form-group">
-                  <label className="so-label text-sm text-muted-foreground fw-bold">
-                    Customer Notes:
-                  </label>
+                  <label className="so-label text-sm text-muted-foreground fw-bold">Customer Notes:</label>
                   <textarea
                     className="form-control so-control textarea"
                     name="paymentRecord.customerNotes"
@@ -794,7 +820,7 @@ const { toast, setToast, showToast } = useGlobalToast();
                 </div>
               </div>
 
-              <div className="summary-column" style={{ background: "#ffff" }}>
+              <div className="summary-column" style={{ background: '#ffff' }}>
                 <div className="border rounded p-3" style={{ minHeight: '200px', fontSize: 13, borderRadius: 10 }}>
                   <div className="d-flex justify-content-between mb-2">
                     <span>Amount Received:</span>
@@ -826,7 +852,6 @@ const { toast, setToast, showToast } = useGlobalToast();
               >
                 Cancel
               </button>
-
               <button
                 type="submit"
                 className="btn me-3 px-4"
@@ -849,7 +874,7 @@ const { toast, setToast, showToast } = useGlobalToast();
         </form>
       </div>
 
-      {/* ---------------- Settings Modal ---------------- */}
+      {/* Settings Modal - Same as before */}
       {showSettings && (
         <div className="settings-overlay" onClick={closePopup}>
           <div
@@ -857,21 +882,15 @@ const { toast, setToast, showToast } = useGlobalToast();
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header custom-header">
-              <h4 className="mb-0" style={{ fontSize: 17 }}>Configure Sales Order Number Preferences</h4>
-              <X
-                size={20}
-                style={{ cursor: 'pointer', color: '#fc0404ff' }}
-                onClick={closePopup}
-              />
+              <h4 className="mb-0" style={{ fontSize: 17 }}>Configure Payment ID Preferences</h4>
+              <X size={20} style={{ cursor: 'pointer', color: '#fc0404ff' }} onClick={closePopup} />
             </div>
 
             <div className="modal-body mt-3">
               <p style={{ fontSize: 13, color: '#555' }}>
-                Your payment Id are currently set to auto-generate numbers. Change settings if
-                needed.
+                Your payment ID are currently set to auto-generate numbers. Change settings if needed.
               </p>
 
-              {/* Auto Mode */}
               <div className="form-check mb-3">
                 <input
                   type="radio"
@@ -880,10 +899,10 @@ const { toast, setToast, showToast } = useGlobalToast();
                   checked={mode === 'auto'}
                   onChange={() => setMode('auto')}
                 />
-                <label className="form-check-label fw-normal" >
+                <label className="form-check-label fw-normal">
                   Continue auto-generating Payment Id Numbers
                 </label>
-                <span className='i-btn'>
+                <span className="i-btn">
                   <Info size={13} />
                 </span>
               </div>
@@ -891,17 +910,14 @@ const { toast, setToast, showToast } = useGlobalToast();
               {mode === 'auto' && (
                 <div className="auto-settings">
                   <div className="auto-settings-row">
-                    {/* PREFIX PATTERN SELECT */}
                     <div style={{ flex: 1, fontSize: 13 }}>
                       <label className="so-label text-sm text-muted-foreground fw-bold">Prefix pattern</label>
                       <select
-                        className="form-select so-control p-6 pt-1 flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                        className="form-select so-control"
                         value={prefixPattern}
                         onChange={(e) => setPrefixPattern(e.target.value)}
                       >
-                        <option value="" disabled>
-                          -- Select prefix --
-                        </option>
+                        <option value="" disabled>-- Select prefix --</option>
                         <option value="YEAR">Current year (YYYY-)</option>
                         <option value="YEAR_MONTH">Current year + month (YYYYMM-)</option>
                         <option value="DATE_DDMMYYYY">Current date (DDMMYYYY-)</option>
@@ -912,7 +928,6 @@ const { toast, setToast, showToast } = useGlobalToast();
                       </small>
                     </div>
 
-                    {/* NEXT NUMBER */}
                     <div style={{ flex: 1, fontSize: 13 }} className="so-form-group mb-4">
                       <label className="so-label text-sm text-muted-foreground fw-bold">Next Number</label>
                       <input
@@ -922,8 +937,7 @@ const { toast, setToast, showToast } = useGlobalToast();
                         placeholder="001"
                       />
                       <small className="text-muted d-block mt-1">
-                        Full example: {buildPrefixFromPattern(prefixPattern)}
-                        {nextNumber || '001'}
+                        Full example: {buildPrefixFromPattern(prefixPattern)}{nextNumber || '001'}
                       </small>
                     </div>
                   </div>
@@ -934,7 +948,6 @@ const { toast, setToast, showToast } = useGlobalToast();
                         type="checkbox"
                         checked={restartYear}
                         onChange={(e) => setRestartYear(e.target.checked)}
-                        // style={{ fontSize: 12 }}
                         className="me-2"
                       />
                       Restart numbering every fiscal year.
@@ -943,7 +956,6 @@ const { toast, setToast, showToast } = useGlobalToast();
                 </div>
               )}
 
-              {/* Manual Mode */}
               <div className="form-check mt-4">
                 <input
                   type="radio"
@@ -952,17 +964,18 @@ const { toast, setToast, showToast } = useGlobalToast();
                   checked={mode === 'manual'}
                   onChange={() => setMode('manual')}
                 />
-                <label className="form-check-label fw-normal" >
-                  Enter Sales Order Numbers manually
-                </label>
+                <label className="form-check-label fw-normal">Enter Payment IDs manually</label>
               </div>
 
               <div className="d-flex justify-content-center mt-4" style={{ gap: 10 }}>
                 <button className="btn border me-3 px-4" onClick={closePopup}>
                   Cancel
                 </button>
-                <button className="btn me-2 px-4"
-                  style={{ background: '#7991BB', color: '#FFF' }} onClick={applyAutoSO}>
+                <button
+                  className="btn me-2 px-4"
+                  style={{ background: '#7991BB', color: '#FFF' }}
+                  onClick={applyAutoSO}
+                >
                   Save
                 </button>
               </div>

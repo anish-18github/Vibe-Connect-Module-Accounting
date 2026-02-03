@@ -313,52 +313,55 @@ const DeliveryChallans = () => {
       return;
     }
 
-    try {
-      showLoading();
+    setTimeout(async () => {
+      try {
+        showLoading();
 
-      // ✅ FETCH FULL DC
-      const response = await api.get(`/delivery-challans/${row.id}/`);
-      const fullDc = response.data;
+        // ✅ FETCH FULL DC
+        const response = await api.get(`/delivery-challans/${row.id}/`);
+        const fullDc = response.data;
 
-      const dcState = {
-        fromDeliveryChallan: true,
+        const dcState = {
+          fromDeliveryChallan: true,
 
-        dcData: {
-          dcId: fullDc.id,
-          customerId: fullDc.customer,
-          referenceNumber: fullDc.challan_number,
-          invoiceDate: fullDc.challan_date,
+          dcData: {
+            dcId: fullDc.id,
+            customerId: fullDc.customer,
+            referenceNumber: fullDc.challan_number,
+            invoiceDate: fullDc.challan_date,
 
-          customerNotes: fullDc.customer_notes,
-          termsAndConditions: fullDc.terms_and_conditions,
+            customerNotes: fullDc.customer_notes,
+            termsAndConditions: fullDc.terms_and_conditions,
 
-          subtotal: fullDc.subtotal,
-          adjustment: fullDc.adjustment,
-          tax: fullDc.tax || null,
-          grandTotal: fullDc.grand_total,
-        },
+            subtotal: fullDc.subtotal,
+            adjustment: fullDc.adjustment,
+            tax: fullDc.tax || null,
+            grandTotal: fullDc.grand_total,
+          },
 
-        dcItems: fullDc.items.map((item: any) => ({
-          description: item.item_details,
-          quantity: Number(item.quantity),
-          rate: Number(item.rate),
-          discount: item.discount || 0,
-        })),
-      };
+          dcItems: fullDc.items.map((item: any) => ({
+            description: item.item_details,
+            quantity: Number(item.quantity),
+            rate: Number(item.rate),
+            discount: item.discount || 0,
+          })),
+        };
 
-      // ✅ ONLY NAVIGATE
-      navigate('/sales/add-invoice', { state: dcState });
+        // ✅ ONLY NAVIGATE
+        navigate('/sales/add-invoice', { state: dcState });
 
-    } catch (err) {
-      console.error('Failed to fetch DC:', err);
-      setToast({
-        stage: 'enter',
-        type: 'error',
-        message: 'Failed to load Delivery Challan details',
-      });
-    } finally {
-      hideLoading();
-    }
+      } catch (err) {
+        console.error('Failed to fetch DC:', err);
+        setToast({
+          stage: 'enter',
+          type: 'error',
+          message: 'Failed to load Delivery Challan details',
+        });
+      } finally {
+        hideLoading();
+      }
+    })
+
   };
 
 
@@ -415,23 +418,30 @@ const DeliveryChallans = () => {
   };
 
 
-  const getMenuItems = (row: DeliveryChallan) => {
+  const menuItems = React.useMemo(() => {
+    if (!selectedRow) return null;
+
+    const row = selectedRow;
     const status = row.status?.toLowerCase();
     const items: React.ReactNode[] = [];
     const canConvertToInvoice = !isInvoiced(row);
-
 
     // DRAFT actions
     if (status === 'draft') {
       items.push(
         <MenuItem key="convert-open" onClick={() => handleConvertToOpen(row)}>
-          <ListItemIcon><SendOutlinedIcon fontSize="small" sx={{ color: '#0369a1' }} /></ListItemIcon>
+          <ListItemIcon>
+            <SendOutlinedIcon fontSize="small" sx={{ color: '#0369a1' }} />
+          </ListItemIcon>
           <ListItemText>Convert to Open</ListItemText>
         </MenuItem>
       );
+
       items.push(
         <MenuItem key="convert-invoice" onClick={() => handleConvertToInvoice(row)}>
-          <ListItemIcon><ReceiptOutlinedIcon fontSize="small" sx={{ color: '#1d4ed8' }} /></ListItemIcon>
+          <ListItemIcon>
+            <ReceiptOutlinedIcon fontSize="small" sx={{ color: '#1d4ed8' }} />
+          </ListItemIcon>
           <ListItemText>Convert to Invoice</ListItemText>
         </MenuItem>
       );
@@ -441,20 +451,28 @@ const DeliveryChallans = () => {
     if (status === 'open') {
       items.push(
         <MenuItem key="mark-delivered" onClick={() => handleMarkAsDelivered(row)}>
-          <ListItemIcon><LocalShippingOutlinedIcon fontSize="small" sx={{ color: '#047857' }} /></ListItemIcon>
+          <ListItemIcon>
+            <LocalShippingOutlinedIcon fontSize="small" sx={{ color: '#047857' }} />
+          </ListItemIcon>
           <ListItemText>Mark as Delivered</ListItemText>
         </MenuItem>
       );
+
       if (!isInvoiced(row)) {
         items.push(
           <MenuItem key="mark-returned" onClick={() => handleMarkAsReturned(row)}>
-            <ListItemIcon><AssignmentReturnOutlinedIcon fontSize="small" sx={{ color: '#b91c1c' }} /></ListItemIcon>
+            <ListItemIcon>
+              <AssignmentReturnOutlinedIcon fontSize="small" sx={{ color: '#b91c1c' }} />
+            </ListItemIcon>
             <ListItemText>Mark as Returned</ListItemText>
           </MenuItem>
         );
+
         items.push(
-          <MenuItem key="convert-invoice" onClick={() => handleConvertToInvoice(row)}>
-            <ListItemIcon><ReceiptOutlinedIcon fontSize="small" sx={{ color: '#1d4ed8' }} /></ListItemIcon>
+          <MenuItem key="convert-invoice-open" onClick={() => handleConvertToInvoice(row)}>
+            <ListItemIcon>
+              <ReceiptOutlinedIcon fontSize="small" sx={{ color: '#1d4ed8' }} />
+            </ListItemIcon>
             <ListItemText>Convert to Invoice</ListItemText>
           </MenuItem>
         );
@@ -465,47 +483,152 @@ const DeliveryChallans = () => {
     if (status === 'delivered') {
       if (!isInvoiced(row)) {
         items.push(
-          <MenuItem key="convert-invoice" onClick={() => handleConvertToInvoice(row)} disabled={!canConvertToInvoice}>
-            <ListItemIcon><ReceiptOutlinedIcon fontSize="small" sx={{ color: '#1d4ed8' }} /></ListItemIcon>
+          <MenuItem
+            key="convert-invoice-delivered"
+            onClick={() => handleConvertToInvoice(row)}
+            disabled={!canConvertToInvoice}
+          >
+            <ListItemIcon>
+              <ReceiptOutlinedIcon fontSize="small" sx={{ color: '#1d4ed8' }} />
+            </ListItemIcon>
             <ListItemText>Convert to Invoice</ListItemText>
           </MenuItem>
         );
       }
+
       items.push(
         <MenuItem key="revert-open" onClick={() => handleRevertToOpen(row)}>
-          <ListItemIcon><UndoOutlinedIcon sx={{ fontSize: 19, color: '#6b7280' }} /></ListItemIcon>
+          <ListItemIcon>
+            <UndoOutlinedIcon sx={{ fontSize: 19, color: '#6b7280' }} />
+          </ListItemIcon>
           <ListItemText>Revert to Open</ListItemText>
         </MenuItem>
       );
     }
 
-    // Common actions for all statuses
-    if (items.length > 0) {
+    // Common actions
+    if (items.length) {
       items.push(<Divider key="divider-1" sx={{ my: 0.5 }} />);
     }
 
     items.push(
       <MenuItem key="clone" onClick={() => handleClone(row)}>
-        <ListItemIcon><ContentCopyOutlinedIcon sx={{ fontSize: 19, color: '#6b7280' }} /></ListItemIcon>
+        <ListItemIcon>
+          <ContentCopyOutlinedIcon sx={{ fontSize: 19, color: '#6b7280' }} />
+        </ListItemIcon>
         <ListItemText>Clone</ListItemText>
       </MenuItem>
     );
 
     items.push(
-      <MenuItem key="delete" onClick={() => openDeleteDialog(row)} sx={{ color: '#dc2626' }}>
-        <ListItemIcon><DeleteOutlineOutlinedIcon fontSize="small" sx={{ color: '#dc2626' }} /></ListItemIcon>
+      <MenuItem
+        key="delete"
+        onClick={() => openDeleteDialog(row)}
+        sx={{ color: '#dc2626' }}
+      >
+        <ListItemIcon>
+          <DeleteOutlineOutlinedIcon fontSize="small" sx={{ color: '#dc2626' }} />
+        </ListItemIcon>
         <ListItemText>Delete</ListItemText>
       </MenuItem>
     );
 
     return items;
-  };
+  }, [selectedRow]);
+
+
+
+  // const getMenuItems = (row: DeliveryChallan) => {
+  //   const status = row.status?.toLowerCase();
+  //   const items: React.ReactNode[] = [];
+  //   const canConvertToInvoice = !isInvoiced(row);
+
+
+  //   // DRAFT actions
+  //   if (status === 'draft') {
+  //     items.push(
+  //       <MenuItem key="convert-open" onClick={() => handleConvertToOpen(row)}>
+  //         <ListItemIcon><SendOutlinedIcon fontSize="small" sx={{ color: '#0369a1' }} /></ListItemIcon>
+  //         <ListItemText>Convert to Open</ListItemText>
+  //       </MenuItem>
+  //     );
+  //     items.push(
+  //       <MenuItem key="convert-invoice" onClick={() => handleConvertToInvoice(row)}>
+  //         <ListItemIcon><ReceiptOutlinedIcon fontSize="small" sx={{ color: '#1d4ed8' }} /></ListItemIcon>
+  //         <ListItemText>Convert to Invoice</ListItemText>
+  //       </MenuItem>
+  //     );
+  //   }
+
+  //   // OPEN actions
+  //   if (status === 'open') {
+  //     items.push(
+  //       <MenuItem key="mark-delivered" onClick={() => handleMarkAsDelivered(row)}>
+  //         <ListItemIcon><LocalShippingOutlinedIcon fontSize="small" sx={{ color: '#047857' }} /></ListItemIcon>
+  //         <ListItemText>Mark as Delivered</ListItemText>
+  //       </MenuItem>
+  //     );
+  //     if (!isInvoiced(row)) {
+  //       items.push(
+  //         <MenuItem key="mark-returned" onClick={() => handleMarkAsReturned(row)}>
+  //           <ListItemIcon><AssignmentReturnOutlinedIcon fontSize="small" sx={{ color: '#b91c1c' }} /></ListItemIcon>
+  //           <ListItemText>Mark as Returned</ListItemText>
+  //         </MenuItem>
+  //       );
+  //       items.push(
+  //         <MenuItem key="convert-invoice" onClick={() => handleConvertToInvoice(row)}>
+  //           <ListItemIcon><ReceiptOutlinedIcon fontSize="small" sx={{ color: '#1d4ed8' }} /></ListItemIcon>
+  //           <ListItemText>Convert to Invoice</ListItemText>
+  //         </MenuItem>
+  //       );
+  //     }
+  //   }
+
+  //   // DELIVERED actions
+  //   if (status === 'delivered') {
+  //     if (!isInvoiced(row)) {
+  //       items.push(
+  //         <MenuItem key="convert-invoice" onClick={() => handleConvertToInvoice(row)} disabled={!canConvertToInvoice}>
+  //           <ListItemIcon><ReceiptOutlinedIcon fontSize="small" sx={{ color: '#1d4ed8' }} /></ListItemIcon>
+  //           <ListItemText>Convert to Invoice</ListItemText>
+  //         </MenuItem>
+  //       );
+  //     }
+  //     items.push(
+  //       <MenuItem key="revert-open" onClick={() => handleRevertToOpen(row)}>
+  //         <ListItemIcon><UndoOutlinedIcon sx={{ fontSize: 19, color: '#6b7280' }} /></ListItemIcon>
+  //         <ListItemText>Revert to Open</ListItemText>
+  //       </MenuItem>
+  //     );
+  //   }
+
+  //   // Common actions for all statuses
+  //   if (items.length > 0) {
+  //     items.push(<Divider key="divider-1" sx={{ my: 0.5 }} />);
+  //   }
+
+  //   items.push(
+  //     <MenuItem key="clone" onClick={() => handleClone(row)}>
+  //       <ListItemIcon><ContentCopyOutlinedIcon sx={{ fontSize: 19, color: '#6b7280' }} /></ListItemIcon>
+  //       <ListItemText>Clone</ListItemText>
+  //     </MenuItem>
+  //   );
+
+  //   items.push(
+  //     <MenuItem key="delete" onClick={() => openDeleteDialog(row)} sx={{ color: '#dc2626' }}>
+  //       <ListItemIcon><DeleteOutlineOutlinedIcon fontSize="small" sx={{ color: '#dc2626' }} /></ListItemIcon>
+  //       <ListItemText>Delete</ListItemText>
+  //     </MenuItem>
+  //   );
+
+  //   return items;
+  // };
 
   // ==================== ACTIONS COLUMN RENDER ====================
 
   const renderActions = (row: DeliveryChallan) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-      <Tooltip title="View Details">
+      <Tooltip title="View Details" placement='bottom-start'>
         <IconButton size="small" onClick={() => handleView(row)} sx={{ color: '#6b7280' }}>
           <RemoveRedEyeOutlinedIcon fontSize="small" />
         </IconButton>
@@ -615,7 +738,7 @@ const DeliveryChallans = () => {
           },
         }}
       >
-        {selectedRow && getMenuItems(selectedRow)}
+        {menuItems}
       </Menu>
 
       <Header />

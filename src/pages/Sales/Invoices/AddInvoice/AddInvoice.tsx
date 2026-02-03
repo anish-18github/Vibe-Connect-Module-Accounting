@@ -67,6 +67,55 @@ export default function AddInvoice() {
   const [submitType, setSubmitType] = useState<SubmitType>('draft');
 
 
+  // CALCULATE DUE DATE 
+  const calculateDueDate = (invoiceDate: string, term: string): string => {
+    if (!invoiceDate) return '';
+
+    const base = new Date(invoiceDate);
+
+    switch (term) {
+      case 'Due on Receipt':
+      case 'Advance':
+        return invoiceDate;
+
+      case 'Net 15':
+        base.setDate(base.getDate() + 15);
+        break;
+
+      case 'Net 30':
+        base.setDate(base.getDate() + 30);
+        break;
+
+      case 'Net 45':
+        base.setDate(base.getDate() + 45);
+        break;
+
+      case 'Net 60':
+        base.setDate(base.getDate() + 60);
+        break;
+
+      case 'Due end of the month':
+        return new Date(
+          base.getFullYear(),
+          base.getMonth() + 1,
+          0
+        ).toISOString().split('T')[0];
+
+      case 'Due end of next month':
+        return new Date(
+          base.getFullYear(),
+          base.getMonth() + 2,
+          0
+        ).toISOString().split('T')[0];
+
+      default:
+        return '';
+    }
+
+    return base.toISOString().split('T')[0];
+  };
+
+
   const buildPrefixFromPattern = (pattern: string) => {
     const now = new Date();
     const year = now.getFullYear();
@@ -141,6 +190,7 @@ export default function AddInvoice() {
 
     loadTaxes();
   }, []);
+
 
 
 
@@ -286,7 +336,7 @@ export default function AddInvoice() {
         invoice: {
           customerId: String(dcData.customerId),
           invoiceNo: '',
-          invoiceDate: dcData.invoiceDate || today,
+          invoiceDate: today,
           dueDate: '',
           paymentTerms: '',
           salesPerson: '',
@@ -359,6 +409,29 @@ export default function AddInvoice() {
   }, [location.state, tcsOptions]);
 
 
+  // DUE DATE 
+  useEffect(() => {
+    const terms = formData.invoice.paymentTerms;
+
+    if (!terms || terms === 'Custom') return;
+
+    const due = calculateDueDate(
+      formData.invoice.invoiceDate,
+      terms
+    );
+
+    setFormData(prev => ({
+      ...prev,
+      invoice: {
+        ...prev.invoice,
+        dueDate: due,
+      },
+    }));
+  }, [
+    formData.invoice.invoiceDate,
+    formData.invoice.paymentTerms
+  ]);
+
   // ---------------- Handlers ----------------
   const handleTaxChange = (field: any, value: any) => {
     setTaxInfo((prev) => ({ ...prev, [field]: value }));
@@ -425,6 +498,21 @@ export default function AddInvoice() {
       return { ...prev, itemTable: updated };
     });
   };
+
+
+  const handleDueDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    setFormData(prev => ({
+      ...prev,
+      invoice: {
+        ...prev.invoice,
+        dueDate: value,
+        paymentTerms: 'Custom', // 👈 auto switch
+      },
+    }));
+  };
+
 
   const validateForm = () => {
     if (!formData.invoice.customerId) return showToast('Select a customer', 'warning'), false;
@@ -607,10 +695,17 @@ export default function AddInvoice() {
                     onChange={handleChange}
                   >
                     <option value="">Select</option>
+                    <option value="Due on Receipt">Due on Receipt</option>
                     <option value="Advance">Advance</option>
                     <option value="Net 15">Net 15</option>
                     <option value="Net 30">Net 30</option>
+                    <option value="Net 45">Net 45</option>
+                    <option value="Net 60">Net 60</option>
+                    <option value="Due end of the month">Due end of the month</option>
+                    <option value="Due end of next month">Due end of next month</option>
+                    <option value="Custom">Custom</option>
                   </select>
+
                 </div>
 
               </div>
@@ -671,8 +766,9 @@ export default function AddInvoice() {
                     type="date"
                     name="dueDate"
                     className="form-control so-control"
+                    // disabled={formData.invoice.paymentTerms !== 'Custom'}
                     value={formData.invoice.dueDate}
-                    onChange={handleChange}
+                    onChange={handleDueDateChange}
                   />
                 </div>
 
