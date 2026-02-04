@@ -505,6 +505,8 @@ export default function AddPayment() {
                       value={formData.paymentRecord.paymentId}
                       onChange={handleChange}
                       style={{ paddingRight: '35px' }}
+                      placeholder="Auto-generated"
+
                     />
                     <span
                       style={{

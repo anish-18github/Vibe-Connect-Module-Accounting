@@ -104,17 +104,21 @@ const PaymentReceived = () => {
     {
       key: 'amount',
       label: 'Amount',
-      render: (value: number) => (
-        <div style={{ display: 'flex', gap: '4px', whiteSpace: 'nowrap' }}>
-          <span style={{ fontSize: '0.8rem', color: '#6c757d' }}>₹</span>
-          <span style={{ fontWeight: 600 }}>
-            {value.toLocaleString('en-IN', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
-          </span>
-        </div>
-      ),
+      render: (value: number | string) => {
+        const amount = Number(value) || 0;
+
+        return (
+          <div style={{ display: 'flex', gap: '4px', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: '0.8rem', color: '#6c757d' }}>₹</span>
+            <span style={{ fontWeight: 600 }}>
+              {amount.toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </span>
+          </div>
+        );
+      },
     },
     {
       key: 'status',
@@ -148,7 +152,12 @@ const PaymentReceived = () => {
       try {
         showLoading();
         const response = await api.get<Payments[]>('payments/');
-        setPayments(response.data);
+        setPayments(
+          response.data.map(p => ({
+            ...p,
+            amount: Number(p.amount),
+          }))
+        );
       } catch (error: any) {
         setToast({
           stage: 'enter',
@@ -190,9 +199,7 @@ const PaymentReceived = () => {
     }, 350);
 
     try {
-      await api.patch(`/payments/${payment.id}/status/`, {
-        // status: 'archived',
-        is_active: false,
+      await api.delete(`payments/${payment.id}/delete/`, {
       });
     } catch (e) {
       setToast({
@@ -210,7 +217,7 @@ const PaymentReceived = () => {
     if (!toRestore) return;
 
     try {
-      await api.patch(`/payments/${toRestore.payment.id}/status/`, {
+      await api.patch(`payments/${toRestore.payment.id}/status/`, {
         is_active: true,
       });
 
